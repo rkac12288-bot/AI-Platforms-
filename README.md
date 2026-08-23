@@ -36,3 +36,5 @@ https://rkac12288-bot.github.io/AI-Platforms-/<platform-folder>/
 Just open the link — everything runs in the browser, no install required.
 
 ---
+* Designed by Renata Kac *
+* LinkedIn : linkedin.com/in/renata-kac-49803511 *
