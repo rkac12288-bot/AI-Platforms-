@@ -10,7 +10,7 @@ Each project lives in its own folder with a full write-up. Every platform is a w
 
 | Platform | What it is | Live demo |
 |----------|-----------|-----------|
-| **[Eterna Wealth](./ETERNA_WEALTH/)** | A storytelling-first portfolio intelligence platform — click any number and it explains what it means, why it matters, and what to do next. Role-aware views for CEO / CFO / PM, an AI analyst with a graceful offline fallback, backtesting, and auto-generated board decks. | [▶ Open](https://YOUR-USERNAME.github.io/AI-PLATFORMS/ETERNA_WEALTH/) |
+| **[Eterna Wealth](./eterna-wealth/)** | A storytelling-first portfolio intelligence platform — click any number and it explains what it means, why it matters, and what to do next. Role-aware views for CEO / CFO / PM, an AI analyst with a graceful offline fallback, backtesting, and auto-generated board decks. | [▶ Open](https://rkac12288-bot.github.io/AI-Platforms-/eterna-wealth/) |
 
 *More platforms coming soon.*
 
@@ -30,11 +30,9 @@ I build AI platforms that turn dense, expert-only data into something a decision
 Each folder with an `index.html` is published automatically via GitHub Pages at:
 
 ```
-https://YOUR-USERNAME.github.io/AI-PLATFORMS/<platform-folder>/
+https://rkac12288-bot.github.io/AI-Platforms-/<platform-folder>/
 ```
 
 Just open the link — everything runs in the browser, no install required.
 
 ---
-
-*Designed and built by Renata Kac.LinkedIn: linkedin.com/in/renata-kac-49803511
