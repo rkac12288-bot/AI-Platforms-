@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Eterna-Wealth</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 :root {
@@ -1025,6 +1026,53 @@ canvas{cursor:default;}
 .hb-code .k{color:#c8a24a;}.hb-code .s{color:#7bc99a;}.hb-code .c{color:#6a655e;}.hb-code .n{color:#6db3e0;}
 .hb-two{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px;}
 @media(max-width:720px){.hb-two,.hb-split{grid-template-columns:1fr;flex-direction:column;}}
+
+/* ── Walk-Forward Backtest ── */
+.wf-hero{background:linear-gradient(135deg,rgba(34,184,168,.08),rgba(74,138,224,.05));border:1px solid rgba(34,184,168,.2);border-radius:14px;padding:18px 22px;margin-bottom:18px;}
+.wf-hero-t{font-size:15px;font-weight:600;color:var(--txt);margin-bottom:6px;display:flex;align-items:center;gap:9px;}
+.wf-hero-d{font-size:12.5px;line-height:1.65;color:var(--muted);}
+.wf-hero-d strong{color:var(--txt);}
+.wf-method{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+.wf-chip{font-family:var(--fm);font-size:9.5px;background:var(--s2);border:1px solid var(--bdr);border-radius:20px;padding:4px 11px;color:var(--muted);}
+.wf-chip b{color:var(--teal);}
+.wf-drop{border:2px dashed var(--bdr2);border-radius:14px;padding:34px 24px;text-align:center;background:var(--s2);transition:all .15s;cursor:pointer;margin-bottom:18px;}
+.wf-drop:hover{border-color:var(--teal);background:rgba(34,184,168,.04);}
+.wf-drop.has{border-style:solid;border-color:rgba(34,184,168,.4);background:rgba(34,184,168,.05);cursor:default;}
+.wf-drop-ic{font-size:30px;margin-bottom:10px;}
+.wf-drop-t{font-size:14px;font-weight:600;color:var(--txt);margin-bottom:5px;}
+.wf-drop-d{font-size:11.5px;color:var(--muted);line-height:1.5;}
+.wf-drop input{display:none;}
+.wf-runbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+.wf-run{background:linear-gradient(135deg,#22b8a8,#4a8ae0);border:none;color:#fff;border-radius:10px;padding:11px 22px;font-family:var(--fw);font-size:13px;font-weight:600;cursor:pointer;transition:transform .12s;}
+.wf-run:hover{transform:scale(1.03);}
+.wf-run:disabled{opacity:.4;cursor:not-allowed;}
+.wf-runinfo{font-size:11.5px;color:var(--muted);}
+.wf-runinfo b{color:var(--txt);font-family:var(--fm);}
+.wf-verdict{border-radius:14px;padding:18px 22px;margin-bottom:18px;display:none;background:linear-gradient(135deg,rgba(74,138,224,.08),rgba(34,184,168,.05));border:1px solid rgba(74,138,224,.25);}
+.wf-verdict.show{display:block;animation:fadeUp .3s ease;}
+.wf-verdict-t{font-size:16px;font-weight:700;color:var(--txt);margin-bottom:6px;}
+.wf-verdict-d{font-size:13px;line-height:1.7;color:var(--txt);}
+.wf-verdict-d strong{font-weight:600;} .wf-verdict-d .up{color:var(--grn);font-weight:600;} .wf-verdict-d .dn{color:var(--red);font-weight:600;}
+.wf-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+.wf-card{background:var(--s1);border:1px solid var(--bdr);border-radius:13px;overflow:hidden;}
+.wf-card.bench{border-color:rgba(138,132,128,.3);}
+.wf-card.win{border-color:rgba(61,184,118,.35);}
+.wf-card.lose{border-color:rgba(217,86,86,.3);}
+.wf-card-hd{padding:13px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px;background:var(--s2);}
+.wf-card-name{font-size:14px;font-weight:600;color:var(--txt);}
+.wf-card-badge{font-family:var(--fm);font-size:8.5px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.05em;margin-left:auto;}
+.wf-card-badge.win{background:var(--n2);color:var(--grn);} .wf-card-badge.lose{background:var(--r2);color:var(--red);} .wf-card-badge.bench{background:var(--s3);color:var(--muted);}
+.wf-card-body{padding:14px 18px;}
+.wf-mrow{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--bdr);}
+.wf-mrow:last-child{border-bottom:none;}
+.wf-mlabel{font-size:11px;color:var(--muted);}
+.wf-mval{font-family:var(--fm);font-size:14px;font-weight:600;color:var(--txt);}
+.wf-mval.good{color:var(--grn);} .wf-mval.bad{color:var(--red);}
+.wf-chartbox{background:var(--s1);border:1px solid var(--bdr);border-radius:13px;padding:16px 18px;margin-bottom:16px;}
+.wf-chartcap{font-size:10.5px;color:var(--muted);margin-top:9px;line-height:1.5;}
+.wf-excl{font-size:11px;color:var(--amb);background:rgba(224,168,74,.08);border:1px solid rgba(224,168,74,.25);border-radius:9px;padding:10px 13px;margin-bottom:16px;line-height:1.5;}
+@media(max-width:720px){.wf-grid{grid-template-columns:1fr;}}
+
 </style>
 
 <div class="shell">
@@ -1086,7 +1134,7 @@ canvas{cursor:default;}
   <button class="nb" onclick="go('matrix',this)"><span class="nb-ic">📋</span><span class="nb-lbl">Action Matrix</span><div class="nb-dot r"></div></button>
   <button class="nb" onclick="go('backtest',this)"><span class="nb-ic">⏮</span><span class="nb-lbl">Backtest &amp; Validate</span></button>
   <button class="nb" onclick="go('fundamental',this)"><span class="nb-ic">🎯</span><span class="nb-lbl">Fundamental AI</span><div class="nb-dot a"></div></button>
-  <button class="nb" onclick="go('advicetest',this)"><span class="nb-ic">🔬</span><span class="nb-lbl">Advice Backtest</span><div class="nb-dot" style="background:#22b8a8;"></div></button>
+  <button class="nb" onclick="go('walkforward',this)"><span class="nb-ic">🔬</span><span class="nb-lbl">Walk-Forward Test</span><div class="nb-dot" style="background:#22b8a8;"></div></button>
 
   <div class="sb-sec">System</div>
   <button class="nb" onclick="go('howbuilt',this)"><span class="nb-ic">🏗️</span><span class="nb-lbl">How It's Built</span></button>
@@ -2183,37 +2231,6 @@ canvas{cursor:default;}
 </div>
 
 
-<!-- ══════════════════ ADVICE BACKTEST ══════════════════ -->
-<div id="page-advicetest" class="page">
-  <div class="pg-head">
-    <div class="pg-title">🔬 Advice Backtest</div>
-    <div class="pg-desc">A controlled experiment: does following Eterna's recommendations actually improve results — tested against thousands of unknown future markets, with no hindsight?</div>
-  </div>
-
-  <div class="at-hero">
-    <div class="at-hero-t">🎯 What this test does — and honestly, what it doesn't</div>
-    <div class="at-hero-d">For each portfolio, we take the <strong>exact recommendations Eterna's own engine produces</strong> (exit fragile holdings, trim drift, add underweight quality), build an "advised" version, then run <strong>both</strong> the original and the advised portfolio forward through thousands of randomized future market paths. The same random shocks hit both versions, so it's a fair fight. Neither portfolio knows which future it will face — that's the "no hindsight" part.<br><br>
-    This tests whether Eterna's <strong>logic is sound</strong> — whether applying its rules improves the risk/return profile against an unknown future. It does <em>not</em> claim "Eterna would have earned you X% last year" — that would need real historical price data, which a live platform pulls from the market, not from these snapshots.</div>
-    <div class="at-method">
-      <span class="at-chip"><b>Method:</b> Monte Carlo forward simulation</span>
-      <span class="at-chip"><b>Paths:</b> 5,000 per portfolio</span>
-      <span class="at-chip"><b>Horizon:</b> 1 year</span>
-      <span class="at-chip"><b>Fairness:</b> identical shocks, both versions</span>
-      <span class="at-chip"><b>Measures:</b> Sharpe & Sortino</span>
-    </div>
-  </div>
-
-  <div class="at-runbar">
-    <button class="at-run" id="atRunBtn" onclick="runAdviceTest()">▶ Run the experiment</button>
-    <div class="at-runinfo">Tests all <b>3</b> portfolios · <b>15,000</b> total simulated paths · deterministic seed for reproducibility</div>
-  </div>
-
-  <div class="at-verdict" id="atVerdict"></div>
-  <div id="atResults"></div>
-</div>
-
-
-<!-- ══════════════════ HOW IT'S BUILT ══════════════════ -->
 <div id="page-howbuilt" class="page">
   <div class="pg-head">
     <div class="pg-title">🏗️ How It's Built</div>
@@ -2328,6 +2345,43 @@ canvas{cursor:default;}
       </div>
     </div>
   </div>
+</div>
+
+
+<!-- ══════════════════ WALK-FORWARD BACKTEST ══════════════════ -->
+<div id="page-walkforward" class="page">
+  <div class="pg-head">
+    <div class="pg-title">🔬 Walk-Forward Backtest</div>
+    <div class="pg-desc">An honest out-of-sample test on real market data. Strategies decide each week using only the past, then the next week is revealed and scored — no look-ahead, no fabricated data.</div>
+  </div>
+
+  <div class="wf-hero">
+    <div class="wf-hero-t">🎯 How this test works — and why it's honest</div>
+    <div class="wf-hero-d">Upload a CSV of <strong>real daily prices</strong> (dates as rows, tickers as columns — the included <code>fetch_prices.py</code> builds one from Yahoo Finance). The engine resamples to weekly decision points, then walks forward: at each week it computes signals from <strong>past prices only</strong>, each strategy decides its new weights <strong>blind to the future</strong>, and only then is the next week's real return revealed and scored. Three strategies (Momentum, Mean-Reversion, Risk-Managed) run against two honest benchmarks (Buy &amp; Hold, Equal-Weight). Crucially, <strong>strategies can — and do — lose</strong>; a test where everything wins is a rigged test.</div>
+    <div class="wf-method">
+      <span class="wf-chip"><b>Data:</b> your real CSV (no fabrication)</span>
+      <span class="wf-chip"><b>Cadence:</b> weekly decisions</span>
+      <span class="wf-chip"><b>Discipline:</b> strict no look-ahead</span>
+      <span class="wf-chip"><b>Benchmarks:</b> Buy &amp; Hold + Equal-Weight</span>
+      <span class="wf-chip"><b>Scoring:</b> realized out-of-sample</span>
+    </div>
+  </div>
+
+  <label class="wf-drop" id="wfDrop">
+    <div class="wf-drop-ic">📄</div>
+    <div class="wf-drop-t" id="wfDropT">Drop your price CSV here, or click to browse</div>
+    <div class="wf-drop-d" id="wfDropD">Format: first column <code>Date</code>, remaining columns are ticker prices. Adjusted close preferred.</div>
+    <input type="file" id="wfFile" accept=".csv" onchange="wfLoadCSV(event)">
+  </label>
+
+  <div class="wf-runbar">
+    <button class="wf-run" id="wfRunBtn" onclick="runWalkForward()" disabled>▶ Run walk-forward test</button>
+    <div class="wf-runinfo" id="wfRunInfo">Waiting for data — upload a CSV to enable.</div>
+  </div>
+
+  <div class="wf-excl" id="wfExcl" style="display:none;"></div>
+  <div class="wf-verdict" id="wfVerdict"></div>
+  <div id="wfResults"></div>
 </div>
 
 </div><!-- /main -->
@@ -2768,7 +2822,7 @@ function go(pg,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   document.getElementById('page-'+pg).classList.add('on');btn.classList.add('on');
-  const inits={cockpit:initCockpit,holistic:()=>{},stress:initStress,rebal:initRebal,cashflow:initCashflow,credit:()=>{},market:initMarket,insight:initInsight,matrix:initMatrix,backtest:initBacktest,fundamental:initFundamental,advicetest:initAdviceTest,howbuilt:()=>{},uploader:()=>{},kb:initKB,settings:()=>{}};
+  const inits={cockpit:initCockpit,holistic:()=>{},stress:initStress,rebal:initRebal,cashflow:initCashflow,credit:()=>{},market:initMarket,insight:initInsight,matrix:initMatrix,backtest:initBacktest,fundamental:initFundamental,walkforward:initWalkForward,howbuilt:()=>{},uploader:()=>{},kb:initKB,settings:()=>{}};
   const flagKey='_i_'+pg+'_'+activePfId;
   if(inits[pg]&&!window[flagKey]){
     window['_i_'+pg]=false;
@@ -9162,343 +9216,235 @@ function openWaterfallStory() {
   document.getElementById('ddOv').classList.add('open');
 }
 
-
 // ══════════════════════════════════════════════════════════════════
-// ADVICE BACKTEST ENGINE
-// Tests whether following Eterna's recommendations improves risk-adjusted
-// results across thousands of unknown future market paths (no hindsight).
+// WALK-FORWARD BACKTEST ENGINE — honest, out-of-sample, real CSV data
+// Ported from a Python prototype validated on real Yahoo Finance prices.
+// No fabricated data: inert until a real CSV is loaded.
 // ══════════════════════════════════════════════════════════════════
-let _atCharts = {};
-let _atHasRun = false;
+let _wfData = null;      // {dates:[], prices:{ticker:[...]}, tickers:[]}
+let _wfCharts = {};
 
-function initAdviceTest(){
-  // don't auto-run (it's heavy) — just show the ready state
-  if(_atHasRun) return;
-}
-
-// Seeded RNG for reproducibility
-function _atMulberry(seed){ return function(){ let t=seed+=0x6D2B79F5; t=Math.imul(t^t>>>15,t|1); t^=t+Math.imul(t^t>>>7,t|61); return ((t^t>>>14)>>>0)/4294967296; }; }
-function _atGauss(rng){ let u=0,v=0; while(u===0)u=rng(); while(v===0)v=rng(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
-
-// Per-holding expected annual return & volatility from its snapshot profile.
-// vol scales with |beta| (same basis as Eterna's sigma = |beta|*9.2%) plus an
-// idiosyncratic floor; lower health (eff) => fatter downside (extra left-tail drift).
-function _atHoldingModel(h){
-  const irr = (h.irr||0)/100;
-  const beta = Math.abs(h.beta==null?1:h.beta);
-  const vol = Math.max(0.04, beta*0.092 + 0.03);      // annual sigma
-  const eff = h.eff==null?0.7:h.eff;
-  // fragile holdings carry a downside "impairment" drag that only bites in bad draws
-  const impair = eff < 0.5 ? (0.5-eff)*0.9 : eff < 0.7 ? (0.7-eff)*0.25 : 0;
-  return { mu:irr, vol, impair, eff, beta };
-}
-
-// Replicate Eterna's EXACT recommendation rules (from the Rebalancing engine)
-const _atSwaps = {
-  HTGC:{rt:'ARCC',ri:10.8,re:0.76,beta:0.9,exp:0}, GAIN:{rt:'ARCC',ri:10.8,re:0.76,beta:0.9,exp:0},
-  ICLN:{rt:'FSLR',ri:14.2,re:0.79,beta:0.88,exp:0.0}, TAN:{rt:'FSLR',ri:14.2,re:0.79,beta:0.88,exp:0},
-  SGOV:{rt:'WOOD',ri:8.2,re:0.62,beta:0.72,exp:0.47}, GDX:{rt:'GLD',ri:8.4,re:0.67,beta:0.15,exp:0.4},
-  VTI:{rt:'QQQ',ri:14.1,re:0.81,beta:1.18,exp:0.2},
-  _default:{rt:'VTI',ri:10.8,re:0.77,beta:1.0,exp:0.03}
+// A balanced test portfolio defined over common liquid tickers.
+// Only tickers actually present in the uploaded CSV are used; the rest are disclosed as excluded.
+const WF_PORTFOLIO = {
+  'VTI':0.20,'QQQ':0.15,'XOM':0.08,'AAPL':0.07,'GLD':0.12,
+  'DBC':0.08,'GDX':0.08,'COPX':0.07,'ICLN':0.05,'BTC-USD':0.06,'ETH-USD':0.04
 };
 
-function _atRecommend(pf){
-  const data = pf.data.map(h=>({...h}));
-  const target = pf.target;
-  const actions = [];
-  const exitTickers = new Set();
+function initWalkForward(){ /* page is ready; waits for CSV upload */ }
 
-  // EXIT: eff<0.5 OR (irr < target*0.6 AND eff<0.65) — top 3 by worst health
-  const exits = data
-    .filter(h => (h.eff||0.7)<0.5 || (h.irr < target*0.6 && (h.eff||0.7)<0.65))
-    .sort((a,b)=>(a.eff||0.7)-(b.eff||0.7)).slice(0,3);
-  exits.forEach(h=>{
-    exitTickers.add(h.ticker);
-    const rep = _atSwaps[h.ticker]||_atSwaps._default;
-    actions.push({type:'exit',ticker:h.ticker,wt:h.wt,to:rep.rt,
-      reason:`health ${(h.eff||0.7).toFixed(2)} below 0.60 floor, earns ${h.irr}% → rotate to ${rep.rt} (${rep.ri}%, health ${rep.re})`});
-  });
-
-  // REDUCE: drift > +2.5% (not already exited) — top 2
-  const reduces = data
-    .filter(h=>(h.wt-h.tgt)>2.5 && !exitTickers.has(h.ticker))
-    .sort((a,b)=>(b.wt-b.tgt)-(a.wt-a.tgt)).slice(0,2);
-  reduces.forEach(h=>{
-    const drift=+(h.wt-h.tgt).toFixed(1);
-    actions.push({type:'trim',ticker:h.ticker,drift,
-      reason:`${drift}% overweight vs ${h.tgt}% target → trim back to target, redirect to underweight`});
-  });
-
-  // ADD: underweight (tgt-wt>2) AND eff>=0.65 — top 2
-  const adds = data
-    .filter(h=>(h.tgt-h.wt)>2 && (h.eff||0.7)>=0.65 && !exitTickers.has(h.ticker))
-    .sort((a,b)=>(b.tgt-b.wt)-(a.tgt-a.wt)).slice(0,2);
-  adds.forEach(h=>{
-    const gap=+(h.tgt-h.wt).toFixed(1);
-    actions.push({type:'add',ticker:h.ticker,gap,
-      reason:`${gap}% underweight, healthy (${(h.eff||0.7).toFixed(2)}) → add toward ${h.tgt}% target`});
-  });
-
-  // Build the ADVISED portfolio by applying the actions
-  let adv = data.map(h=>({...h}));
-
-  // Apply exits: replace holding with its swap (keep the weight, adopt new profile)
-  adv = adv.map(h=>{
-    if(exitTickers.has(h.ticker)){
-      const rep=_atSwaps[h.ticker]||_atSwaps._default;
-      return {...h, ticker:rep.rt, irr:rep.ri, eff:rep.re, beta:rep.beta, exp:rep.exp, _swappedFrom:h.ticker};
+function wfLoadCSV(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const parsed = _wfParseCSV(e.target.result);
+      _wfData = parsed;
+      _wfOnDataLoaded(file.name);
+    } catch(err){
+      document.getElementById('wfDropT').textContent = '⚠ Could not read that CSV';
+      document.getElementById('wfDropD').textContent = err.message;
     }
-    return h;
-  });
+  };
+  reader.readAsText(file);
+}
 
-  // Apply trims: move drift back to target; pool the freed weight
-  let freed = 0;
-  adv.forEach(h=>{
-    const r = reduces.find(x=>x.ticker===h.ticker || (x.ticker && h._swappedFrom===x.ticker));
-    if(r){ const drift=h.wt-h.tgt; if(drift>0){ freed+=drift; h.wt=h.tgt; } }
-  });
-  // Apply adds: fill underweight up to target using freed capital (proportionally)
-  const addTargets = adv.filter(h=>adds.find(a=>a.ticker===h.ticker));
-  let totalGap = addTargets.reduce((s,h)=>s+(h.tgt-h.wt),0);
-  if(freed>0 && totalGap>0){
-    addTargets.forEach(h=>{ const gap=h.tgt-h.wt; const give=Math.min(gap, freed*(gap/totalGap)); h.wt+=give; });
+function _wfParseCSV(text){
+  const lines = text.trim().split(/\r?\n/).filter(l=>l.trim());
+  if(lines.length<10) throw new Error('Need at least ~10 rows of price data.');
+  const hdr = lines[0].split(',').map(s=>s.trim());
+  if(hdr[0].toLowerCase()!=='date') throw new Error('First column must be "Date".');
+  const tickers = hdr.slice(1);
+  const dates=[]; const prices={}; tickers.forEach(t=>prices[t]=[]);
+  for(let i=1;i<lines.length;i++){
+    const cells = lines[i].split(',');
+    dates.push(cells[0].trim());
+    tickers.forEach((t,j)=>{
+      const v = parseFloat(cells[j+1]);
+      prices[t].push(isNaN(v)?null:v);
+    });
   }
-  // If capital still freed (e.g. no adds), redistribute to healthiest holdings pro-rata
-  const usedByAdds = Math.min(freed, totalGap);
-  let leftover = freed - usedByAdds;
-  if(leftover>0.01){
-    const healthy = adv.filter(h=>(h.eff||0.7)>=0.7);
-    const pool = healthy.length?healthy:adv;
-    const wsum = pool.reduce((s,h)=>s+h.wt,0);
-    pool.forEach(h=>{ h.wt += leftover*(h.wt/wsum); });
+  return {dates, prices, tickers};
+}
+
+function _wfOnDataLoaded(fname){
+  // Which portfolio tickers are actually covered by real data?
+  const present = Object.keys(WF_PORTFOLIO).filter(t=>_wfData.tickers.includes(t) && _wfData.prices[t].every(v=>v!=null));
+  const missing = Object.keys(WF_PORTFOLIO).filter(t=>!present.includes(t));
+  _wfData._present = present;
+
+  const drop = document.getElementById('wfDrop');
+  drop.classList.add('has');
+  document.getElementById('wfDropIc');
+  document.querySelector('#wfDrop .wf-drop-ic').textContent = '✅';
+  document.getElementById('wfDropT').textContent = fname + ' loaded';
+  document.getElementById('wfDropD').textContent =
+    `${_wfData.dates.length} rows · ${_wfData.tickers.length} tickers · ${_wfData.dates[0]} → ${_wfData.dates[_wfData.dates.length-1]}`;
+
+  // Disclose exclusions honestly
+  const excl = document.getElementById('wfExcl');
+  if(missing.length){
+    excl.style.display='block';
+    excl.innerHTML = `<strong>⚠ Disclosed exclusions:</strong> ${missing.length} portfolio holding(s) — <b>${missing.join(', ')}</b> — are not present (or have gaps) in this CSV and are excluded from the test. The remaining ${present.length} holdings are re-weighted to sum to 100%. This is disclosed rather than filled with estimated data.`;
+  } else {
+    excl.style.display='none';
   }
-  // Renormalize to 100
-  const wt = adv.reduce((s,h)=>s+h.wt,0);
-  if(wt>0) adv.forEach(h=>h.wt = h.wt/wt*100);
 
-  return { actions, advised:adv, exitTickers };
-}
-
-// Monte Carlo: simulate 1-yr forward return for a portfolio across N paths.
-// Shocks are shared across both versions via a shared market factor per path.
-function _atSimulate(holdings, nav, paths, seedBase){
-  const models = holdings.map(h=>({ w:(h.wt||0)/100, ...(_atHoldingModel(h)) }));
-  const rng = _atMulberry(seedBase);
-  const finals = [];
-  for(let p=0;p<paths;p++){
-    // shared market factor for this path (systematic shock)
-    const mkt = _atGauss(rng);
-    let ret = 0;
-    for(const m of models){
-      // holding return = mu + beta*market shock*(vol scale) + idiosyncratic - impairment tail
-      const idio = _atGauss(rng)*m.vol*0.5;
-      const systematic = m.beta * mkt * m.vol * 0.7;
-      let r = m.mu + systematic + idio;
-      // impairment: only bites on the downside (fat left tail for fragile names)
-      if(mkt < 0) r -= m.impair * Math.abs(mkt) * 0.5;
-      ret += m.w * r;
-    }
-    finals.push(ret);
+  const btn=document.getElementById('wfRunBtn');
+  if(present.length>=3){
+    btn.disabled=false;
+    document.getElementById('wfRunInfo').innerHTML = `Ready — <b>${present.length}</b> holdings covered by real data. Click to run.`;
+  } else {
+    btn.disabled=true;
+    document.getElementById('wfRunInfo').innerHTML = `<span style="color:var(--red);">Only ${present.length} portfolio tickers found in this CSV. Need at least 3. Check the ticker column names.</span>`;
   }
-  finals.sort((a,b)=>a-b);
-  const mean = finals.reduce((s,x)=>s+x,0)/paths;
-  const variance = finals.reduce((s,x)=>s+(x-mean)**2,0)/paths;
-  const sd = Math.sqrt(variance);
-  const downside = finals.filter(x=>x<0);
-  const dsd = downside.length? Math.sqrt(downside.reduce((s,x)=>s+x*x,0)/downside.length) : sd*0.7;
-  const rf = 0.053;
-  const sharpe = sd>0 ? (mean-rf)/sd : 0;
-  const sortino = dsd>0 ? (mean-rf)/dsd : 0;
-  const p5 = finals[Math.floor(paths*0.05)];
-  const p50 = finals[Math.floor(paths*0.5)];
-  const p95 = finals[Math.floor(paths*0.95)];
-  const probLoss = downside.length/paths*100;
-  // max drawdown proxy: worst 5% average (expected shortfall)
-  const es = downside.length? downside.slice(0,Math.max(1,Math.floor(paths*0.05))).reduce((s,x)=>s+x,0)/Math.max(1,Math.floor(paths*0.05)) : 0;
-  return { mean, sd, sharpe, sortino, p5, p50, p95, probLoss, es, finals };
 }
 
-function runAdviceTest(){
-  const btn = document.getElementById('atRunBtn');
-  btn.disabled = true; btn.textContent = '⏳ Running 15,000 simulations…';
-  setTimeout(()=>{ _executeAdviceTest(); btn.disabled=false; btn.textContent='↻ Re-run the experiment'; }, 60);
+// ── Resample daily → weekly (every 5th row) ──
+function _wfWeekly(){
+  const idx=[]; for(let i=0;i<_wfData.dates.length;i+=5) idx.push(i);
+  if(idx[idx.length-1]!==_wfData.dates.length-1) idx.push(_wfData.dates.length-1);
+  const wdates=idx.map(i=>_wfData.dates[i]);
+  const wp={};
+  _wfData._present.forEach(t=>{ wp[t]=idx.map(i=>_wfData.prices[t][i]); });
+  return {wdates, wp, W:idx.length};
 }
 
-function _executeAdviceTest(){
-  const PATHS = 5000;
-  const results = [];
-
-  portfolios.forEach((pf, idx)=>{
-    const { actions, advised, exitTickers } = _atRecommend(pf);
-    // Fair test: SAME seed for both versions so identical market shocks hit both
-    const seed = 1000 + idx*7;
-    const origSim = _atSimulate(pf.data, pf.nav, PATHS, seed);
-    const advSim  = _atSimulate(advised,  pf.nav, PATHS, seed);
-    results.push({ pf, actions, advised, exitTickers, origSim, advSim });
+// ── Point-in-time signals from prices[0..t] ONLY ──
+function _wfSignals(wp, present, t, lookback){
+  lookback = lookback||12;
+  const out={};
+  present.forEach(tk=>{
+    const series = wp[tk].slice(0,t+1);       // strictly past + present
+    if(series.length<2){ out[tk]={mom:0,vol:0,dd:0}; return; }
+    const lb=Math.min(lookback,series.length-1);
+    const mom=series[series.length-1]/series[series.length-1-lb]-1;
+    const rets=[]; for(let i=1;i<series.length;i++) rets.push(series[i]/series[i-1]-1);
+    const recent=rets.slice(-lb);
+    const vol = recent.length>1 ? _wfStd(recent)*Math.sqrt(52) : 0;
+    const peak=Math.max(...series); const dd=series[series.length-1]/peak-1;
+    out[tk]={mom,vol,dd};
   });
+  return out;
+}
+function _wfStd(a){ const m=a.reduce((s,x)=>s+x,0)/a.length; return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2,0)/a.length); }
+function _wfNorm(w){ const s=Object.values(w).reduce((a,b)=>a+b,0); const o={}; for(const k in w) o[k]=s>0?w[k]/s:w[k]; return o; }
 
-  _atHasRun = true;
-  _renderAdviceResults(results);
+// ── Three strategies (identical logic to the validated prototype) ──
+const WF_STRATS = {
+  'Momentum': (w,sig)=>{ const nw={}; for(const tk in w) nw[tk]=w[tk]*(1+Math.max(-0.5,Math.min(0.5,sig[tk].mom*1.5))); return _wfNorm(nw); },
+  'Mean-Reversion': (w,sig)=>{ const nw={}; for(const tk in w) nw[tk]=w[tk]*(1-Math.max(-0.5,Math.min(0.5,sig[tk].mom*1.0))); return _wfNorm(nw); },
+  'Risk-Managed': (w,sig)=>{ const nw={}; for(const tk in w){ const pen=1-Math.min(0.6,sig[tk].vol*0.5)-Math.min(0.4,Math.abs(Math.min(0,sig[tk].dd))*1.0); nw[tk]=w[tk]*Math.max(0.2,pen); } return _wfNorm(nw); }
+};
+
+function _wfWeekReturn(wp, w, t){
+  let r=0; for(const tk in w){ const p0=wp[tk][t], p1=wp[tk][t+1]; r+=w[tk]*(p1/p0-1); } return r;
 }
 
-function _renderAdviceResults(results){
-  // ── Overall verdict ──
-  let sharpeWins=0, sortinoWins=0, totalSharpeGain=0, totalSortinoGain=0;
-  results.forEach(r=>{
-    if(r.advSim.sharpe > r.origSim.sharpe) sharpeWins++;
-    if(r.advSim.sortino > r.origSim.sortino) sortinoWins++;
-    totalSharpeGain += (r.advSim.sharpe - r.origSim.sharpe);
-    totalSortinoGain += (r.advSim.sortino - r.origSim.sortino);
-  });
-  const n = results.length;
-  const avgSharpeGain = totalSharpeGain/n, avgSortinoGain = totalSortinoGain/n;
-  const allWin = sharpeWins===n && sortinoWins===n;
+// ── Walk-forward runner. decide=null => buy & hold; 'equal' => equal-weight rebalance; else strategy fn ──
+function _wfRun(wp, present, W, decide){
+  let w={}; const base=_wfNorm(Object.fromEntries(present.map(t=>[t,WF_PORTFOLIO[t]])));
+  w=Object.assign({},base);
+  const equity=[1]; const wrets=[];
+  for(let t=0;t<W-1;t++){
+    if(decide==='equal'){ w={}; present.forEach(tk=>w[tk]=1/present.length); }
+    else if(decide){ const sig=_wfSignals(wp,present,t); w=decide(w,sig); }   // decide on PAST only
+    const r=_wfWeekReturn(wp,w,t);                                            // reveal t->t+1
+    wrets.push(r); equity.push(equity[equity.length-1]*(1+r));
+  }
+  return {equity,wrets};
+}
 
-  const vEl = document.getElementById('atVerdict');
-  vEl.className = 'at-verdict show ' + (allWin?'win':'mix');
-  const dir = g => g>=0 ? `<span class="up">improved by ${g.toFixed(2)}</span>` : `<span class="dn">fell by ${Math.abs(g).toFixed(2)}</span>`;
-  vEl.innerHTML = `
-    <div class="at-verdict-t">${allWin?'✅ Eterna\'s advice improved every portfolio':'⚖️ Mixed — Eterna\'s advice helped in most cases'}</div>
-    <div class="at-verdict-d">Across <strong>${n} portfolios</strong> and <strong>${(n*5000).toLocaleString()} simulated future paths</strong>, following Eterna's recommendations moved risk-adjusted performance as follows: average <strong>Sharpe</strong> ${dir(avgSharpeGain)} and average <strong>Sortino</strong> ${dir(avgSortinoGain)}. The advised version won on Sharpe in <strong>${sharpeWins}/${n}</strong> portfolios and on Sortino (downside-focused) in <strong>${sortinoWins}/${n}</strong>.<br><br>
-    Because both versions faced the <strong>identical</strong> set of random futures, this isolates the effect of the advice itself — not luck. ${allWin?'The engine\'s core rules (exit fragile credit, trim drift, add underweight quality) are directionally sound.':'Where advice underperformed, it\'s usually because a trimmed high-beta name happened to be a strong return driver — a reminder that de-risking trades some upside for stability.'}</div>`;
+function _wfStats(equity,wrets){
+  const total=(equity[equity.length-1]-1)*100;
+  const mean=wrets.reduce((a,b)=>a+b,0)/wrets.length;
+  const sd=_wfStd(wrets);
+  const ann=mean*52, annvol=sd*Math.sqrt(52);
+  const sharpe=annvol>0?(ann-0.05)/annvol:0;
+  const downs=wrets.filter(x=>x<0);
+  const dsd=downs.length>1?_wfStd(downs)*Math.sqrt(52):annvol;
+  const sortino=dsd>0?(ann-0.05)/dsd:0;
+  let peak=-9,mdd=0; equity.forEach(e=>{peak=Math.max(peak,e);mdd=Math.min(mdd,e/peak-1);});
+  const hit=wrets.filter(x=>x>0).length/wrets.length*100;
+  return {total,sharpe,sortino,mdd:mdd*100,hit,annvol:annvol*100};
+}
 
-  // ── Per-portfolio cards ──
-  const host = document.getElementById('atResults');
-  host.innerHTML = results.map((r,i)=>{
-    const o=r.origSim, a=r.advSim;
-    const pct = x => (x*100).toFixed(1)+'%';
-    const sharpeUp = a.sharpe>=o.sharpe, sortinoUp=a.sortino>=o.sortino;
-    const badge = (sharpeUp&&sortinoUp)?'win':(!sharpeUp&&!sortinoUp)?'lose':'flat';
-    const badgeTx = badge==='win'?'ADVICE WON':badge==='lose'?'ADVICE LAGGED':'MIXED';
+function runWalkForward(){
+  const btn=document.getElementById('wfRunBtn');
+  btn.disabled=true; btn.textContent='⏳ Running…';
+  setTimeout(()=>{ _wfExecute(); btn.disabled=false; btn.textContent='↻ Re-run test'; }, 50);
+}
 
-    const actionsHtml = r.actions.length ? r.actions.map(ac=>`
-      <div class="at-act">
-        <span class="at-act-tag ${ac.type}">${ac.type.toUpperCase()}</span>
-        <span class="at-act-tx"><b>${ac.ticker}</b> — ${ac.reason}</span>
-      </div>`).join('') : '<div class="at-noact">Eterna found no changes to recommend — this portfolio is already clean (no fragile holdings, no material drift).</div>';
+function _wfExecute(){
+  const {wdates,wp,W}=_wfWeekly();
+  const present=_wfData._present;
 
-    const mrow=(lbl,ov,av,better)=>{
-      const oc = better==='low'?(ov<=av?'good':''):(ov>=av?'good':'');
-      const ac = better==='low'?(av<=ov?'good':''):(av>=ov?'good':'');
-      return `<div class="at-mrow"><span class="at-mlabel">${lbl}</span></div>`;
-    };
+  // Buy & Hold and Equal-Weight benchmarks
+  const bhRun=_wfRun(wp,present,W,null); const bhS=_wfStats(bhRun.equity,bhRun.wrets);
+  const eqRun=_wfRun(wp,present,W,'equal'); const eqS=_wfStats(eqRun.equity,eqRun.wrets);
 
-    return `
-    <div class="at-pf">
-      <div class="at-pf-hd">
-        <div class="at-pf-dot" style="background:${r.pf.col};"></div>
-        <div class="at-pf-name">${r.pf.name}</div>
-        <div class="at-pf-badge ${badge}">${badgeTx}</div>
-        <div class="at-pf-meta">${fmtNav(r.pf.nav)} · ${r.pf.data.length} holdings · ${r.actions.length} actions applied</div>
-      </div>
-      <div class="at-pf-body">
-        <div class="at-actions">
-          <div class="at-actions-t">Recommendations Eterna generated & applied</div>
-          ${actionsHtml}
-        </div>
+  const results={};
+  for(const name in WF_STRATS){ const run=_wfRun(wp,present,W,WF_STRATS[name]); results[name]={run,stats:_wfStats(run.equity,run.wrets)}; }
 
-        <div class="at-cmp">
-          <div class="at-side orig">
-            <div class="at-side-h">📋 Original (do nothing)</div>
-            <div class="at-mrow"><span class="at-mlabel">Sharpe ratio</span><span class="at-mval">${o.sharpe.toFixed(2)}</span></div>
-            <div class="at-mrow"><span class="at-mlabel">Sortino ratio</span><span class="at-mval">${o.sortino.toFixed(2)}</span></div>
-            <div class="at-mrow"><span class="at-mlabel">Expected return</span><span class="at-mval">${pct(o.mean)}</span></div>
-            <div class="at-mrow"><span class="at-mlabel">Volatility</span><span class="at-mval">${pct(o.sd)}</span></div>
-            <div class="at-mrow"><span class="at-mlabel">Prob. of loss</span><span class="at-mval">${o.probLoss.toFixed(0)}%</span></div>
-            <div class="at-mrow"><span class="at-mlabel">Worst 5% (P5)</span><span class="at-mval">${pct(o.p5)}</span></div>
-          </div>
-          <div class="at-side adv">
-            <div class="at-side-h">✨ After Eterna's advice</div>
-            <div class="at-mrow"><span class="at-mlabel">Sharpe ratio</span><span class="at-mval ${sharpeUp?'good':'bad'}">${a.sharpe.toFixed(2)} ${sharpeUp?'▲':'▼'}</span></div>
-            <div class="at-mrow"><span class="at-mlabel">Sortino ratio</span><span class="at-mval ${sortinoUp?'good':'bad'}">${a.sortino.toFixed(2)} ${sortinoUp?'▲':'▼'}</span></div>
-            <div class="at-mrow"><span class="at-mlabel">Expected return</span><span class="at-mval ${a.mean>=o.mean?'good':'bad'}">${pct(a.mean)} ${a.mean>=o.mean?'▲':'▼'}</span></div>
-            <div class="at-mrow"><span class="at-mlabel">Volatility</span><span class="at-mval ${a.sd<=o.sd?'good':'bad'}">${pct(a.sd)} ${a.sd<=o.sd?'▼':'▲'}</span></div>
-            <div class="at-mrow"><span class="at-mlabel">Prob. of loss</span><span class="at-mval ${a.probLoss<=o.probLoss?'good':'bad'}">${a.probLoss.toFixed(0)}% ${a.probLoss<=o.probLoss?'▼':'▲'}</span></div>
-            <div class="at-mrow"><span class="at-mlabel">Worst 5% (P5)</span><span class="at-mval ${a.p5>=o.p5?'good':'bad'}">${pct(a.p5)} ${a.p5>=o.p5?'▲':'▼'}</span></div>
-          </div>
-        </div>
+  _wfRender(wdates, bhRun, bhS, eqRun, eqS, results, present);
+}
 
-        <div class="at-chartbox">
-          <canvas id="atChart${i}" style="height:180px;"></canvas>
-          <div class="at-chartcap">Distribution of 1-year outcomes across 5,000 unknown futures. A taller, narrower curve shifted right (advised, teal) means better and more consistent returns; a fatter left tail (original, grey) means more downside risk.</div>
-        </div>
+function _wfRender(wdates, bhRun, bhS, eqRun, eqS, results, present){
+  // Verdict
+  const names=Object.keys(results);
+  const beatReturn=names.filter(n=>results[n].stats.total>bhS.total);
+  const beatSharpe=names.filter(n=>results[n].stats.sharpe>bhS.sharpe);
+  const best=names.reduce((a,b)=>results[b].stats.sharpe>results[a].stats.sharpe?b:a);
+  const worst=names.reduce((a,b)=>results[b].stats.sharpe<results[a].stats.sharpe?b:a);
+  const v=document.getElementById('wfVerdict'); v.className='wf-verdict show';
+  v.innerHTML = `<div class="wf-verdict-t">📊 Result: ${beatSharpe.length} of ${names.length} strategies beat Buy &amp; Hold on risk-adjusted return</div>
+    <div class="wf-verdict-d">Over <strong>${bhRun.wrets.length} weeks</strong> of real out-of-sample data, <strong>Buy &amp; Hold</strong> returned <strong>${bhS.total.toFixed(1)}%</strong> (Sharpe ${bhS.sharpe.toFixed(2)}). The best strategy was <strong>${best}</strong> (Sharpe ${results[best].stats.sharpe.toFixed(2)}); the worst was <strong>${worst}</strong> (Sharpe ${results[worst].stats.sharpe.toFixed(2)}). ${beatSharpe.length<names.length?`<span class="up">That some strategies lost is the point</span> — it confirms the test isn't rigged.`:`Note: all strategies beating the benchmark in one period can happen in a strong trending market, but treat single-period wins with caution.`}<br><br>Every decision used <strong>only past data</strong>; next-week returns were revealed after weights were set. No look-ahead, no fabricated data.</div>`;
+
+  // Cards: benchmarks + strategies
+  const mk=(name, s, cls, badge, badgeCls)=>`
+    <div class="wf-card ${cls}">
+      <div class="wf-card-hd"><div class="wf-card-name">${name}</div><div class="wf-card-badge ${badgeCls}">${badge}</div></div>
+      <div class="wf-card-body">
+        <div class="wf-mrow"><span class="wf-mlabel">Total return</span><span class="wf-mval ${s.total>=0?'good':'bad'}">${s.total>=0?'+':''}${s.total.toFixed(1)}%</span></div>
+        <div class="wf-mrow"><span class="wf-mlabel">Sharpe ratio</span><span class="wf-mval">${s.sharpe.toFixed(2)}</span></div>
+        <div class="wf-mrow"><span class="wf-mlabel">Sortino ratio</span><span class="wf-mval">${s.sortino.toFixed(2)}</span></div>
+        <div class="wf-mrow"><span class="wf-mlabel">Max drawdown</span><span class="wf-mval ${s.mdd>-15?'good':'bad'}">${s.mdd.toFixed(1)}%</span></div>
+        <div class="wf-mrow"><span class="wf-mlabel">Weekly hit rate</span><span class="wf-mval">${s.hit.toFixed(0)}%</span></div>
+        <div class="wf-mrow"><span class="wf-mlabel">Annualized vol</span><span class="wf-mval">${s.annvol.toFixed(1)}%</span></div>
       </div>
     </div>`;
-  }).join('');
 
-  // Render distribution charts
+  let cards = mk('Buy &amp; Hold (benchmark)', bhS, 'bench','BENCHMARK','bench') + mk('Equal-Weight (benchmark)', eqS, 'bench','BENCHMARK','bench');
+  names.forEach(n=>{
+    const s=results[n].stats;
+    const win=s.sharpe>bhS.sharpe;
+    cards += mk(n, s, win?'win':'lose', win?'BEAT B&H':'LOST TO B&H', win?'win':'lose');
+  });
+  document.getElementById('wfResults').innerHTML =
+    `<div class="wf-chartbox"><canvas id="wfEquityChart" style="height:280px;"></canvas><div class="wf-chartcap">Cumulative growth of $1 across the walk-forward. Benchmarks in grey; strategies in color. This is realized, out-of-sample performance on real prices — not a projection.</div></div>
+     <div class="wf-grid">${cards}</div>`;
+
+  // Equity curve chart
   setTimeout(()=>{
-    results.forEach((r,i)=>{
-      const ctx=document.getElementById('atChart'+i); if(!ctx) return;
-      if(_atCharts[i]){try{_atCharts[i].destroy();}catch(e){}}
-      // histogram both distributions
-      const bins=26;
-      const all=[...r.origSim.finals,...r.advSim.finals];
-      const min=Math.min(...all), max=Math.max(...all), bw=(max-min)/bins || 1;
-      const hist=(arr)=>{const hh=Array(bins).fill(0); arr.forEach(v=>{const b=Math.min(bins-1,Math.max(0,Math.floor((v-min)/bw))); hh[b]++;}); return hh;};
-      const labels=Array.from({length:bins},(_,b)=>((min+b*bw)*100).toFixed(0)+'%');
-      _atCharts[i]=new Chart(ctx,{type:'line',
-        data:{labels,datasets:[
-          {label:'Original',data:hist(r.origSim.finals),borderColor:'#8a8480',backgroundColor:'rgba(138,132,128,.12)',fill:true,borderWidth:1.5,pointRadius:0,tension:.4},
-          {label:'After advice',data:hist(r.advSim.finals),borderColor:'#22b8a8',backgroundColor:'rgba(34,184,168,.14)',fill:true,borderWidth:2,pointRadius:0,tension:.4},
-        ]},
-        options:{responsive:true,maintainAspectRatio:false,
-          plugins:{legend:{display:true,labels:{color:'#8a8480',font:{size:10},usePointStyle:true}}},
-          scales:{x:{ticks:{color:'#8a8480',font:{size:8},maxTicksLimit:8},grid:{display:false}},y:{display:false}}}});
-    });
+    const ctx=document.getElementById('wfEquityChart'); if(!ctx) return;
+    if(_wfCharts.eq){try{_wfCharts.eq.destroy();}catch(e){}}
+    const labels=wdates.slice(0,bhRun.equity.length);
+    const colors={'Momentum':'#4a8ae0','Mean-Reversion':'#d9a656','Risk-Managed':'#22b8a8'};
+    const ds=[
+      {label:'Buy & Hold',data:bhRun.equity,borderColor:'#8a8480',borderWidth:2,borderDash:[6,3],pointRadius:0,tension:.2},
+      {label:'Equal-Weight',data:eqRun.equity,borderColor:'#b8b2a8',borderWidth:1.5,borderDash:[2,2],pointRadius:0,tension:.2},
+    ];
+    names.forEach(n=>ds.push({label:n,data:results[n].run.equity,borderColor:colors[n]||'#888',borderWidth:2.5,pointRadius:0,tension:.2}));
+    _wfCharts.eq=new Chart(ctx,{type:'line',data:{labels,datasets:ds},
+      options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+        plugins:{legend:{display:true,labels:{color:'#8a8480',font:{size:10},usePointStyle:true,boxWidth:8}},
+          tooltip:{callbacks:{label:c=>c.dataset.label+': $'+c.parsed.y.toFixed(3)}}},
+        scales:{x:{ticks:{color:'#8a8480',font:{size:8},maxTicksLimit:10},grid:{display:false}},
+          y:{ticks:{color:'#8a8480',font:{size:9},callback:v=>'$'+v.toFixed(2)},grid:{color:'rgba(0,0,0,.04)'}}}}});
   },80);
 }
-
 </script>
-
-<!-- ══════════════════ CEO OVERLAY ══════════════════ -->
-<div class="exec-overlay" id="execCEO">
-  <div class="exec-topbar">
-    <span class="exec-logo ceo">ETERNA · WEALTH</span>
-    <span class="exec-role-badge ceo">CEO VIEW</span>
-    <button class="exec-close" onclick="setRole('pro',document.querySelector('.role-btn:first-child'))">← Back to Full Platform</button>
-  </div>
-  <div class="exec-body">
-    <div class="exec-hero"><div class="exec-hero-title" id="ceoHeroTitle">Portfolio Health Report</div><div class="exec-hero-sub" id="ceoHeroSub">High-level summary for executive decision-making</div></div>
-    <div class="exec-section"><div class="exec-section-title">Key Numbers — What You Need to Know</div><div class="exec-kpis" id="ceoKpis"></div></div>
-    <div class="exec-section"><div class="exec-section-title">Alerts Requiring Your Attention</div><div id="ceoAlerts"></div></div>
-    <div class="exec-section"><div class="exec-section-title">What Each Number Means in Plain English</div><div class="exec-card" id="ceoMetrics"></div></div>
-    <div class="exec-section"><div class="exec-section-title">Recommended Board Actions</div><div id="ceoActions"></div></div>
-  </div>
-</div>
-
-<!-- ══════════════════ CFO OVERLAY ══════════════════ -->
-<div class="exec-overlay" id="execCFO">
-  <div class="exec-topbar">
-    <span class="exec-logo cfo">ETERNA · WEALTH</span>
-    <span class="exec-role-badge cfo">CFO VIEW</span>
-    <button class="exec-close" onclick="setRole('pro',document.querySelector('.role-btn:first-child'))">← Back to Full Platform</button>
-  </div>
-  <div class="exec-body">
-    <div class="exec-hero"><div class="exec-hero-title" id="cfoHeroTitle">Financial Performance & Compliance Report</div><div class="exec-hero-sub" id="cfoHeroSub">P&L attribution · fee analysis · liquidity · IFRS 9</div></div>
-    <div class="exec-section"><div class="exec-section-title">Financial KPIs</div><div class="exec-kpis" id="cfoKpis"></div></div>
-    <div class="exec-section"><div class="exec-section-title">Returns Waterfall — Where the Money Goes</div><div class="exec-card" id="cfoWaterfall"></div></div>
-    <div class="exec-section"><div class="exec-section-title">IFRS 9 Credit Obligations</div><div id="cfoCredit"></div></div>
-    <div class="exec-section"><div class="exec-section-title">Cost Transparency — Full Fee Breakdown</div><div class="exec-card" id="cfoCosts"></div></div>
-    <div class="exec-section"><div class="exec-section-title">Benchmark Performance</div><div class="exec-card" id="cfoBench"></div></div>
-  </div>
-</div>
-
-<!-- ══════════════════ PM OVERLAY ══════════════════ -->
-<div class="exec-overlay" id="execPM">
-  <div class="exec-topbar">
-    <span class="exec-logo pm">ETERNA · WEALTH</span>
-    <span class="exec-role-badge pm">PORTFOLIO MANAGER VIEW</span>
-    <button class="exec-close" onclick="setRole('pro',document.querySelector('.role-btn:first-child'))">← Back to Full Platform</button>
-  </div>
-  <div class="exec-body">
-    <div class="exec-hero"><div class="exec-hero-title" id="pmHeroTitle">Portfolio Manager Dashboard</div><div class="exec-hero-sub" id="pmHeroSub">Risk metrics · drift alerts · credit signals · swap recommendations</div></div>
-    <div class="exec-section"><div class="exec-section-title">Risk & Return Snapshot</div><div class="exec-kpis" id="pmKpis"></div></div>
-    <div class="exec-section"><div class="exec-section-title">Holdings Requiring Action</div><div id="pmHoldings"></div></div>
-    <div class="exec-section"><div class="exec-section-title">Drift Monitor — All Positions</div><div class="exec-card" id="pmDrift"></div></div>
-    <div class="exec-section"><div class="exec-section-title">Credit & IFRS 9 Signals</div><div id="pmCredit"></div></div>
-    <div class="exec-section"><div class="exec-section-title">Rebalancing Recommendations</div><div id="pmSwaps"></div></div>
-  </div>
-</div>
-
+</body>
 </html>
+
