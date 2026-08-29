@@ -1,71 +1,118 @@
-# Eterna Wealth — Storytelling-First Portfolio Intelligence
+# Eterna Wealth — The Portfolio That Explains Itself
 
-> A single-file wealth management platform where every number explains itself. Click any metric, chart point, or holding and instead of a definition you get a story: what it is, why it matters, which assets are driving it, and the one action that moves it.
+### What if every number on your dashboard could tell you what to *do* about it?
 
-**🔗 Live demo:** `https://rkac12288-bot.github.io/AI-Platforms-/eterna-wealth/`
-*(works once GitHub Pages is enabled on the repository — see the top-level README)*
+That's Eterna Wealth. Click any metric, chart point, or holding — and instead of a definition, you get a plain-English story: what it means, why it matters, which holdings are driving it, and the **one move to make**. A dashboard reports. Eterna advises.
+
+**🔗 [Open the live demo →](https://rkac12288-bot.github.io/AI-Platforms-/eterna-wealth/)** &nbsp;·&nbsp; runs entirely in your browser, no install.
 
 ![Status](https://img.shields.io/badge/status-demo-e0a84a) ![Build](https://img.shields.io/badge/build-none-3db876) ![Dependencies](https://img.shields.io/badge/dependencies-zero%20backend-22b8a8) ![File](https://img.shields.io/badge/single--file-HTML-4a8ae0)
 
 ---
 
-## What it is
+## 🎬 See it in 12 seconds
 
-Eterna Wealth is an institutional-grade portfolio analytics platform built as a **single, self-contained HTML file** — no build step, no backend, no database. It reframes portfolio data the way a trusted analyst would explain it: in plain English, framed for whoever is reading (CEO, CFO, or portfolio manager), always ending in a decision.
+<!-- Record a 12s clip (click a metric → story opens → switch roles) and save as demo.gif here: -->
+![Eterna Wealth demo](./demo.gif)
 
-The core idea is **storytelling-first intelligence**. Most dashboards throw dozens of metrics on a screen and leave the executive asking "…so what do I actually do?" Eterna answers that question on every number.
+<!-- Video walkthrough: upload to YouTube/Loom, then uncomment and set the URL + thumbnail:
+[![Watch the walkthrough](./demo-thumbnail.png)](VIDEO_URL)
+-->
 
-## Why it's interesting (the engineering)
+> One click turns a cold number into a decision. That's the whole product — and the demo above shows it without a single word of narration.
 
-- **Graceful AI degradation.** The AI analyst calls a language model for narration, but that call is an *enhancement, not a dependency*. If the network is down, the file is opened locally (CORS), or the API is unreachable, a deterministic **local analysis engine** takes over in-browser and produces a genuine, portfolio-specific answer — the user never sees an error. This is documented on the in-app **"How It's Built"** page with a real request/response.
-- **Zero-install architecture.** One `.html` file. It opens anywhere — including offline on a plane — with all metrics, charts, backtests, and recommendations computed client-side.
-- **Point-in-time honesty.** The Advice Backtest enforces no look-ahead bias in code: at each simulated month the recommendation engine is hard-blocked from seeing future data. Decide, act, *then* reveal the next period.
-- **Intellectual honesty by design.** Demo data is clearly badged, illustrative data connectors are explicitly labeled, and simulated results are never presented as real market history.
+---
 
-## Features
+## The problem everyone in finance knows
 
-| Area | What it does |
-|------|-------------|
-| **Executive Cockpit** | Story-led daily health check — click any KPI for the full narrative + attribution |
-| **Role Lenses (CEO / CFO / PM)** | The same data reframed three ways — strategic, financial, or trade-level |
-| **Storytelling Drill-Downs** | Click any metric, chart point, or holding for a plain-English 3-part story |
-| **AI Analyst** | Ask anything; get portfolio-specific answers — with the on-device fallback engine |
-| **Backtest & Validate** | Monte Carlo (10,000 paths), walk-forward, and statistical validation tests |
-| **Advice Backtest** | A controlled experiment testing whether following the platform's own advice improves risk-adjusted results, with no hindsight |
-| **Daily Reports** | One-click, board-ready briefings with the day's activity timeline |
-| **Board Presentation** | Auto-generated monthly & quarterly board decks |
-| **Credit Monitor** | IFRS 9 staging, credit gauges, provisioning |
-| **Team Layer** | Chat, decision log with voting, and pinned notes |
-| **Guided Tour** | A spotlight walkthrough that onboards new users |
+Every wealth dashboard throws the same wall of numbers at you — Sharpe, VaR, drawdown, IRR — and leaves you asking the only question that matters: **"…so what do I actually do?"**
+
+Answering it today takes an analyst in the room. That doesn't scale, it slows every decision, and it means the CEO, the CFO, and the portfolio manager are all squinting at the same screen that was built for none of them.
+
+## The idea: storytelling-first intelligence
+
+Eterna answers "what do I do?" on **every single number**. Click anything and it unfolds a four-part story:
+
+1. **What it is** — in plain English, in context. No jargon.
+2. **Why it matters** — the stakes: a mandate breached, a risk limit, a funding gap.
+3. **What's driving it** — the *exact* holdings responsible, named.
+4. **The action that moves it** — the single next step, spelled out.
+
+It never just shows you the number. It tells you what to do about it — and every story ends in a decision.
+
+## One portfolio, three lenses
+
+The same book reframes itself for whoever's in the room. One click switches the entire platform's voice:
+
+- **CEO** → a strategic briefing: the headline, the risks, the one decision for the board.
+- **CFO** → P&L, fees, provisions, and liquidity: every dollar accounted for.
+- **PM** → trade-level detail: factor exposure, drift, and specific buy/sell calls.
+
+One source of truth, told three ways. Nobody has to translate for anybody.
+
+---
+
+## What it actually does
+
+Beyond the storytelling, Eterna is a full portfolio operating system:
+
+**🏛 Executive Cockpit** — a story-led daily health check. Every KPI is clickable and opens its full narrative plus attribution — which assets moved it and why.
+
+**🎭 Role Lenses (CEO / CFO / PM)** — the entire interface reframes to the reader's job. Same data, three completely different framings, one click apart.
+
+**💬 AI Analyst that never breaks** — ask anything and get a portfolio-specific answer. It calls a language model for narration, but if that's unreachable (offline, opened as a local file, API down), a **local analysis engine** takes over and answers from the same live data. The AI is an enhancement, never a hard dependency — so it *works on a plane*.
+
+**📄 One-click board reporting** — designed daily briefings and full monthly/quarterly board decks, generated straight from the live portfolio. Work that took an analyst half a day is now a button.
+
+**🏦 Credit Monitor** — IFRS 9 staging, credit gauges, and provisioning, with plain-English explanations of what each credit event means for the book.
+
+**📊 Analytics suite** — a Monte Carlo simulation (a range of possible futures from real return/volatility statistics) and a real-data walk-forward test (decide week-by-week on real prices, no look-ahead). **Built to plug into live market-data APIs in production.**
+
+**🏗️ How It's Built** — in-app documentation of the AI pipeline (context → model call → parse → fallback), with a real request/response, so the engineering is transparent.
+
+**👥 Team Layer** — chat, a decision log with voting, and pinned notes, so the whole team works in one place.
+
+**🧭 Guided Tour** — a spotlight walkthrough that onboards a first-time user in under a minute.
+
+---
+
+## Why you can trust what you see
+
+Good analytics earn trust by showing their work and never over-claiming. Eterna is explicit about what's what:
+
+- ✅ **Real** — all in-browser computation: every metric, chart, drill-down story, and the local AI engine. The walk-forward test runs on **real prices you supply**.
+- 🟡 **Demo** — the sample portfolio holdings and NAVs are generated demo data, shown by a persistent **"DEMO DATA"** badge on every screen.
+- ⚠️ **Illustrative** — the institutional data connectors (Bloomberg, ANBIMA, PostgreSQL, Preqin) on the Settings page show how the platform *would* wire into production sources. They're clearly labeled as illustrative and make no real connections in this demo.
+
+No black boxes, no numbers presented as more real than they are.
 
 ## Tech stack
 
-- **Vanilla JavaScript** — no framework, no bundler
+- **Vanilla JavaScript** — no framework, no bundler, no build step
 - **Chart.js** for all data visualization
 - **Claude API** for AI narration (optional; local fallback engine when unavailable)
-- **~9,500 lines**, one file, no backend
+- **~9,500 lines**, one self-contained HTML file, no backend, no database
 
-## Running it
+## Run it yourself
 
-**Just open the file.** Download `index.html` and open it in any modern browser — that's the whole setup. Everything runs client-side.
+**Just open the file.** Download `index.html`, open it in any modern browser, and the whole platform runs client-side — no install, no setup. Try it offline to watch the AI fallback engine take over seamlessly.
 
-For the live AI narration, the app calls a language-model API; when that isn't reachable, the built-in local analysis engine handles it automatically, so the platform is fully functional offline.
+## Deploy your own copy (GitHub Pages, free)
 
-## Important notes on the data
+1. Rename the platform file to **`index.html`** and put it in this folder.
+2. In the repository: **Settings → Pages → Source: Deploy from a branch → Branch `main` / `root` → Save.**
+3. Wait ~1 minute — your live demo appears at
+   `https://rkac12288-bot.github.io/AI-Platforms-/eterna-wealth/`
 
-This is a **demonstration platform**, and it says so throughout:
-
-- **All portfolio holdings, prices, and NAVs are generated sample data** — not real market data or live accounts (shown by the persistent "DEMO DATA" badge).
-- **The institutional data connectors** (Bloomberg, ANBIMA, PostgreSQL, Preqin, etc.) shown on the Settings page are **illustrative** — they show how the platform *would* wire into production data sources, but make no real connections in this demo.
-- **Backtest and simulation results** use generated market paths with real-date labels and are clearly marked as simulations, not actual historical performance.
+Any folder with an `index.html` is published automatically, so every platform in this repo gets its own clean, shareable live link.
 
 ## Design principles
 
 🎯 **Storytelling over data-dumps** — every number explains itself
+👥 **Built for the whole room** — CEO, CFO, and PM each get their own lens
 🛡️ **Graceful degradation** — the AI is an enhancement, never a hard dependency
-📦 **Zero-install** — one file, opens anywhere, no backend
-🔍 **Point-in-time honesty** — simulations never let future data leak into past decisions
+🔍 **Intellectual honesty** — demo data, illustrative connectors, and simulations are all labeled as such
 
 ---
 
-*Part of my [AI Platforms](../) collection.*
+*Part of my [AI Platforms](../) collection — where I explore how AI can make complex, high-stakes data genuinely legible to the people who have to act on it.*
