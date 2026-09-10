@@ -1073,6 +1073,54 @@ canvas{cursor:default;}
 .wf-excl{font-size:11px;color:var(--amb);background:rgba(224,168,74,.08);border:1px solid rgba(224,168,74,.25);border-radius:9px;padding:10px 13px;margin-bottom:16px;line-height:1.5;}
 @media(max-width:720px){.wf-grid{grid-template-columns:1fr;}}
 
+
+/* ── Guided Tour ── */
+.tour-btn{background:linear-gradient(135deg,var(--gold,#c8a24a),var(--teal,#22b8a8));color:#fff;border:none;border-radius:20px;padding:6px 14px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;margin-left:10px;transition:transform .14s,box-shadow .14s;white-space:nowrap;}
+.tour-btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(200,162,74,.35);}
+.tour-overlay{position:fixed;inset:0;z-index:9000;display:none;}
+.tour-overlay.on{display:block;}
+.tour-dim{position:absolute;inset:0;background:rgba(16,22,38,.72);transition:clip-path .35s ease;pointer-events:auto;}
+.tour-ring{position:absolute;border:2px solid var(--gold,#c8a24a);border-radius:12px;box-shadow:0 0 0 4px rgba(200,162,74,.25),0 0 0 9999px rgba(16,22,38,.001);transition:all .35s cubic-bezier(.3,.7,.2,1);pointer-events:none;z-index:9001;}
+.tour-pop{position:absolute;z-index:9002;background:#fff;border-radius:14px;box-shadow:0 18px 50px rgba(16,22,38,.4);width:330px;max-width:calc(100vw - 32px);padding:20px 22px;transition:all .35s cubic-bezier(.3,.7,.2,1);}
+.tour-pop .tp-step{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold,#c8a24a);margin-bottom:7px;}
+.tour-pop .tp-title{font-size:17px;font-weight:700;color:#1c1a17;margin-bottom:7px;line-height:1.2;}
+.tour-pop .tp-body{font-size:13.5px;color:#5a544c;line-height:1.55;margin-bottom:16px;}
+.tour-pop .tp-controls{display:flex;align-items:center;gap:8px;}
+.tour-pop .tp-dots{display:flex;gap:5px;margin-right:auto;}
+.tour-pop .tp-dot{width:7px;height:7px;border-radius:50%;background:#e5e0d8;transition:background .2s;}
+.tour-pop .tp-dot.on{background:var(--gold,#c8a24a);}
+.tour-pop button{font-family:inherit;font-size:13px;font-weight:600;border-radius:8px;padding:8px 16px;cursor:pointer;border:none;transition:all .14s;}
+.tour-pop .tp-next{background:var(--navy,#1a2740);color:#fff;}
+.tour-pop .tp-next:hover{background:#2d4468;}
+.tour-pop .tp-back{background:transparent;color:#8a8480;padding:8px 10px;}
+.tour-pop .tp-back:hover{color:#1c1a17;}
+.tour-pop .tp-skip{position:absolute;top:14px;right:16px;background:transparent;color:#b8b2a8;font-size:12px;font-weight:500;padding:2px 4px;}
+.tour-pop .tp-skip:hover{color:#5a544c;}
+@media(max-width:640px){.tour-pop{width:calc(100vw - 32px);}}
+
+
+/* ── Auto-play demo mode ── */
+.tour-auto-badge{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:9003;background:rgba(26,39,64,.95);color:#fff;border-radius:24px;padding:9px 20px;font-size:13px;font-weight:600;display:none;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.3);}
+.tour-auto-badge.on{display:flex;}
+.tour-auto-badge .pulse{width:9px;height:9px;border-radius:50%;background:#22b8a8;animation:autopulse 1.2s ease-in-out infinite;}
+@keyframes autopulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.tour-auto-badge button{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+.tour-auto-badge button:hover{background:rgba(255,255,255,.28);}
+/* simulated cursor for performed actions */
+.demo-cursor{position:fixed;z-index:9004;width:22px;height:22px;pointer-events:none;display:none;transition:left .6s cubic-bezier(.4,.1,.2,1),top .6s cubic-bezier(.4,.1,.2,1);filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));}
+.demo-cursor.on{display:block;}
+.demo-cursor.tap{animation:tap .35s ease;}
+@keyframes tap{50%{transform:scale(.7)}}
+
+
+/* ── Demo caption bar + voice toggle ── */
+.demo-caption{position:fixed;bottom:74px;left:50%;transform:translateX(-50%);z-index:9003;background:rgba(16,22,38,.94);color:#fff;border-radius:14px;padding:16px 26px;max-width:min(760px,90vw);text-align:center;font-size:18px;line-height:1.5;font-weight:500;box-shadow:0 12px 40px rgba(0,0,0,.4);display:none;border:1px solid rgba(200,162,74,.35);}
+.demo-caption.on{display:block;animation:capIn .4s ease;}
+@keyframes capIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.demo-caption .cap-label{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold,#c8a24a);font-weight:700;margin-bottom:6px;}
+.voice-toggle{display:inline-flex;align-items:center;gap:6px;margin-left:8px;font-size:12px;color:#fff;cursor:pointer;user-select:none;}
+.voice-toggle input{cursor:pointer;}
+
 </style>
 
 <div class="shell">
@@ -1084,6 +1132,8 @@ canvas{cursor:default;}
     <div class="tb-sub" id="tbSub">Portfolio <span id="tbPfSub">test1</span> &middot; <span id="tbNavSub">$1.00M</span> NAV</div>
   </div>
   <div class="demo-badge" title="This is a demonstration platform. All portfolio data, prices, and metrics are generated sample data — not real market data or live accounts. See the 'How It's Built' page for details."><div class="dot"></div>DEMO DATA</div>
+  <button class="tour-btn" id="tourBtn" onclick="startTour()" title="Take a guided tour of the platform">🧭 Tour</button>
+  <button class="tour-btn" id="autoBtn" onclick="startAutoTour()" title="Auto-play the tour hands-free — great for screen recording" style="background:linear-gradient(135deg,#4a8ae0,#22b8a8);">▶ Auto Demo</button>
   <div class="tb-sep"></div>
   <div class="tb-chips">
     <div class="chip r"><div class="chip-dot r"></div>Market Risk: Alert</div>
@@ -2077,8 +2127,10 @@ canvas{cursor:default;}
 <div id="page-backtest" class="page">
   <div class="pg-head">
     <div class="pg-title">Backtest &amp; Model Validation</div>
-    <div class="pg-desc">Historical simulation of the portfolio strategy · walk-forward analysis · statistical validation of the risk &amp; return model</div>
+    <div class="pg-desc">Monte Carlo simulation of the portfolio — a range of possible outcomes generated from return &amp; volatility statistics. Not a replay of history and not a prediction. For real historical, no-look-ahead testing, see the Walk-Forward Test page.</div>
   </div>
+
+  <div id="btProvenance" style="display:none;margin-bottom:14px;"></div>
 
   <!-- Controls -->
   <div class="panel mb">
@@ -2156,11 +2208,17 @@ canvas{cursor:default;}
     </div>
   </div>
 
-  <!-- Walk-forward -->
+  <!-- Pointer to the real walk-forward test -->
   <div class="panel mb" style="margin-top:14px;">
     <div class="ph"><span class="pt">🚶 Walk-Forward Analysis</span>
-      <span class="pt-sub">Out-of-sample validation — train on N, test on N+1</span></div>
-    <div class="pb"><div id="walkForward"></div></div>
+      <span class="pt-sub">Real out-of-sample testing lives on its own page</span></div>
+    <div class="pb">
+      <div style="font-size:12px;line-height:1.65;color:var(--muted);">
+        This page is a <strong>Monte Carlo simulation</strong> — it models a <em>range of possible futures</em> from return and volatility statistics. It has no time sequence, so "out-of-sample / no look-ahead" doesn't apply here.<br><br>
+        For a genuine <strong>walk-forward test</strong> — deciding week-by-week on real prices with no look-ahead, then scoring the revealed next week — see the dedicated
+        <a href="#" onclick="event.preventDefault();document.querySelector('.nb[onclick*=\'walkforward\']').click();" style="color:var(--gold);font-weight:600;">Walk-Forward Test</a> page. That's where real historical validation belongs.
+      </div>
+    </div>
   </div>
 
   <!-- AI interpretation -->
@@ -2341,7 +2399,7 @@ canvas{cursor:default;}
         <div style="margin-bottom:8px;">🎯 <strong>Storytelling over data-dumps</strong> — every number explains itself.</div>
         <div style="margin-bottom:8px;">🛡️ <strong>Graceful degradation</strong> — the AI is an enhancement, never a hard dependency.</div>
         <div style="margin-bottom:8px;">📦 <strong>Zero-install</strong> — one file, opens anywhere, no backend.</div>
-        <div>🔍 <strong>Point-in-time honesty</strong> — the Advice Backtest never lets future data leak into past decisions.</div>
+        <div>🔍 <strong>Point-in-time honesty</strong> — the Walk-Forward Test never lets future data leak into past decisions.</div>
       </div>
     </div>
   </div>
@@ -2370,7 +2428,7 @@ canvas{cursor:default;}
   <label class="wf-drop" id="wfDrop">
     <div class="wf-drop-ic">📄</div>
     <div class="wf-drop-t" id="wfDropT">Drop your price CSV here, or click to browse</div>
-    <div class="wf-drop-d" id="wfDropD">Format: first column <code>Date</code>, remaining columns are ticker prices. Adjusted close preferred.</div>
+    <div class="wf-drop-d" id="wfDropD">Format: first column <code>Date</code>, remaining columns are ticker prices. Adjusted close preferred. <strong>Uploaded once, it is remembered on this device</strong> — no need to re-upload next time.</div>
     <input type="file" id="wfFile" accept=".csv" onchange="wfLoadCSV(event)">
   </label>
 
@@ -7239,6 +7297,44 @@ function initBacktest() {
   runBacktest();
 }
 
+
+// ── Real-statistics helper: derive annualized return & vol from the uploaded CSV ──
+// Used by Backtest & Validate to ground its Monte Carlo in real asset behavior.
+// Returns null when no real data is available (page then falls back to model stats, clearly labeled).
+function _btRealStats(){
+  // Reuse walk-forward data if present this session, else try localStorage
+  let d = (typeof _wfData!=='undefined' && _wfData) ? _wfData : null;
+  if(!d){
+    try{ const raw=localStorage.getItem('eterna_wf_csv'); if(raw && typeof _wfParseCSV==='function') d=_wfParseCSV(raw); }catch(e){}
+  }
+  if(!d || !d.tickers || !d.dates || d.dates.length<30) return null;
+
+  // Portfolio weights over tickers actually present in the CSV (same balanced set as WF)
+  const W = (typeof WF_PORTFOLIO!=='undefined') ? WF_PORTFOLIO : null;
+  if(!W) return null;
+  const present = Object.keys(W).filter(t=>d.tickers.includes(t) && d.prices[t] && d.prices[t].every(v=>v!=null));
+  if(present.length<3) return null;
+  const wsum = present.reduce((s,t)=>s+W[t],0);
+  const wts = {}; present.forEach(t=>wts[t]=W[t]/wsum);
+
+  // Daily portfolio returns from real prices
+  const N = d.dates.length;
+  const pRets = [];
+  for(let i=1;i<N;i++){
+    let r=0; for(const t of present){ r += wts[t]*(d.prices[t][i]/d.prices[t][i-1]-1); }
+    pRets.push(r);
+  }
+  if(pRets.length<20) return null;
+  const mean = pRets.reduce((a,b)=>a+b,0)/pRets.length;
+  const variance = pRets.reduce((a,b)=>a+(b-mean)**2,0)/pRets.length;
+  const sd = Math.sqrt(variance);
+  // Annualize (252 trading days)
+  const annRet = mean*252;
+  const annVol = sd*Math.sqrt(252);
+  return { annRet, annVol, nDays: pRets.length, nTickers: present.length,
+           from: d.dates[0], to: d.dates[N-1], present };
+}
+
 function runBacktest() {
   const pf = getActivePf();
   const data = pf.data || [];
@@ -7246,8 +7342,11 @@ function runBacktest() {
 
   const periodYears = { '3y':3, '5y':5, '10y':10 }[_btParams.period];
   const months = periodYears * 12;
-  const annualRet = m.irr / 100;
-  const annualVol = m.sigma / 100;
+  // Prefer REAL statistics measured from the uploaded price CSV; fall back to model figures.
+  const _rs = _btRealStats();
+  const _usingReal = !!_rs;
+  const annualRet = _usingReal ? _rs.annRet : m.irr / 100;
+  const annualVol = _usingReal ? _rs.annVol : m.sigma / 100;
   const monthlyRet = annualRet / 12;
   const monthlyVol = annualVol / Math.sqrt(12);
 
@@ -7258,8 +7357,25 @@ function runBacktest() {
     'agg':  { ret:0.043, vol:0.052, name:'AGG Bonds' },
   }[_btParams.bench];
 
+  const _prov = _usingReal
+    ? `real stats (${_rs.nTickers} holdings, ${_rs.from}→${_rs.to})`
+    : `model stats (demo)`;
   document.getElementById('btCurveSub').textContent =
-    `${periodYears}-year simulation · ${_btParams.rebal} rebalance · vs ${benchCfg.name}`;
+    `${periodYears}-year Monte Carlo simulation · driven by ${_prov} · vs ${benchCfg.name}`;
+  // Honest provenance banner
+  const _bnr = document.getElementById('btProvenance');
+  if(_bnr){
+    if(_usingReal){
+      _bnr.style.display='block';
+      _bnr.className='wf-excl';
+      _bnr.style.background='rgba(34,184,168,.08)'; _bnr.style.borderColor='rgba(34,184,168,.3)'; _bnr.style.color='var(--txt)';
+      _bnr.innerHTML=`✅ <strong>Using real statistics</strong> — return and volatility measured from your uploaded price data (${_rs.nTickers} holdings, ${_rs.nDays} trading days, ${_rs.from}→${_rs.to}). This is a <strong>forward-looking Monte Carlo simulation</strong> grounded in how these assets actually behaved — a distribution of possible outcomes, <em>not</em> a replay of history and <em>not</em> a prediction.`;
+    } else {
+      _bnr.style.display='block';
+      _bnr.className='wf-excl';
+      _bnr.innerHTML=`ℹ️ <strong>Using model statistics (demo data).</strong> Upload a price CSV on the <a href="#" onclick="event.preventDefault();document.querySelector('.nb[onclick*=\'walkforward\']').click();" style="color:var(--gold);">Walk-Forward Test</a> page and this Monte Carlo will automatically use real, measured return and volatility instead. This is a simulation of possible outcomes — not a prediction.`;
+    }
+  }
 
   // Generate paths (seeded for reproducibility)
   const rng = mulberry32(Math.round(annualRet * 10000) + months);
@@ -7370,7 +7486,7 @@ function runBacktest() {
   // ── Run validation suite ──
   runValidation(m, _btLastResult, monthlyReturns);
   runMonteCarlo(m, periodYears);
-  runWalkForward(periodYears, cagr);
+  // (walk-forward validation now lives on its own real-data page)
 
   showToast(`Backtest complete — ${cagr.toFixed(1)}% CAGR over ${periodYears}y`, '#3db876');
 }
@@ -7514,32 +7630,6 @@ function runMonteCarlo(m, years) {
       <div class="mc-stat best"><div class="mc-stat-lab">Best case · P95</div><div class="mc-stat-val" style="color:var(--teal);">$${p95.toFixed(0)}</div><div class="mc-stat-sub">+${((p95/100-1)*100).toFixed(0)}% return</div></div>
       <div class="mc-stat loss"><div class="mc-stat-lab">Prob. of loss</div><div class="mc-stat-val" style="color:${lossPct>20?'var(--red)':'var(--amb)'};">${lossPct.toFixed(1)}%</div><div class="mc-stat-sub">1-year horizon</div></div>
     </div>`;
-}
-
-// ── Walk-forward ──
-function runWalkForward(years, cagr) {
-  const folds = Math.min(years, 5);
-  const rng = mulberry32(7);
-  let html = `<div style="font-size:11.5px;color:var(--muted);margin-bottom:12px;line-height:1.6;">Each fold trains the model on prior data and tests on the next unseen period. Consistent out-of-sample performance indicates the model generalises rather than overfits.</div>
-    <table class="t"><thead><tr><th>Fold</th><th>Train Period</th><th>Test Period</th><th>In-Sample</th><th>Out-Sample</th><th>Decay</th><th>Verdict</th></tr></thead><tbody>`;
-  for(let i=0;i<folds;i++){
-    const inS = cagr + (rng()-0.5)*3;
-    const outS = inS - rng()*4 - 0.5; // out-of-sample always decays a bit
-    const decay = ((outS - inS)/inS*100);
-    const verdict = decay>-15?'pass':decay>-30?'warn':'fail';
-    const vcol = verdict==='pass'?'var(--grn)':verdict==='warn'?'var(--amb)':'var(--red)';
-    const vlabel = verdict==='pass'?'✓ Robust':verdict==='warn'?'! Decay':'✕ Overfit';
-    html += `<tr>
-      <td style="text-align:left;">Fold ${i+1}</td>
-      <td>Y${i+1}</td><td>Y${i+2}</td>
-      <td style="color:var(--muted);">${inS.toFixed(1)}%</td>
-      <td style="color:${vcol};">${outS.toFixed(1)}%</td>
-      <td style="color:${decay>-15?'var(--grn)':'var(--red)'};">${decay.toFixed(0)}%</td>
-      <td><span class="pill ${verdict==='pass'?'p-ok':verdict==='warn'?'p-warn':'p-red'}">${vlabel}</span></td>
-    </tr>`;
-  }
-  html += `</tbody></table>`;
-  document.getElementById('walkForward').innerHTML = html;
 }
 
 // ── AI interpretation of backtest ──
@@ -9231,7 +9321,21 @@ const WF_PORTFOLIO = {
   'DBC':0.08,'GDX':0.08,'COPX':0.07,'ICLN':0.05,'BTC-USD':0.06,'ETH-USD':0.04
 };
 
-function initWalkForward(){ /* page is ready; waits for CSV upload */ }
+const WF_STORE_KEY = 'eterna_wf_csv';
+const WF_STORE_NAME = 'eterna_wf_csv_name';
+
+function initWalkForward(){
+  // Auto-load a previously-saved CSV so the user never has to re-upload.
+  if(_wfData) return;                       // already loaded this session
+  let saved = null, savedName = '';
+  try { saved = localStorage.getItem(WF_STORE_KEY); savedName = localStorage.getItem(WF_STORE_NAME) || 'saved dataset'; } catch(e){}
+  if(saved){
+    try {
+      _wfData = _wfParseCSV(saved);
+      _wfOnDataLoaded(savedName, true);     // true = restored from storage
+    } catch(e){ /* corrupt saved data — ignore, wait for upload */ }
+  }
+}
 
 function wfLoadCSV(evt){
   const file = evt.target.files[0];
@@ -9239,15 +9343,37 @@ function wfLoadCSV(evt){
   const reader = new FileReader();
   reader.onload = e => {
     try {
-      const parsed = _wfParseCSV(e.target.result);
+      const raw = e.target.result;
+      const parsed = _wfParseCSV(raw);      // validate before saving
       _wfData = parsed;
-      _wfOnDataLoaded(file.name);
+      // Persist so future visits auto-load it (no re-upload needed)
+      try {
+        localStorage.setItem(WF_STORE_KEY, raw);
+        localStorage.setItem(WF_STORE_NAME, file.name);
+      } catch(err){ /* storage full/blocked — still works for this session */ }
+      _wfOnDataLoaded(file.name, false);
     } catch(err){
       document.getElementById('wfDropT').textContent = '⚠ Could not read that CSV';
       document.getElementById('wfDropD').textContent = err.message;
     }
   };
   reader.readAsText(file);
+}
+
+function wfClearSaved(){
+  try { localStorage.removeItem(WF_STORE_KEY); localStorage.removeItem(WF_STORE_NAME); } catch(e){}
+  _wfData = null;
+  // reset the UI back to the empty state
+  const drop = document.getElementById('wfDrop');
+  drop.classList.remove('has');
+  const ic = document.querySelector('#wfDrop .wf-drop-ic'); if(ic) ic.textContent = '📄';
+  document.getElementById('wfDropT').textContent = 'Drop your price CSV here, or click to browse';
+  document.getElementById('wfDropD').innerHTML = 'Format: first column <code>Date</code>, remaining columns are ticker prices. Adjusted close preferred.';
+  document.getElementById('wfExcl').style.display = 'none';
+  document.getElementById('wfVerdict').classList.remove('show');
+  document.getElementById('wfResults').innerHTML = '';
+  const btn = document.getElementById('wfRunBtn'); btn.disabled = true;
+  document.getElementById('wfRunInfo').textContent = 'Waiting for data — upload a CSV to enable.';
 }
 
 function _wfParseCSV(text){
@@ -9268,7 +9394,7 @@ function _wfParseCSV(text){
   return {dates, prices, tickers};
 }
 
-function _wfOnDataLoaded(fname){
+function _wfOnDataLoaded(fname, restored){
   // Which portfolio tickers are actually covered by real data?
   const present = Object.keys(WF_PORTFOLIO).filter(t=>_wfData.tickers.includes(t) && _wfData.prices[t].every(v=>v!=null));
   const missing = Object.keys(WF_PORTFOLIO).filter(t=>!present.includes(t));
@@ -9276,11 +9402,13 @@ function _wfOnDataLoaded(fname){
 
   const drop = document.getElementById('wfDrop');
   drop.classList.add('has');
-  document.getElementById('wfDropIc');
-  document.querySelector('#wfDrop .wf-drop-ic').textContent = '✅';
-  document.getElementById('wfDropT').textContent = fname + ' loaded';
-  document.getElementById('wfDropD').textContent =
-    `${_wfData.dates.length} rows · ${_wfData.tickers.length} tickers · ${_wfData.dates[0]} → ${_wfData.dates[_wfData.dates.length-1]}`;
+  document.querySelector('#wfDrop .wf-drop-ic').textContent = restored ? '💾' : '✅';
+  document.getElementById('wfDropT').innerHTML = (restored ? 'Using your saved data — ' : '') + fname + (restored ? '' : ' loaded');
+  document.getElementById('wfDropD').innerHTML =
+    `${_wfData.dates.length} rows · ${_wfData.tickers.length} tickers · ${_wfData.dates[0]} → ${_wfData.dates[_wfData.dates.length-1]}` +
+    (restored ? ` &nbsp;·&nbsp; <span style="color:var(--teal);">auto-loaded from your last session</span>` : '') +
+    ` &nbsp;·&nbsp; <a href="#" onclick="event.preventDefault();event.stopPropagation();document.getElementById('wfFile').click();" style="color:var(--gold);">replace</a>` +
+    ` · <a href="#" onclick="event.preventDefault();event.stopPropagation();wfClearSaved();" style="color:var(--muted);">clear saved</a>`;
 
   // Disclose exclusions honestly
   const excl = document.getElementById('wfExcl');
@@ -9444,7 +9572,242 @@ function _wfRender(wdates, bhRun, bhS, eqRun, eqS, results, present){
           y:{ticks:{color:'#8a8480',font:{size:9},callback:v=>'$'+v.toFixed(2)},grid:{color:'rgba(0,0,0,.04)'}}}}});
   },80);
 }
+
+// ══════════════════════════════════════════════════════════════════
+// GUIDED TOUR — spotlight walkthrough of the platform
+// ══════════════════════════════════════════════════════════════════
+const TOUR_STEPS = [
+  { sel:'#tourBtn', title:'Welcome to Eterna Wealth',
+    body:'This 90-second tour shows you the four things that make Eterna different. You can leave any time with Skip — and replay from this 🧭 button whenever you like.', pos:'bottom' },
+  { sel:'#ksCockpit', title:'Every number tells a story',
+    body:'These are your headline metrics. Click any one of them and Eterna explains what it means, why it matters, what\u2019s driving it, and the one action to take. A dashboard reports — this advises.', pos:'bottom' },
+  { sel:'#roleSwitcher', title:'One portfolio, three lenses',
+    body:'The same book, reframed for whoever\u2019s reading it. Switch between Pro, CEO, CFO, and PM — the entire platform\u2019s voice and emphasis change with one click.', pos:'bottom' },
+  { sel:'.sb', title:'A whole operating system',
+    body:'Cockpit, credit monitor, cash planner, board decks, analytics — every area is here in the sidebar, and each one leads with a plain-English story instead of a wall of numbers.', pos:'right' },
+  { sel:'.pf-switcher', title:'Switch portfolios instantly',
+    body:'Manage multiple books from one place. Switch the active portfolio here and every page updates to match.', pos:'bottom' },
+  { sel:'#tourBtn', title:'That\u2019s the tour!',
+    body:'Now try it yourself — click any metric on the cockpit to see a story unfold. And remember: everything here runs in a single self-contained file, no backend required.', pos:'bottom' }
+];
+
+let _tourIdx = 0;
+
+function startTour(){
+  _tourIdx = 0;
+  // Always begin on the cockpit so the highlighted elements exist
+  try {
+    if(typeof go === 'function'){
+      const cockpitBtn = document.querySelector('.nb[onclick*="cockpit"]');
+      if(cockpitBtn) go('cockpit', cockpitBtn);
+    }
+  } catch(e){ /* navigation is best-effort; tour continues regardless */ }
+  document.getElementById('tourOverlay').classList.add('on');
+  // build dots
+  document.getElementById('tpDots').innerHTML = TOUR_STEPS.map((_,i)=>`<div class="tp-dot" data-i="${i}"></div>`).join('');
+  setTimeout(()=>_renderTourStep(), 80);
+}
+
+function endTour(){
+  document.getElementById('tourOverlay').classList.remove('on');
+  try{ localStorage.setItem('eterna_tour_seen','1'); }catch(e){}
+}
+
+function tourNext(){ if(_tourIdx < TOUR_STEPS.length-1){ _tourIdx++; _renderTourStep(); } else { endTour(); } }
+function tourPrev(){ if(_tourIdx > 0){ _tourIdx--; _renderTourStep(); } }
+
+function _renderTourStep(){
+  const step = TOUR_STEPS[_tourIdx];
+  const target = document.querySelector(step.sel);
+  const ring = document.getElementById('tourRing');
+  const pop = document.getElementById('tourPop');
+
+  // update text
+  document.getElementById('tpStep').textContent = `Step ${_tourIdx+1} of ${TOUR_STEPS.length}`;
+  document.getElementById('tpTitle').textContent = step.title;
+  document.getElementById('tpBody').textContent = step.body;
+  document.getElementById('tpBack').style.visibility = _tourIdx===0 ? 'hidden' : 'visible';
+  document.getElementById('tpNext').textContent = _tourIdx===TOUR_STEPS.length-1 ? 'Finish' : 'Next';
+  document.querySelectorAll('#tpDots .tp-dot').forEach((d,i)=>d.classList.toggle('on', i===_tourIdx));
+
+  if(!target){ // target missing — center the popup, hide ring
+    ring.style.opacity = '0';
+    pop.style.top = '50%'; pop.style.left = '50%'; pop.style.transform = 'translate(-50%,-50%)';
+    return;
+  }
+  ring.style.opacity = '1';
+
+  // scroll target into view, then position
+  target.scrollIntoView({behavior:'smooth', block:'center', inline:'center'});
+  setTimeout(()=>{
+    const r = target.getBoundingClientRect();
+    const pad = 8;
+    ring.style.left = (r.left - pad) + 'px';
+    ring.style.top = (r.top - pad) + 'px';
+    ring.style.width = (r.width + pad*2) + 'px';
+    ring.style.height = (r.height + pad*2) + 'px';
+
+    // position popup near the target, clamped to viewport
+    const popW = Math.min(330, window.innerWidth - 32);
+    const popH = pop.offsetHeight || 190;
+    let top, left;
+    const gap = 16;
+    if(step.pos === 'right' && r.right + gap + popW < window.innerWidth){
+      left = r.right + gap; top = Math.max(12, r.top);
+    } else if(step.pos === 'bottom' && r.bottom + gap + popH < window.innerHeight){
+      left = Math.min(r.left, window.innerWidth - popW - 12); top = r.bottom + gap;
+    } else { // fallback: above
+      left = Math.min(Math.max(12, r.left), window.innerWidth - popW - 12);
+      top = Math.max(12, r.top - popH - gap);
+      if(top < 12){ top = r.bottom + gap; } // if no room above, go below
+    }
+    pop.style.transform = 'none';
+    pop.style.left = Math.max(12, left) + 'px';
+    pop.style.top = top + 'px';
+  }, 220);
+}
+
+// Reposition on resize while tour is open
+window.addEventListener('resize', ()=>{ if(document.getElementById('tourOverlay').classList.contains('on')) _renderTourStep(); });
+// Keyboard: Esc closes, arrows navigate
+document.addEventListener('keydown', (e)=>{
+  if(!document.getElementById('tourOverlay').classList.contains('on')) return;
+  if(e.key==='Escape') endTour();
+  else if(e.key==='ArrowRight') tourNext();
+  else if(e.key==='ArrowLeft') tourPrev();
+});
+
+
+// ══════════════════════════════════════════════════════════════════
+// AUTO-PLAY DEMO MODE — hands-free tour + performed actions (for recording)
+// ══════════════════════════════════════════════════════════════════
+let _autoTimers = [];
+let _autoOn = false;
+
+// Per-step: how long to dwell (ms) and an optional action to perform
+const AUTO_PLAN = [
+  { dwell:4500, say:"This is Eterna Wealth — a portfolio that explains itself." },
+  { dwell:8000, action:'kpis', say:"Every number here is more than a figure. Click any metric, and Eterna tells you what it means, why it matters, what's driving it, and the one action to take. A dashboard reports — this advises." },
+  { dwell:8500, action:'roles', say:"And the same portfolio reframes itself for whoever's reading it — a CEO, a CFO, or a portfolio manager. One click, and the whole view changes to their language." },
+  { dwell:6000, action:'nav', say:"Behind the storytelling is a full platform — credit monitoring, cash planning, board decks, analytics — every area just a click away." },
+  { dwell:4500, say:"Manage as many books as you like, and switch between them instantly." },
+  { dwell:6000, say:"Numbers that tell a story — and every story that leads to a decision. That's Eterna Wealth." }
+];
+
+function _moveCursor(el, cb){
+  const cur = document.getElementById('demoCursor');
+  if(!el){ if(cb)cb(); return; }
+  const r = el.getBoundingClientRect();
+  cur.classList.add('on');
+  cur.style.left = (r.left + r.width/2 - 6) + 'px';
+  cur.style.top  = (r.top + r.height/2 - 4) + 'px';
+  setTimeout(()=>{ cur.classList.add('tap'); setTimeout(()=>cur.classList.remove('tap'),350); if(cb)cb(); }, 650);
+}
+
+function _autoAction(kind){
+  try{
+    if(kind==='roles'){
+      // cycle CEO -> CFO -> PM -> back to Pro, with the cursor
+      const seq=['ceo','cfo','pm','pro'];
+      seq.forEach((role,i)=>{
+        _autoTimers.push(setTimeout(()=>{
+          const btn=document.querySelector(`.role-btn.${role}`)||document.querySelector(`.role-btn[onclick*="'${role}'"]`);
+          if(btn) _moveCursor(btn, ()=>btn.click());
+        }, i*1400));
+      });
+    } else if(kind==='kpis'){
+      // sweep the cursor across the KPI strip to draw the eye
+      const cards=[...document.querySelectorAll('#ksCockpit .kcard')];
+      cards.slice(0,4).forEach((c,i)=>{ _autoTimers.push(setTimeout(()=>_moveCursor(c),i*900)); });
+    } else if(kind==='nav'){
+      // briefly visit Credit Monitor then return to cockpit
+      _autoTimers.push(setTimeout(()=>{
+        const credit=document.querySelector('.nb[onclick*="credit"]');
+        if(credit) _moveCursor(credit,()=>credit.click());
+      }, 400));
+      _autoTimers.push(setTimeout(()=>{
+        const cock=document.querySelector('.nb[onclick*="cockpit"]');
+        if(cock) cock.click();
+      }, 3200));
+    }
+  }catch(e){/* performed actions are best-effort */}
+}
+
+function startAutoTour(){
+  stopAutoTour();               // clear any prior run
+  _autoOn = true;
+  document.getElementById('autoBadge').classList.add('on');
+  document.getElementById('demoCursor').classList.add('on');
+  startTour();                  // opens overlay at step 1
+  _scheduleAuto(0);
+}
+
+function _scheduleAuto(i){
+  if(!_autoOn) return;
+  _tourIdx = i;
+  _renderTourStep();
+  const plan = AUTO_PLAN[i] || {dwell:4500};
+  document.getElementById('autoBadgeTxt').textContent = `Auto-playing demo… (${i+1}/${TOUR_STEPS.length})`;
+  // show caption + speak narration for this step
+  if(plan.say) _showCaption(plan.say);
+  // perform this step's action shortly after the spotlight lands
+  if(plan.action) _autoTimers.push(setTimeout(()=>_autoAction(plan.action), 900));
+  // advance to next step after dwell
+  if(i < TOUR_STEPS.length-1){
+    _autoTimers.push(setTimeout(()=>_scheduleAuto(i+1), plan.dwell));
+  } else {
+    _autoTimers.push(setTimeout(()=>{ stopAutoTour(); endTour(); }, plan.dwell));
+  }
+}
+
+function _showCaption(text){
+  const cap = document.getElementById('demoCaption');
+  document.getElementById('demoCaptionTxt').textContent = text;
+  cap.classList.add('on');
+  // speak via browser text-to-speech if voice is on
+  try{
+    const voiceOn = document.getElementById('voiceChk') && document.getElementById('voiceChk').checked;
+    if(voiceOn && 'speechSynthesis' in window){
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.98; u.pitch = 1.0; u.volume = 1.0;
+      window.speechSynthesis.speak(u);
+    }
+  }catch(e){}
+}
+
+function stopAutoTour(){
+  _autoOn = false;
+  _autoTimers.forEach(t=>clearTimeout(t)); _autoTimers=[];
+  document.getElementById('autoBadge').classList.remove('on');
+  document.getElementById('demoCursor').classList.remove('on');
+  const cap=document.getElementById('demoCaption'); if(cap) cap.classList.remove('on');
+  try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+}
+
 </script>
+
+<!-- ═══ GUIDED TOUR ═══ -->
+<div class="tour-overlay" id="tourOverlay">
+  <div class="tour-dim" id="tourDim" onclick="endTour()"></div>
+  <div class="tour-ring" id="tourRing"></div>
+  <div class="tour-pop" id="tourPop">
+    <button class="tp-skip" onclick="endTour()">Skip ✕</button>
+    <div class="tp-step" id="tpStep">Step 1 of 6</div>
+    <div class="tp-title" id="tpTitle"></div>
+    <div class="tp-body" id="tpBody"></div>
+    <div class="tp-controls">
+      <div class="tp-dots" id="tpDots"></div>
+      <button class="tp-back" id="tpBack" onclick="tourPrev()">Back</button>
+      <button class="tp-next" id="tpNext" onclick="tourNext()">Next</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="demo-caption" id="demoCaption"><div class="cap-label">Narration</div><span id="demoCaptionTxt"></span></div>
+<div class="tour-auto-badge" id="autoBadge"><span class="pulse"></span><span id="autoBadgeTxt">Auto-playing demo…</span><label class="voice-toggle"><input type="checkbox" id="voiceChk" checked>🔊 Voice</label><button onclick="stopAutoTour()">Stop</button></div>
+<svg class="demo-cursor" id="demoCursor" viewBox="0 0 24 24" fill="none"><path d="M5 3l14 8-6 1.5L10 20 5 3z" fill="#fff" stroke="#1a2740" stroke-width="1.5" stroke-linejoin="round"/></svg>
+
 </body>
 </html>
-
