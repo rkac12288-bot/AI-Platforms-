@@ -14,7 +14,7 @@ Each platform starts from a concrete business problem — losses in a supermarke
 | [GenAI CoE — Business Case](genai-coe-business-case/) | Corporate strategy | Board briefing for a GenAI Centre of Excellence in a large Brazilian holding, tied to EBITDA | ✅ Live |
 | [Eterna CoE Command](eterna-coe-command/) | GenAI governance | Hub-and-spoke governance platform: use cases, adoption, ROI and compliance across divisions | ✅ Live |
 | [Pharmacy Operations ERP](pharmacy-operations-erp/) | Retail pharmacy | Pricing compliance, inventory, expiry and audit to boost sales and reduce shrinkage | ✅ Live |
-| Eterna Wealth | Wealth management | Institutional portfolio dashboard | 🔜 Coming |
+| [Eterna Wealth](eterna-wealth/) | Wealth management | Portfolio that explains itself: every number opens a story and the one move to make, with CEO / CFO / PM lenses | ✅ Live |
 | Portfolio CoE OS | Private equity | AI asset-management platform built on the Eterna design system | 🔜 Coming |
 | Rare Earths Investment Platform | Mining · commodities | REE market and project investment modelling for Brazil | 🔜 Coming |
 | Lumina | Health tech | Architecture for a therapeutic AI companion with an embodied robot | 🔜 Coming |
@@ -25,9 +25,15 @@ Each live platform comes with a `presentation.html`: a 9-slide story of the prob
 
 ## Live demos
 
-With GitHub Pages switched on, every platform opens directly in the browser:
+Every platform runs in the browser, no install:
 
-`https://<your-username>.github.io/AI-Platforms/<platform-folder>/`
+| Platform | Live demo | Presentation |
+|---|---|---|
+| Supermarket Ops Copilot | [Open](https://rkac12288-bot.github.io/AI-Platforms-/supermarket-ops-copilot/) | [Slides](https://rkac12288-bot.github.io/AI-Platforms-/supermarket-ops-copilot/presentation.html) |
+| Eterna CoE Command | [Open](https://rkac12288-bot.github.io/AI-Platforms-/eterna-coe-command/) | [Slides](https://rkac12288-bot.github.io/AI-Platforms-/eterna-coe-command/presentation.html) |
+| Pharmacy Operations ERP | [Open](https://rkac12288-bot.github.io/AI-Platforms-/pharmacy-operations-erp/) | [Slides](https://rkac12288-bot.github.io/AI-Platforms-/pharmacy-operations-erp/presentation.html) |
+| Eterna Wealth | [Open](https://rkac12288-bot.github.io/AI-Platforms-/eterna-wealth/) | — |
+| GenAI CoE — Business Case | — | [Slides](https://rkac12288-bot.github.io/AI-Platforms-/genai-coe-business-case/) |
 
 ## Common approach
 
