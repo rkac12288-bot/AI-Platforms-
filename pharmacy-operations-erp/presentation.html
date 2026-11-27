@@ -1,0 +1,214 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pharmacy Operations ERP</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Public+Sans:wght@400;600&display=swap">
+<style>:root{
+  --dark:#0F2A30; --light:#F4F8F7; --alt:#E7EFED; --surface:#FCFEFD; --ink:#13262A; --muted:#4A5E61; --line:#CFDDDA;
+  --accent:#0E7C74; --accent-text:#0B6B64; --accent-on-dark:#7FDCD3;
+  --on-dark:#EEF6F4; --on-dark-muted:#B3CCC8; --on-accent:#F4F8F7; --on-accent-soft:#CFEDEA; --glow:#1D6E73;
+  --head:'Manrope', Arial, sans-serif; --body:'Public Sans', Arial, sans-serif;
+}
+body{font-family:var(--body);color:var(--ink)}
+section{padding:128px;box-sizing:border-box;background:var(--light);color:var(--ink);display:flex;flex-direction:column;gap:56px;font-family:var(--body)}
+section.alt{background:var(--alt)}
+section.dark{background:var(--dark);color:var(--on-dark)}
+section.accent{background:var(--accent);color:var(--on-accent)}
+section.cover{justify-content:space-between}
+section.closing{justify-content:center;gap:48px}
+.glow{position:absolute;left:1240px;top:0;width:680px;height:1080px;background:radial-gradient(circle at 65% 45%, var(--glow) 0%, var(--dark) 70%)}
+.head{display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:26px;letter-spacing:4px;text-transform:uppercase;font-weight:600;color:var(--accent-text)}
+.dark .eyebrow{color:var(--accent-on-dark)}
+.accent .eyebrow{color:var(--on-accent-soft)}
+.display{font-family:var(--head);font-size:112px;font-weight:800;line-height:1.04;width:1450px;color:var(--on-dark)}
+.hl{color:var(--accent-on-dark)}
+.title{font-family:var(--head);font-size:72px;font-weight:800;line-height:1.1;width:1550px;color:var(--ink)}
+.dark .title{color:var(--on-dark)}
+.lede{font-size:36px;line-height:1.4;color:var(--muted);width:1250px}
+.dark .lede{color:var(--on-dark-muted)}
+.accent .lede{color:var(--on-accent-soft)}
+.foot{font-size:24px;color:var(--on-dark-muted)}
+.note{font-size:24px;color:var(--muted)}
+.dark .note{color:var(--on-dark-muted)}
+.steps{display:flex;flex-direction:column;gap:28px}
+.step{display:flex;gap:40px;align-items:flex-start;border-top:2px solid var(--line);padding:28px 0 0 0}
+.time{font-family:var(--head);font-size:44px;font-weight:800;color:var(--accent-text);width:200px;flex:none;line-height:1.1}
+.step-txt{font-size:32px;line-height:1.45;color:var(--ink);width:1300px}
+.step-txt-strong{font-size:32px;line-height:1.45;color:var(--ink);width:1300px;font-weight:600}
+.cards{display:flex;gap:32px;flex:1}
+.card{flex:1;background:var(--surface);border-radius:20px;padding:48px;display:flex;flex-direction:column;gap:20px;border-top:8px solid var(--accent)}
+.big{font-family:var(--head);font-size:88px;font-weight:800;line-height:1;color:var(--accent-text)}
+.card-h{font-size:36px;font-weight:600;line-height:1.2;color:var(--ink)}
+.card-t{font-size:28px;line-height:1.45;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px}
+.tile{background:var(--surface);border-radius:18px;padding:40px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--line)}
+.ic{color:var(--accent-text);width:52px;height:52px}
+.tile-h{font-size:34px;font-weight:600;color:var(--ink)}
+.tile-t{font-size:26px;line-height:1.45;color:var(--muted)}
+.flow{display:flex;align-items:stretch;gap:20px}
+.fstep{flex:1;background:var(--surface);border-radius:18px;padding:40px;display:flex;flex-direction:column;gap:16px;border:1px solid var(--line)}
+.fnum{font-family:var(--head);font-size:44px;font-weight:800;color:var(--accent-text);line-height:1}
+.fh{font-size:34px;font-weight:600;color:var(--ink)}
+.ft{font-size:26px;line-height:1.45;color:var(--muted)}
+.arrow{width:56px;height:28px;background:var(--accent);align-self:center;flex:none}
+.split{display:flex;gap:96px;flex:1;align-items:center}
+.col{flex:1;display:flex;flex-direction:column;gap:28px}
+.huge{font-family:var(--head);font-size:160px;font-weight:800;line-height:1;color:var(--accent-text)}
+.huge-lab{font-size:32px;line-height:1.4;color:var(--ink)}
+.rule{background:var(--surface);border-left:8px solid var(--accent);border-radius:12px;padding:36px 40px;font-size:28px;line-height:1.5;color:var(--ink)}
+.formula{background:var(--dark);color:var(--on-dark);border-radius:12px;padding:32px 40px;font-size:28px;line-height:1.5;font-family:'Courier New', monospace}
+.tbl{font-size:28px;color:var(--ink);font-family:var(--body)}
+.tbl-head{background:var(--dark)}
+.band{background:var(--alt)}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:40px}
+.stat{display:flex;flex-direction:column;gap:16px;border-top:3px solid var(--accent-on-dark);padding:32px 0 0 0}
+.num{font-family:var(--head);font-size:80px;font-weight:800;line-height:1;color:var(--on-dark)}
+.lab{font-size:28px;line-height:1.4;color:var(--on-dark-muted)}
+.statement{font-family:var(--head);font-size:96px;font-weight:800;line-height:1.08;width:1500px;color:var(--on-accent)}
+@keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.rise{animation:rise 600ms ease-out both;animation-delay:calc(var(--i) * 120ms)}
+
+html,body{margin:0;height:100%;background:#0b0b0b;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center}
+#stage>section{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .35s;overflow:hidden}
+#stage>section.on{opacity:1;pointer-events:auto}
+#stage>section>*:not(.glow){position:relative}
+#stage>section:not(.on) .rise{animation:none}
+#stage p,#stage h1,#stage h2,#stage h3{margin:0}
+#stage table{border-collapse:collapse;width:100%}#stage th,#stage td{padding:20px 26px;text-align:left}#stage th{font-weight:600}
+#stage .arrow{background:none;color:var(--accent)}
+nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;font:14px system-ui,sans-serif;color:#ddd;background:rgba(20,20,20,.75);padding:6px 10px;border-radius:99px}
+nav button{background:none;border:1px solid #888;color:#eee;border-radius:99px;width:34px;height:34px;cursor:pointer;font-size:16px}
+</style></head><body>
+<div id="stage">
+<section id="cover" class="dark cover">
+<div class="glow"></div>
+<p class="eyebrow">Pharmacy Operations ERP · AI-driven retail pharmacy control</p>
+<div class="head">
+<h1 class="display">Margin leaks out one shelf at a time.<br><span class="hl">Now every leak has an owner.</span></h1>
+<p class="lede">A control platform that finds every expiring box, every empty shelf and every lost unit before it reaches the P&amp;L.</p>
+</div>
+<p class="foot">Fictional pharmacy chain · 700 products · illustrative data</p>
+
+</section>
+<section id="story">
+<div class="head">
+<p class="eyebrow">A Tuesday morning in the stockroom</p>
+<h2 class="title">158 boxes of vitamin C expire tomorrow. Nobody knows.</h2>
+</div>
+<div class="steps">
+<div class="step rise" style="--i:1"><p class="time">08:00</p><p class="step-txt">The expiry list lives in a spreadsheet that was last opened two weeks ago.</p></div>
+<div class="step rise" style="--i:2"><p class="time">11:30</p><p class="step-txt">A customer asks for the best-selling sunscreen. The shelf has been empty since Saturday.</p></div>
+<div class="step rise" style="--i:3"><p class="time">16:00</p><p class="step-txt">The monthly count shows units missing again, with no record of where they went.</p></div>
+<div class="step rise" style="--i:4"><p class="time">Month end</p><p class="step-txt-strong">The write-off lands on the P&amp;L, too late to do anything about it.</p></div>
+</div>
+
+</section>
+<section id="cost" class="alt">
+<div class="head">
+<p class="eyebrow">The hidden cost</p>
+<h2 class="title">Quiet leaks, one shrinking margin.</h2>
+</div>
+<div class="cards">
+<div class="card rise" style="--i:1"><p class="big">$418K</p><p class="card-h">Lost to theft and breakage</p><p class="card-t">Shrinkage across 700 products, invisible until the stock count.</p></div>
+<div class="card rise" style="--i:2"><p class="big">33</p><p class="card-h">Products near expiry</p><p class="card-t">Expiring within 30 days, 17 of them within a week.</p></div>
+<div class="card rise" style="--i:3"><p class="big">7</p><p class="card-h">Critical stockouts</p><p class="card-t">Products below their reorder point, each one a lost sale and a lost customer.</p></div>
+</div>
+<p class="note">Fictional pharmacy chain · 700 SKUs · $4.3M inventory at cost</p>
+
+</section>
+<section id="platform">
+<div class="head">
+<p class="eyebrow">The platform</p>
+<h2 class="title">One control room for stock, price and loss.</h2>
+</div>
+<div class="tiles">
+<div class="tile rise" style="--i:1"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><p class="tile-h">Pricing Compliance</p><p class="tile-t">Flags any price above the recommended retail price, product by product.</p></div>
+<div class="tile rise" style="--i:2"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18h.01"/></svg><p class="tile-h">Low Stock Engine</p><p class="tile-t">Best sellers below their reorder point, ranked by sales impact.</p></div>
+<div class="tile rise" style="--i:3"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4z"/><path d="M20 4h-6a3 3 0 0 0-3 3"/><path d="M20 4v14h-6"/></svg><p class="tile-h">Audit and Loss Ledger</p><p class="tile-t">Theft and breakage traced by product, category and date.</p></div>
+<div class="tile rise" style="--i:4"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><p class="tile-h">Markdown Trigger</p><p class="tile-t">Expiring stock repriced to clear, with a Quick Sale sticker ready to print.</p></div>
+<div class="tile rise" style="--i:5"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg><p class="tile-h">AI Engine</p><p class="tile-t">Explains the pattern behind each loss, markdown and stockout.</p></div>
+<div class="tile rise" style="--i:6"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><p class="tile-h">Action Matrix</p><p class="tile-t">Every open issue gets an owner, a priority and a next step.</p></div>
+</div>
+
+</section>
+<section id="how" class="alt">
+<div class="head">
+<p class="eyebrow">How it works</p>
+<h2 class="title">From the inventory file to the shelf in four steps.</h2>
+</div>
+<div class="flow">
+<div class="fstep rise" style="--i:1"><p class="fnum">01</p><p class="fh">Ingest</p><p class="ft">The product and stock file: cost, price, quantity, expiry.</p></div>
+<svg class="arrow" viewBox="0 0 56 28" preserveAspectRatio="none" style="background:none"><path d="M0 8h34V0l22 14-22 14v-8H0z" fill="currentColor"/></svg>
+<div class="fstep rise" style="--i:2"><p class="fnum">02</p><p class="fh">Detect</p><p class="ft">Rules for expiry, reorder point, price ceiling and losses.</p></div>
+<svg class="arrow" viewBox="0 0 56 28" preserveAspectRatio="none" style="background:none"><path d="M0 8h34V0l22 14-22 14v-8H0z" fill="currentColor"/></svg>
+<div class="fstep rise" style="--i:3"><p class="fnum">03</p><p class="fh">Explain</p><p class="ft">The AI engine says why it happens and what it costs.</p></div>
+<svg class="arrow" viewBox="0 0 56 28" preserveAspectRatio="none" style="background:none"><path d="M0 8h34V0l22 14-22 14v-8H0z" fill="currentColor"/></svg>
+<div class="fstep rise" style="--i:4"><p class="fnum">04</p><p class="fh">Act</p><p class="ft">Stickers printed, reorders raised, owners assigned.</p></div>
+</div>
+<p class="lede">Rules and thresholds stay in the pharmacy’s hands, set in one settings screen.</p>
+
+</section>
+<section id="insight">
+<div class="head">
+<p class="eyebrow">The idea that pays for the platform</p>
+<h2 class="title">Sell it at cost before it becomes a write-off.</h2>
+</div>
+<div class="split">
+<div class="col rise" style="--i:1">
+<p class="huge">$200.7K</p>
+<p class="huge-lab">recoverable from the 33 products expiring in the next 30 days, instead of throwing them away.</p>
+</div>
+<div class="col rise" style="--i:2">
+<p class="formula">days to expiry ≤ 30<br>and quantity &gt; 0<br>→ price = cost<br>→ print Quick Sale sticker</p>
+<p class="rule">One click activates the markdown and sends the sticker to the printer. Revenue is kept, waste disappears.</p>
+</div>
+</div>
+
+</section>
+<section id="change">
+<div class="head">
+<p class="eyebrow">What changes for the pharmacy</p>
+<h2 class="title">Before and after the control room.</h2>
+</div>
+<table class="tbl">
+<tr class="tbl-head"><th style="width:22%;color:#EEF6F4">&#160;</th><th style="width:39%;color:#EEF6F4">Before</th><th style="width:39%;color:#7FDCD3">With the platform</th></tr>
+<tr><td>Expiry</td><td style="color:#4A5E61">Found on the shelf, already expired</td><td>Marked down 30 days ahead</td></tr>
+<tr class="band"><td>Stockouts</td><td style="color:#4A5E61">Discovered by the customer</td><td>Flagged at the reorder point</td></tr>
+<tr><td>Pricing</td><td style="color:#4A5E61">Checked by hand, if at all</td><td>Every product against the price ceiling</td></tr>
+<tr class="band"><td>Shrinkage</td><td style="color:#4A5E61">A number at month end</td><td>Traced by product and category</td></tr>
+<tr><td>Audit</td><td style="color:#4A5E61">Days of spreadsheet work</td><td>Report exported in one click</td></tr>
+<tr class="band"><td>Follow-up</td><td style="color:#4A5E61">Lost in emails</td><td>An owner and a priority for each issue</td></tr>
+</table>
+
+</section>
+<section id="results" class="dark">
+<div class="head">
+<p class="eyebrow">The result</p>
+<h2 class="title">Full control from day one.</h2>
+</div>
+<div class="stats">
+<div class="stat rise" style="--i:1"><p class="num">700</p><p class="lab">Products monitored every day across 6 categories</p></div>
+<div class="stat rise" style="--i:2"><p class="num">$4.3M</p><p class="lab">Inventory at cost under one view</p></div>
+<div class="stat rise" style="--i:3"><p class="num">$200.7K</p><p class="lab">Recoverable from expiring stock with one click</p></div>
+<div class="stat rise" style="--i:4"><p class="num">0</p><p class="lab">Products priced above the recommended retail price</p></div>
+</div>
+<p class="note">Fictional pharmacy chain · illustrative data</p>
+
+</section>
+<section id="close" class="accent closing">
+<p class="eyebrow">Why it matters</p>
+<p class="statement">Less waste. No empty shelves. Every unit accounted for.</p>
+<p class="lede">Higher margin and higher sales for any pharmacy, from a single store to a distribution chain.</p>
+
+</section>
+
+</div>
+<nav><button id="prev" aria-label="Previous slide">‹</button><span id="pos"></span><button id="next" aria-label="Next slide">›</button></nav>
+<script>
+const S=[...document.querySelectorAll('#stage>section')],st=document.getElementById('stage');let i=0;
+function fit(){const k=Math.min(innerWidth/1920,innerHeight/1080);st.style.transform=`translate(-50%,-50%) scale(${k})`}
+function go(n){i=Math.max(0,Math.min(S.length-1,n));S.forEach((s,j)=>s.classList.toggle('on',j===i));document.getElementById('pos').textContent=`${i+1} / ${S.length}`;history.replaceState(null,'','#'+(i+1))}
+addEventListener('resize',fit);addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))go(i+1);if(['ArrowLeft','PageUp'].includes(e.key))go(i-1)});
+prev.onclick=()=>go(i-1);next.onclick=()=>go(i+1);
+fit();go((parseInt(location.hash.slice(1))||1)-1);
+</script></body></html>
