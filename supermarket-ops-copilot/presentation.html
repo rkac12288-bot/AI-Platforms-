@@ -1,0 +1,213 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Supermarket Ops Copilot</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400..700&family=Inter:wght@400;600&display=swap">
+<style>:root{
+  --dark:#13261C; --light:#F7F5EF; --alt:#EEEADF; --surface:#FFFDF8; --ink:#1C2A22; --muted:#55615A; --line:#D9D3C4;
+  --accent:#E2672B; --accent-text:#B24A17; --accent-on-dark:#F4A26F;
+  --on-dark:#F4F1E8; --on-dark-muted:#B9C7BE; --on-accent:#13261C; --on-accent-soft:#3A2414; --glow:#2E6B47;
+  --head:'DM Sans', Arial, sans-serif; --body:'Inter', Arial, sans-serif;
+}
+body{font-family:var(--body);color:var(--ink)}
+section{padding:128px;box-sizing:border-box;background:var(--light);color:var(--ink);display:flex;flex-direction:column;gap:56px;font-family:var(--body)}
+section.alt{background:var(--alt)}
+section.dark{background:var(--dark);color:var(--on-dark)}
+section.accent{background:var(--accent);color:var(--on-accent)}
+section.cover{justify-content:space-between}
+section.closing{justify-content:center;gap:48px}
+.glow{position:absolute;left:1240px;top:0;width:680px;height:1080px;background:radial-gradient(circle at 65% 45%, var(--glow) 0%, var(--dark) 70%)}
+.head{display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:26px;letter-spacing:4px;text-transform:uppercase;font-weight:600;color:var(--accent-text)}
+.dark .eyebrow{color:var(--accent-on-dark)}
+.accent .eyebrow{color:var(--on-accent-soft)}
+.display{font-family:var(--head);font-size:112px;font-weight:700;line-height:1.04;width:1450px;color:var(--on-dark)}
+.hl{color:var(--accent-on-dark)}
+.title{font-family:var(--head);font-size:72px;font-weight:700;line-height:1.1;width:1550px;color:var(--ink)}
+.dark .title{color:var(--on-dark)}
+.lede{font-size:36px;line-height:1.4;color:var(--muted);width:1250px}
+.dark .lede{color:var(--on-dark-muted)}
+.accent .lede{color:var(--on-accent-soft)}
+.foot{font-size:24px;color:var(--on-dark-muted)}
+.note{font-size:24px;color:var(--muted)}
+.dark .note{color:var(--on-dark-muted)}
+.steps{display:flex;flex-direction:column;gap:28px}
+.step{display:flex;gap:40px;align-items:flex-start;border-top:2px solid var(--line);padding:28px 0 0 0}
+.time{font-family:var(--head);font-size:44px;font-weight:700;color:var(--accent-text);width:200px;flex:none;line-height:1.1}
+.step-txt{font-size:32px;line-height:1.45;color:var(--ink);width:1300px}
+.step-txt-strong{font-size:32px;line-height:1.45;color:var(--ink);width:1300px;font-weight:600}
+.cards{display:flex;gap:32px;flex:1}
+.card{flex:1;background:var(--surface);border-radius:20px;padding:48px;display:flex;flex-direction:column;gap:20px;border-top:8px solid var(--accent)}
+.big{font-family:var(--head);font-size:88px;font-weight:700;line-height:1;color:var(--accent-text)}
+.card-h{font-size:36px;font-weight:600;line-height:1.2;color:var(--ink)}
+.card-t{font-size:28px;line-height:1.45;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px}
+.tile{background:var(--surface);border-radius:18px;padding:40px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--line)}
+.ic{color:var(--accent-text);width:52px;height:52px}
+.tile-h{font-size:34px;font-weight:600;color:var(--ink)}
+.tile-t{font-size:26px;line-height:1.45;color:var(--muted)}
+.flow{display:flex;align-items:stretch;gap:20px}
+.fstep{flex:1;background:var(--surface);border-radius:18px;padding:40px;display:flex;flex-direction:column;gap:16px;border:1px solid var(--line)}
+.fnum{font-family:var(--head);font-size:44px;font-weight:700;color:var(--accent-text);line-height:1}
+.fh{font-size:34px;font-weight:600;color:var(--ink)}
+.ft{font-size:26px;line-height:1.45;color:var(--muted)}
+.arrow{width:56px;height:28px;background:var(--accent);align-self:center;flex:none}
+.split{display:flex;gap:96px;flex:1;align-items:center}
+.col{flex:1;display:flex;flex-direction:column;gap:28px}
+.huge{font-family:var(--head);font-size:160px;font-weight:700;line-height:1;color:var(--accent-text)}
+.huge-lab{font-size:32px;line-height:1.4;color:var(--ink)}
+.rule{background:var(--surface);border-left:8px solid var(--accent);border-radius:12px;padding:36px 40px;font-size:28px;line-height:1.5;color:var(--ink)}
+.tbl{font-size:28px;color:var(--ink);font-family:var(--body)}
+.tbl-head{background:var(--dark)}
+.band{background:var(--alt)}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:40px}
+.stat{display:flex;flex-direction:column;gap:16px;border-top:3px solid var(--accent-on-dark);padding:32px 0 0 0}
+.num{font-family:var(--head);font-size:80px;font-weight:700;line-height:1;color:var(--on-dark)}
+.lab{font-size:28px;line-height:1.4;color:var(--on-dark-muted)}
+.statement{font-family:var(--head);font-size:96px;font-weight:700;line-height:1.08;width:1500px;color:var(--on-accent)}
+@keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.rise{animation:rise 600ms ease-out both;animation-delay:calc(var(--i) * 120ms)}
+
+html,body{margin:0;height:100%;background:#0b0b0b;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center}
+#stage>section{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .35s;overflow:hidden}
+#stage>section.on{opacity:1;pointer-events:auto}
+#stage>section>*:not(.glow){position:relative}
+#stage>section:not(.on) .rise{animation:none}
+#stage p,#stage h1,#stage h2,#stage h3{margin:0}
+#stage table{border-collapse:collapse;width:100%}#stage th,#stage td{padding:20px 26px;text-align:left}#stage th{font-weight:600}
+#stage .arrow{background:none;color:var(--accent)}
+nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;font:14px system-ui,sans-serif;color:#ddd;background:rgba(20,20,20,.75);padding:6px 10px;border-radius:99px}
+nav button{background:none;border:1px solid #888;color:#eee;border-radius:99px;width:34px;height:34px;cursor:pointer;font-size:16px}
+</style></head><body>
+<div id="stage">
+<section id="cover" class="dark cover">
+<div class="glow"></div>
+<p class="eyebrow">Supermarket Ops Copilot · AI for grocery delivery</p>
+<div class="head">
+<h1 class="display">Every missing item has a price.<br><span class="hl">Now you can see it.</span></h1>
+<p class="lede">How an AI operations copilot turns a neighbourhood supermarket’s delivery orders into fewer losses, faster picking and more sales.</p>
+</div>
+<p class="foot">Cedar Market · demo store · illustrative data</p>
+
+</section>
+<section id="story">
+<div class="head">
+<p class="eyebrow">A Friday, 6:10 pm</p>
+<h2 class="title">The busiest hour is when the store loses the most.</h2>
+</div>
+<div class="steps">
+<div class="step rise" style="--i:1"><p class="time">18:10</p><p class="step-txt">A customer orders 23 items for the family dinner through the delivery app.</p></div>
+<div class="step rise" style="--i:2"><p class="time">18:24</p><p class="step-txt">The picker can’t find eggs or fresh schnitzel. One is replaced, one is refunded.</p></div>
+<div class="step rise" style="--i:3"><p class="time">18:31</p><p class="step-txt">The customer cancels the whole basket and leaves a low rating.</p></div>
+<div class="step rise" style="--i:4"><p class="time">Monday</p><p class="step-txt-strong">Nobody links the lost order to the shelf that has been empty since Tuesday.</p></div>
+</div>
+
+</section>
+<section id="cost" class="alt">
+<div class="head">
+<p class="eyebrow">The hidden cost</p>
+<h2 class="title">Small gaps on the shelf add up to real money.</h2>
+</div>
+<div class="cards">
+<div class="card rise" style="--i:1"><p class="big">9.1%</p><p class="card-h">Orders cancelled</p><p class="card-t">Whole baskets lost, most of them after a single item was missing.</p></div>
+<div class="card rise" style="--i:2"><p class="big">11.8%</p><p class="card-h">Lines short</p><p class="card-t">Items replaced, rejected or refunded because the shelf was empty.</p></div>
+<div class="card rise" style="--i:3"><p class="big">7.5 min</p><p class="card-h">Average pick</p><p class="card-t">Pickers walk the store in the order the customer tapped, not the order of the aisles.</p></div>
+</div>
+<p class="note">Baseline month before the platform · demo dataset</p>
+
+</section>
+<section id="platform">
+<div class="head">
+<p class="eyebrow">The platform</p>
+<h2 class="title">One console, from order history to action.</h2>
+</div>
+<div class="tiles">
+<div class="tile rise" style="--i:1"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4z"/><path d="M20 4h-6a3 3 0 0 0-3 3"/><path d="M20 4v14h-6"/></svg><p class="tile-h">Executive briefing</p><p class="tile-t">Where revenue comes from, what grows, what fades, and the decisions for the next 30 days.</p></div>
+<div class="tile rise" style="--i:2"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18h.01"/></svg><p class="tile-h">Manager alerts</p><p class="tile-t">Ranked by money at stake, each with one clear action for the owner or operations.</p></div>
+<div class="tile rise" style="--i:3"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><p class="tile-h">Deal-breakers</p><p class="tile-t">The items whose absence makes customers cancel the whole order.</p></div>
+<div class="tile rise" style="--i:4"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><p class="tile-h">Stock and reorder</p><p class="tile-t">Days of cover per item and a shorter reorder interval for what keeps running out.</p></div>
+<div class="tile rise" style="--i:5"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><p class="tile-h">Planogram picking</p><p class="tile-t">A pick route sorted by aisle, sent to the picker’s phone.</p></div>
+<div class="tile rise" style="--i:6"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><p class="tile-h">Growth simulator</p><p class="tile-t">What each fix is worth against the monthly revenue target.</p></div>
+</div>
+
+</section>
+<section id="how" class="alt">
+<div class="head">
+<p class="eyebrow">How it works</p>
+<h2 class="title">Four steps from yesterday’s orders to tomorrow’s shelf.</h2>
+</div>
+<div class="flow">
+<div class="fstep rise" style="--i:1"><p class="fnum">01</p><p class="fh">Import</p><p class="ft">The delivery app’s order export and a simple stock file.</p></div>
+<svg class="arrow" viewBox="0 0 56 28" preserveAspectRatio="none" style="background:none"><path d="M0 8h34V0l22 14-22 14v-8H0z" fill="currentColor"/></svg>
+<div class="fstep rise" style="--i:2"><p class="fnum">02</p><p class="fh">Diagnose</p><p class="ft">Short lines, deal-breakers, days of cover and busy hours.</p></div>
+<svg class="arrow" viewBox="0 0 56 28" preserveAspectRatio="none" style="background:none"><path d="M0 8h34V0l22 14-22 14v-8H0z" fill="currentColor"/></svg>
+<div class="fstep rise" style="--i:3"><p class="fnum">03</p><p class="fh">Decide</p><p class="ft">Restock, delist, reorder sooner, reroute the picker.</p></div>
+<svg class="arrow" viewBox="0 0 56 28" preserveAspectRatio="none" style="background:none"><path d="M0 8h34V0l22 14-22 14v-8H0z" fill="currentColor"/></svg>
+<div class="fstep rise" style="--i:4"><p class="fnum">04</p><p class="fh">Act</p><p class="ft">A daily message for the owner and a pick list for the team.</p></div>
+</div>
+<p class="lede">Every number traces back to the store’s own orders, so the team trusts the recommendation.</p>
+
+</section>
+<section id="insight">
+<div class="head">
+<p class="eyebrow">The insight that changes the game</p>
+<h2 class="title">Some items don’t just go missing. They cancel the whole order.</h2>
+</div>
+<div class="split">
+<div class="col rise" style="--i:1">
+<p class="huge">1 item</p>
+<p class="huge-lab">is enough to lose a full basket worth the store’s average order of ₪168.</p>
+</div>
+<div class="col rise" style="--i:2">
+<p class="rule"><b>Restock</b> when an item caused 6 or more cancellations in 4 months and sells over 100 units a month: raise its shelf level.</p>
+<p class="rule"><b>Delist</b> when it sells fewer than 100 units a month: mark it unavailable in the app before a customer orders it.</p>
+</div>
+</div>
+
+</section>
+<section id="change">
+<div class="head">
+<p class="eyebrow">What changes for the store</p>
+<h2 class="title">Before and after the copilot.</h2>
+</div>
+<table class="tbl">
+<tr class="tbl-head"><th style="width:22%;color:#F4F1E8">&#160;</th><th style="width:39%;color:#F4F1E8">Before</th><th style="width:39%;color:#F4A26F">With the copilot</th></tr>
+<tr><td>Stockouts</td><td style="color:#55615A">Found by the picker, mid-order</td><td>Predicted days ahead from days of cover</td></tr>
+<tr class="band"><td>Cancellations</td><td style="color:#55615A">Cause unknown</td><td>Traced to the exact item</td></tr>
+<tr><td>Reordering</td><td style="color:#55615A">Same schedule for everything</td><td>Shorter cycle for what runs out</td></tr>
+<tr class="band"><td>Picking</td><td style="color:#55615A">App order, zig-zag through aisles</td><td>Route sorted by planogram</td></tr>
+<tr><td>Owner update</td><td style="color:#55615A">None, or a long rejected-items list</td><td>Daily message with the top actions</td></tr>
+<tr class="band"><td>Growth</td><td style="color:#55615A">Guesswork</td><td>Simulator against the monthly target</td></tr>
+</table>
+
+</section>
+<section id="results" class="dark">
+<div class="head">
+<p class="eyebrow">The result</p>
+<h2 class="title">Four months later, the store is a different business.</h2>
+</div>
+<div class="stats">
+<div class="stat rise" style="--i:1"><p class="num">₪258K</p><p class="lab">Delivery revenue in 30 days, up 158% and above the ₪250K target</p></div>
+<div class="stat rise" style="--i:2"><p class="num">1,595</p><p class="lab">Orders a month, up 33% and above the 1,500 target</p></div>
+<div class="stat rise" style="--i:3"><p class="num">3.4%</p><p class="lab">Orders cancelled, down from 9.1%</p></div>
+<div class="stat rise" style="--i:4"><p class="num">6.1 min</p><p class="lab">Average pick, 19% faster than 7.5 minutes</p></div>
+</div>
+<p class="note">Demo dataset for a fictional store · short lines fell from 11.8% to 6.4%</p>
+
+</section>
+<section id="close" class="accent closing">
+<p class="eyebrow">Why it matters</p>
+<p class="statement">Less waste. Fewer refunds. More orders.</p>
+<p class="lede">Every decision backed by the store’s own data, ready for any supermarket that sells through a delivery marketplace.</p>
+
+</section>
+
+</div>
+<nav><button id="prev" aria-label="Previous slide">‹</button><span id="pos"></span><button id="next" aria-label="Next slide">›</button></nav>
+<script>
+const S=[...document.querySelectorAll('#stage>section')],st=document.getElementById('stage');let i=0;
+function fit(){const k=Math.min(innerWidth/1920,innerHeight/1080);st.style.transform=`translate(-50%,-50%) scale(${k})`}
+function go(n){i=Math.max(0,Math.min(S.length-1,n));S.forEach((s,j)=>s.classList.toggle('on',j===i));document.getElementById('pos').textContent=`${i+1} / ${S.length}`;history.replaceState(null,'','#'+(i+1))}
+addEventListener('resize',fit);addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))go(i+1);if(['ArrowLeft','PageUp'].includes(e.key))go(i-1)});
+prev.onclick=()=>go(i-1);next.onclick=()=>go(i+1);
+fit();go((parseInt(location.hash.slice(1))||1)-1);
+</script></body></html>

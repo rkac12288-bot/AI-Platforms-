@@ -1,0 +1,1500 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Supermarket Ops Copilot</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Hebrew:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: operations console — left rail of modules, summary strip, then working panels; every page reads one 4-month order history. */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --surface2:#eef1f6; --line:#d9dee7; --fg:#121a2b; --muted:#5b6578;
+  --accent:#1b4fd6; --accent-soft:#e3eafc; --brand:#d6232f;
+  --good:#11845b; --good-soft:#dff3ea; --warn:#b26a00; --warn-soft:#fdf0d9; --bad:#c8303b; --bad-soft:#fbe3e5;
+  --gondola:#c9d2e0; --route:#1b4fd6; --route2:#c8303b; --heat:27,79,214;
+  --c1:#257de0; --c2:#f47230; --c3:#00b894; --c4:#f2a600; --c5:#ee7fac; --c6:#008a17; --c7:#6a4ce2; --c8:#ec4647; --c9:#a3abb9;
+  --f-ui:"IBM Plex Sans","IBM Plex Sans Hebrew",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-he:"IBM Plex Sans Hebrew","IBM Plex Sans","Arial Hebrew",Arial,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1220; --surface:#151c2e; --surface2:#1c2438; --line:#2a3550; --fg:#e7ecf6; --muted:#97a3bb;
+  --accent:#7ea2ff; --accent-soft:#1f2c50; --brand:#ff6b74;
+  --good:#4fd1a0; --good-soft:#123528; --warn:#f2b45a; --warn-soft:#3a2a10; --bad:#ff7a83; --bad-soft:#3d1a1f;
+  --gondola:#33405e; --route:#7ea2ff; --route2:#ff7a83; --heat:126,162,255; --c1:#338ced; --c2:#e76624; --c3:#00a888; --c4:#d28e05; --c5:#e24d8b; --c6:#0aac23; --c7:#9887ef; --c8:#eb6263; --c9:#5b6476; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1220; --surface:#151c2e; --surface2:#1c2438; --line:#2a3550; --fg:#e7ecf6; --muted:#97a3bb;
+  --accent:#7ea2ff; --accent-soft:#1f2c50; --brand:#ff6b74;
+  --good:#4fd1a0; --good-soft:#123528; --warn:#f2b45a; --warn-soft:#3a2a10; --bad:#ff7a83; --bad-soft:#3d1a1f;
+  --gondola:#33405e; --route:#7ea2ff; --route2:#ff7a83; --heat:126,162,255; --c1:#338ced; --c2:#e76624; --c3:#00a888; --c4:#d28e05; --c5:#e24d8b; --c6:#0aac23; --c7:#9887ef; --c8:#eb6263; --c9:#5b6476; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-ui);font-size:14px;line-height:1.5;margin:0}
+.he{font-family:var(--f-he);direction:rtl;unicode-bidi:isolate}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+h1,h2,h3{margin:0;text-wrap:balance;line-height:1.2}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh}
+.rail{background:var(--surface);border-right:1px solid var(--line);padding:20px 14px;position:sticky;top:env(safe-area-inset-top,0px);height:100vh;display:flex;flex-direction:column;gap:16px;overflow-y:auto}
+.brand{display:flex;gap:10px;align-items:center;padding:0 6px}
+.mark{width:34px;height:34px;border-radius:8px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:16px;flex:none}
+.brand b{display:block;font-size:15px}
+.brand small{color:var(--muted);font-size:12px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav .grp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;padding:10px 10px 3px}
+.nav a{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:8px 10px;border-radius:7px;color:var(--fg);text-decoration:none;font-weight:500}
+.nav a:hover{background:var(--surface2)}
+.nav a.on{background:var(--accent-soft);color:var(--accent)}
+.nav .ct{font-family:var(--f-num);font-size:11px;padding:1px 7px;border-radius:99px;background:var(--bad-soft);color:var(--bad)}
+.nav .ct:empty{display:none}
+.rail .foot{margin-top:auto;font-size:12px;color:var(--muted);padding:0 6px;display:flex;flex-direction:column;gap:6px}
+.themebtn{border:1px solid var(--line);background:var(--surface2);border-radius:7px;padding:6px 10px;font-size:12px;text-align:left}
+main{padding-block:22px 48px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));min-width:0;display:flex;flex-direction:column;gap:16px;max-width:1320px}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between}
+.top h1{font-size:24px;font-weight:700}
+.top p{margin:4px 0 0;color:var(--muted);max-width:72ch}
+.store{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip b{color:var(--fg);font-weight:600}
+.banner{display:flex;gap:12px;align-items:flex-start;background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);border-radius:9px;padding:10px 14px;font-size:13px}
+.banner b{color:var(--warn)}
+.banner button{margin-left:auto;white-space:nowrap}
+.stack{display:flex;flex-direction:column;gap:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:13px 15px;display:flex;flex-direction:column;gap:3px}
+.kpi .l{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+.kpi .v{font-family:var(--f-num);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:12px;color:var(--muted)}
+.up{color:var(--good)} .dn{color:var(--bad)}
+.bar{height:6px;border-radius:9px;background:var(--surface2);overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:9px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.grid2.w{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.panel h2{font-size:15px;font-weight:600}
+.sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.ph{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.chartbox{position:relative;height:260px}
+.chartbox.s{height:200px}
+.tw{overflow:auto;border:1px solid var(--line);border-radius:8px}
+.tw.lim{max-height:460px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;background:var(--surface2);padding:8px 10px;white-space:nowrap;position:sticky;top:0;z-index:1}
+th.r,td.r{text-align:right}
+td{padding:7px 10px;border-top:1px solid var(--line);vertical-align:middle}
+tr:hover td{background:color-mix(in srgb,var(--surface2) 55%,transparent)}
+.item{display:flex;flex-direction:column;gap:1px;min-width:170px}
+.item .he{font-size:13.5px;font-weight:500;text-align:right}
+.item small{color:var(--muted);font-size:11.5px}
+.rk{font-family:var(--f-num);color:var(--muted);font-size:12px}
+.pill{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.p-bad{background:var(--bad-soft);color:var(--bad)} .p-warn{background:var(--warn-soft);color:var(--warn)} .p-good{background:var(--good-soft);color:var(--good)} .p-acc{background:var(--accent-soft);color:var(--accent)} .p-mut{background:var(--surface2);color:var(--muted)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:7px;padding:7px 12px;font-size:13px;font-weight:500}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;background:var(--surface);padding:6px 11px;font-size:12.5px}
+.seg button.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+select,input[type=number],input[type=text]{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:6px 9px}
+.note{font-size:12.5px;color:var(--muted);margin:0}
+.formula{font-family:var(--f-num);font-size:12px;background:var(--surface2);border-radius:7px;padding:8px 10px;overflow-x:auto}
+.decide{display:flex;gap:4px}
+.decide button{border:1px solid var(--line);background:var(--surface);border-radius:6px;font-size:11.5px;padding:3px 8px}
+.decide button.on.restock{background:var(--good-soft);color:var(--good);border-color:transparent;font-weight:600}
+.decide button.on.delist{background:var(--bad-soft);color:var(--bad);border-color:transparent;font-weight:600}
+.decide button.on.watch{background:var(--accent-soft);color:var(--accent);border-color:transparent;font-weight:600}
+.hb{display:flex;align-items:center;gap:8px}
+.hb span.b{display:inline-block;height:8px;border-radius:4px;background:var(--accent);min-width:2px}
+.hb span.b.bad{background:var(--bad)} .hb span.b.warn{background:var(--warn)}
+/* heatmap */
+.heat{display:grid;grid-template-columns:44px repeat(13,minmax(34px,1fr));gap:3px;min-width:560px;font-size:11px}
+.heat .hd{color:var(--muted);text-align:center;font-family:var(--f-num)}
+.heat .rl{color:var(--muted);font-weight:600;display:flex;align-items:center}
+.heat .c{border-radius:4px;height:30px;display:grid;place-items:center;font-family:var(--f-num);font-size:11px;color:var(--fg)}
+.heat .c.x{background:repeating-linear-gradient(45deg,var(--surface2),var(--surface2) 4px,transparent 4px,transparent 8px)}
+.heatwrap{overflow-x:auto}
+/* planogram */
+.mapwrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface2)}
+#plan{display:block;width:100%;min-width:620px;height:auto}
+#plan text{font-family:var(--f-ui)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.picklist{display:flex;flex-direction:column;max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.picklist div{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 10px;border-top:1px solid var(--line);font-size:13px}
+.picklist div:first-child{border-top:0}
+.picklist .n{font-family:var(--f-num);font-size:11px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:600}
+.picklist .z{font-size:11px;color:var(--muted);white-space:nowrap}
+.stat3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat3 div{background:var(--surface2);border-radius:8px;padding:10px 12px}
+.stat3 .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stat3 .v{font-family:var(--f-num);font-size:18px;font-weight:600}
+/* simulator */
+.field{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:10px;align-items:center;padding:6px 0;border-top:1px dashed var(--line);font-size:13px}
+.field:first-of-type{border-top:0}
+.field input{width:100%;text-align:right;font-family:var(--f-num)}
+.slider{display:flex;flex-direction:column;gap:4px;padding:8px 0}
+.slider label{display:flex;justify-content:space-between;font-size:13px;font-weight:500}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.target{display:flex;flex-direction:column;gap:10px}
+.trow{display:grid;grid-template-columns:90px minmax(0,1fr) 150px;gap:10px;align-items:center;font-size:13px}
+.track{position:relative;height:12px;background:var(--surface2);border-radius:9px;overflow:hidden}
+.track i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:9px}
+.track b{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--fg)}
+/* alerts & reports */
+.alist{display:flex;flex-direction:column;gap:8px}
+.rcard{border:1px solid var(--line);border-radius:9px;padding:12px 14px;display:grid;grid-template-columns:6px minmax(0,1fr) auto;gap:12px;align-items:start;background:var(--surface)}
+.rcard .s{border-radius:4px;align-self:stretch}
+.rcard h3{font-size:14px;font-weight:600}
+.rcard p{margin:3px 0 0;font-size:13px;color:var(--muted)}
+.rcard p.act{color:var(--fg)}
+.rcard .meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;color:var(--muted);white-space:nowrap}
+.rcard .meta button{font-size:11.5px;text-transform:none;letter-spacing:0}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+pre.out{white-space:pre-wrap;font-family:var(--f-num);font-size:12px;background:var(--surface2);border-radius:8px;padding:12px;margin:0;max-height:320px;overflow:auto}
+.drop{border:2px dashed var(--line);border-radius:10px;padding:22px;text-align:center;color:var(--muted);cursor:pointer}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));right:max(18px,env(safe-area-inset-right,0px));background:var(--fg);color:var(--bg);padding:9px 14px;border-radius:8px;font-size:13px;z-index:20}
+[hidden]{display:none!important}
+table.compact th{white-space:normal}
+/* filters */
+.filters{position:sticky;top:env(safe-area-inset-top,0px);z-index:4;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;box-shadow:0 6px 14px -12px rgba(10,20,40,.45)}
+.fgroup{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.flabel{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+.chips{display:inline-flex;gap:4px;flex-wrap:wrap}
+.chips button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 10px;font-size:12.5px}
+.chips button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);border-color:transparent;font-weight:600}
+.dd{position:relative}
+.dd summary{list-style:none;cursor:pointer;border:1px solid var(--line);border-radius:7px;padding:6px 30px 6px 10px;background:var(--surface);position:relative;font-size:13px;white-space:nowrap}
+.dd summary::-webkit-details-marker{display:none}
+.dd summary::after{content:"";position:absolute;right:11px;top:50%;width:6px;height:6px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:translateY(-70%) rotate(45deg)}
+.ddbody{position:absolute;z-index:6;top:calc(100% + 6px);left:0;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:10px;width:min(340px,86vw);box-shadow:0 14px 30px -14px rgba(10,20,40,.5);display:flex;flex-direction:column;gap:8px}
+#fCats{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;max-height:300px;overflow:auto}
+.ck{display:flex;gap:6px;align-items:center;font-size:12.5px}
+#fNote{flex-basis:100%;margin:0}
+/* briefing */
+.brief{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:16px}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600}
+.brief h2.head{font-size:clamp(19px,2.2vw,25px);font-weight:600;line-height:1.35;max-width:64ch}
+.brief h2.head b{color:var(--accent);font-weight:700}
+.chapter{display:flex;flex-direction:column;gap:12px;padding-top:8px}
+.ch-h{display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;align-items:start}
+.ch-n{width:32px;height:32px;border-radius:8px;background:var(--fg);color:var(--bg);display:grid;place-items:center;font-family:var(--f-num);font-weight:600}
+.ch-h h2{font-size:18px;font-weight:600}
+.lede{margin:4px 0 0;color:var(--muted);max-width:78ch}
+.panel h3{font-size:14px;font-weight:600;margin:0}
+.insights{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+.insights li{background:var(--surface2);border-radius:9px;padding:12px 14px;font-size:13.5px;line-height:1.5}
+.insights li b{font-family:var(--f-num);font-weight:600}
+.insights .tag{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-bottom:3px}
+.dec{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.dcard{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
+.dcard h3{font-size:15px;font-weight:600}
+.dcard .imp{font-family:var(--f-num);font-size:18px;font-weight:600}
+.dcard .imp small{font-family:var(--f-ui);font-size:12px;font-weight:500;color:var(--muted)}
+.dcard dl{margin:0;display:grid;grid-template-columns:72px minmax(0,1fr);gap:5px 10px;font-size:12.8px}
+.dcard dt{color:var(--muted);font-weight:600;text-transform:uppercase;font-size:10.5px;letter-spacing:.07em;padding-top:2px}
+.dcard dd{margin:0}
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted)}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.delta{font-family:var(--f-num);font-weight:600;white-space:nowrap}
+.narr{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;font-size:14px;line-height:1.6;display:flex;flex-direction:column;gap:6px}
+.narr p{margin:0}
+.narr b{font-family:var(--f-num);font-weight:600}
+.cmpctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.vs{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.vs .sw{display:inline-block;width:12px;height:12px;border-radius:3px}
+@media (max-width:1060px){.grid2,.grid2.w{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:980px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .rail{position:sticky;top:env(safe-area-inset-top,0px);height:auto;z-index:5;flex-direction:row;align-items:center;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));border-right:0;border-bottom:1px solid var(--line);overflow-x:auto;gap:12px}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+  .brand small,.rail .foot,.nav .grp{display:none}
+  .nav{flex-direction:row;gap:4px}
+  .nav a{white-space:nowrap;padding:7px 10px}
+  main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .filters{position:static}
+}
+@media (max-width:560px){
+  .stat3{grid-template-columns:minmax(0,1fr)}
+  .trow{grid-template-columns:70px minmax(0,1fr)}
+  .trow>span:last-child{grid-column:2}
+  .kpi .v{font-size:19px}
+  .rcard{grid-template-columns:6px minmax(0,1fr)}
+  .rcard .meta{grid-column:2;align-items:flex-start;flex-direction:row;flex-wrap:wrap}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="app">
+  <aside class="rail">
+    <div class="brand"><div class="mark">C</div><div><b>Cedar Market Ops</b><small>Demo store · Downtown branch</small></div></div>
+    <nav class="nav" id="nav">
+      <span class="grp">Overview</span>
+      <a href="#insights" data-v="insights">Executive briefing</a>
+      <a href="#command" data-v="command">Command center</a>
+      <a href="#dashboard" data-v="dashboard">Sales dashboard</a>
+      <a href="#compare" data-v="compare">Compare periods</a>
+      <a href="#alerts" data-v="alerts">Manager alerts <span class="ct" id="ctAl"></span></a>
+      <span class="grp">Inventory</span>
+      <a href="#inventory" data-v="inventory">Stock &amp; losses <span class="ct" id="ctInv"></span></a>
+      <a href="#dealbreakers" data-v="dealbreakers">Deal-breakers <span class="ct" id="ctDb"></span></a>
+      <a href="#reorder" data-v="reorder">Replacements &amp; reorder <span class="ct" id="ctRe"></span></a>
+      <span class="grp">Operations</span>
+      <a href="#picking" data-v="picking">Planogram picking</a>
+      <a href="#reports" data-v="reports">Owner &amp; ops reports</a>
+      <a href="#simulator" data-v="simulator">Growth simulator</a>
+      <a href="#import" data-v="import">Import Wolt data</a>
+    </nav>
+    <div class="foot">
+      <span>Wolt venue: cedar-market-downtown</span>
+      <span>Sample catalog · prices as of 24–27 Nov 2026</span>
+      <button class="themebtn" id="themeBtn" type="button">Theme: system</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div><h1 id="vTitle">Command center</h1><p id="vSub"></p></div>
+      <div class="store">
+        <span class="chip">Wolt rating <b class="num">8.2</b></span>
+        <span class="chip">History <b class="num" id="rangeChip"></b></span>
+        <span class="chip" id="srcChip">Data <b>Example set</b></span>
+      </div>
+    </div>
+    <div class="banner" id="banner"><div><b>Example data.</b> This is a demo store: the catalogue, prices, 4 months of orders (27 Jul – 26 Nov 2026), stock levels and store layout are all generated example data sized to your goal of 1,500 orders and ₪250K a month, including the Tishrei holidays. Import your Wolt order export to replace them.</div><button class="btn" type="button" data-go="import">Import data</button></div>
+
+    <div class="filters" id="filters" hidden>
+      <div class="fgroup"><label class="flabel" for="fPeriod">Period</label><select id="fPeriod"></select></div>
+      <div class="fgroup"><span class="flabel">Days</span><div class="chips" id="fDays"></div></div>
+      <div class="fgroup"><span class="flabel">Categories</span><details class="dd" id="fCatDD"><summary id="fCatSum">All categories</summary><div class="ddbody"><div class="toolbar"><button type="button" class="btn" id="fCatAll">Select all</button><button type="button" class="btn" id="fCatNone">Clear</button></div><div id="fCats"></div></div></details></div>
+      <button class="btn" id="fReset" type="button">Reset filters</button>
+      <p class="note" id="fNote"></p>
+    </div>
+
+    <!-- EXECUTIVE BRIEFING -->
+    <section class="view stack" id="v-insights" hidden>
+      <div class="brief">
+        <span class="eyebrow" id="brEyebrow"></span>
+        <h2 class="head" id="brHead"></h2>
+        <div class="kpis" id="brK"></div>
+      </div>
+
+      <div class="chapter">
+        <div class="ch-h"><span class="ch-n">1</span><div><h2>Where the money comes from</h2><p class="lede" id="l1"></p></div></div>
+        <div class="grid2 w">
+          <div class="panel">
+            <div class="ph"><div><h3>Revenue by department, per month</h3><div class="sub" id="compSub"></div></div>
+              <div class="seg" id="compSeg"><button class="on" data-m="abs" type="button">₪ per open day</button><button data-m="pct" type="button">% share</button></div></div>
+            <div class="chartbox" style="height:300px"><canvas id="compChart" aria-label="Revenue composition by department"></canvas></div>
+            <div class="leg" id="compLeg"></div>
+          </div>
+          <div class="panel">
+            <div><h3>Department share and momentum</h3><div class="sub" id="shareSub"></div></div>
+            <div class="tw"><table id="shareTable" class="compact"></table></div>
+          </div>
+        </div>
+        <ul class="insights" id="i1"></ul>
+      </div>
+
+      <div class="chapter">
+        <div class="ch-h"><span class="ch-n">2</span><div><h2>What is growing and what is fading</h2><p class="lede" id="l2"></p></div></div>
+        <div class="panel"><div class="ph"><div><h3>Category growth</h3><div class="sub" id="growSub"></div></div><button class="btn" type="button" id="growCopy">Copy</button></div>
+          <div class="tw lim"><table id="growTable"></table></div></div>
+        <ul class="insights" id="i2"></ul>
+      </div>
+
+      <div class="chapter">
+        <div class="ch-h"><span class="ch-n">3</span><div><h2>When customers order</h2><p class="lede" id="l3"></p></div></div>
+        <div class="grid2">
+          <div class="panel"><div><h3>Average revenue per open day, by weekday</h3><div class="sub">Holiday closures excluded</div></div><div class="chartbox"><canvas id="dowChart" aria-label="Revenue by weekday"></canvas></div></div>
+          <div class="panel"><div><h3>Average orders per hour</h3><div class="sub">Sun–Thu against Friday</div></div><div class="chartbox"><canvas id="hrChart" aria-label="Orders per hour"></canvas></div></div>
+        </div>
+        <ul class="insights" id="i3"></ul>
+      </div>
+
+      <div class="chapter">
+        <div class="ch-h"><span class="ch-n">4</span><div><h2>Basket economics</h2><p class="lede" id="l4"></p></div></div>
+        <div class="grid2">
+          <div class="panel"><div><h3>Delivered orders by basket value</h3><div class="sub">Share of orders in each ₪ band</div></div><div class="chartbox"><canvas id="histChart" aria-label="Basket value distribution"></canvas></div></div>
+          <div class="panel"><div><h3>Revenue concentration (Pareto)</h3><div class="sub">Cumulative share of revenue against the share of items, best sellers first</div></div><div class="chartbox"><canvas id="parChart" aria-label="Pareto curve of item revenue"></canvas></div></div>
+        </div>
+        <ul class="insights" id="i4"></ul>
+      </div>
+
+      <div class="chapter">
+        <div class="ch-h"><span class="ch-n">5</span><div><h2>Service quality is the growth lever</h2><p class="lede" id="l5"></p></div></div>
+        <div class="grid2 w">
+          <div class="panel"><div><h3>Category revenue share against short-line rate</h3><div class="sub">Bubble size = full-order cancellations · dashed lines are the medians · top right is where to fix first</div></div><div class="chartbox" style="height:330px"><canvas id="quadChart" aria-label="Revenue share against short-line rate by category"></canvas></div></div>
+          <div class="panel"><div><h3>What a missing item costs</h3><div class="sub">Delivered and cancelled orders, split by whether any line was short</div></div><div class="tw"><table id="svcTable"></table></div><p class="note" id="svcNote"></p></div>
+        </div>
+        <ul class="insights" id="i5"></ul>
+      </div>
+
+      <div class="chapter">
+        <div class="ch-h"><span class="ch-n">6</span><div><h2>Decisions for the next 30 days</h2><p class="lede">Each decision comes from the evidence above. Impact figures are monthly estimates from this data, to validate with a 2–4 week test.</p></div></div>
+        <div class="dec" id="decs"></div>
+      </div>
+    </section>
+
+    <!-- COMPARE -->
+    <section class="view stack" id="v-compare" hidden>
+      <div class="panel">
+        <div class="cmpctl">
+          <div class="seg" id="cmpSeg"><button class="on" data-p="wtd" type="button">This week vs last week</button><button data-p="lw" type="button">Last full week vs week before</button><button data-p="mtd" type="button">Month to date vs last month</button><button data-p="lm" type="button">Last full month vs month before</button><button data-p="custom" type="button">Custom</button></div>
+          <div class="seg" id="normSeg"><button class="on" data-n="tot" type="button">Totals</button><button data-n="day" type="button">Per open day</button></div>
+        </div>
+        <div class="cmpctl" id="cmpCustom" hidden>
+          <label class="flabel" for="cmpA">Period A</label><select id="cmpA"></select>
+          <label class="flabel" for="cmpB">Period B</label><select id="cmpB"></select>
+        </div>
+        <div class="vs" id="cmpVs"></div>
+      </div>
+      <div class="narr" id="cmpNarr"></div>
+      <div class="grid2">
+        <div class="panel"><div><h3>Key metrics</h3><div class="sub">Rates compare as percentage points</div></div><div class="tw"><table id="cmpTable"></table></div></div>
+        <div class="panel"><div><h3>Daily revenue, day by day</h3><div class="sub">Day 1 is the first day of each period</div></div><div class="chartbox"><canvas id="cmpDaily" aria-label="Daily revenue comparison"></canvas></div></div>
+      </div>
+      <div class="grid2">
+        <div class="panel"><div><h3>What drove the change</h3><div class="sub">Revenue change by Wolt category, A minus B</div></div><div class="chartbox" style="height:380px"><canvas id="cmpCat" aria-label="Revenue change by category"></canvas></div></div>
+        <div class="panel"><div><h3>Revenue per open day, by weekday</h3><div class="sub">Shows whether the change is spread or comes from one day</div></div><div class="chartbox" style="height:380px"><canvas id="cmpDow" aria-label="Revenue by weekday comparison"></canvas></div></div>
+      </div>
+      <div class="grid2">
+        <div class="panel"><div><h3>Biggest item gains</h3></div><div class="tw"><table id="cmpUp"></table></div></div>
+        <div class="panel"><div><h3>Biggest item drops</h3></div><div class="tw"><table id="cmpDn"></table></div></div>
+      </div>
+    </section>
+
+    <!-- COMMAND -->
+    <section class="view stack" id="v-command">
+      <div class="kpis" id="kpis"></div>
+      <div class="grid2 w">
+        <div class="panel">
+          <div class="ph"><div><h2>Weekly Wolt revenue and orders</h2><div class="sub">17 full weeks · dashed line is the monthly target as a weekly pace</div></div>
+            <div class="seg" id="trendSeg"><button class="on" data-m="rev" type="button">Revenue</button><button data-m="ord" type="button">Orders</button><button data-m="svc" type="button">Service</button></div></div>
+          <div class="chartbox"><canvas id="trend" aria-label="Weekly trend chart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div><h2>Critical alerts now</h2><div class="sub">The top of the manager alert list</div></div>
+          <div class="alist" id="cmdTop"></div>
+          <button class="btn" type="button" data-go="alerts">All manager alerts</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div><h2>Where orders break, by Wolt category</h2><div class="sub">Last 30 days · short lines are replaced, rejected or missing</div></div>
+        <div class="tw"><table id="catTable"></table></div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section class="view stack" id="v-dashboard" hidden>
+      <div class="kpis" id="dkpis"></div>
+      <div class="panel">
+        <div class="ph"><div><h2>Orders per day</h2><div class="sub">Peaks are the holiday eves; gaps are Saturdays and holidays when the store is closed</div></div></div>
+        <div class="chartbox s"><canvas id="daily" aria-label="Orders per day"></canvas></div>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <div class="ph"><div><h2 id="topH">Most ordered items</h2><div class="sub"><span id="topSub">Ranked by units ordered on Wolt</span> · fruit and vegetables excluded</div></div>
+            <div class="toolbar"><div class="seg" id="sortSeg"><button class="on" data-s="u" type="button">Units</button><button data-s="rev" type="button">Revenue</button><button data-s="price" type="button">Item price</button></div><div class="seg" id="topSeg"><button class="on" data-n="10" type="button">Top 10</button><button data-n="20" type="button">Top 20</button><button data-n="30" type="button">Top 30</button></div><button class="btn" type="button" id="topCopy">Copy</button></div></div>
+          <div class="tw lim"><table id="topTable"></table></div>
+        </div>
+        <div class="panel">
+          <div class="ph"><div><h2>Orders per hour</h2><div class="sub">Bar is the lowest to highest day; dot is the average</div></div>
+            <select id="hrSel" aria-label="Days"><option value="all">All open days</option><option value="wk">Sun–Thu</option><option value="0">Sunday</option><option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="fri">Friday</option></select></div>
+          <div class="chartbox"><canvas id="hourly" aria-label="Orders per hour"></canvas></div>
+          <div class="toolbar"><label for="pickers" class="note">Pickers on shift</label><input type="number" id="pickers" min="1" max="8" value="2" style="width:64px"><span class="note" id="capNote"></span></div>
+          <div class="tw"><table id="hrTable"></table></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><div><h2>Sales by Wolt category</h2><div class="sub">Orders that include the category, units, delivered revenue and short lines for the selected period</div></div>
+          <div class="toolbar"><div class="seg" id="catMetric"><button class="on" data-m="rev" type="button">Revenue</button><button data-m="ord" type="button">Orders</button><button data-m="u" type="button">Units</button></div><button class="btn" type="button" id="catCopy">Copy</button></div></div>
+        <div class="grid2">
+          <div class="chartbox" style="height:420px"><canvas id="catChart" aria-label="Sales by category"></canvas></div>
+          <div class="tw lim"><table id="catSales"></table></div>
+        </div>
+        <div class="ph"><div><h2 style="font-size:14px">Top items in <span id="catName"></span></h2><div class="sub">Choose a category, or click one in the table</div></div>
+          <select id="catPick" aria-label="Category"></select></div>
+        <div class="tw"><table id="catTop"></table></div>
+      </div>
+      <div class="panel">
+        <div><h2>Average orders by day and hour</h2><div class="sub">Darker means busier · hatched means closed · hover for the highest day</div></div>
+        <div class="heatwrap"><div class="heat" id="heat"></div></div>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <div class="ph"><div><h2>Rejected items</h2><div class="sub">Customer refused the substitute, or the item was missing and refunded</div></div><button class="btn" type="button" id="rjCopy">Copy</button></div>
+          <div class="tw lim"><table id="rjTable"></table></div>
+        </div>
+        <div class="panel">
+          <div class="ph"><div><h2>Replaced items</h2><div class="sub">Shelf was empty and the customer accepted a substitute</div></div><button class="btn" type="button" id="rpCopy">Copy</button></div>
+          <div class="tw lim"><table id="rpTable"></table></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><div><h2>High inventory</h2><div class="sub">Items with the most days of stock on hand at today's sales pace (Wolt + in-store)</div></div><button class="btn" type="button" data-go="inventory">Full stock view</button></div>
+        <div class="tw"><table id="hiTable"></table></div>
+      </div>
+    </section>
+
+    <!-- ALERTS -->
+    <section class="view stack" id="v-alerts" hidden>
+      <div class="ph">
+        <div class="seg" id="alSeg"><button class="on" data-s="all" type="button">All</button><button data-s="crit" type="button">Critical</button><button data-s="warn" type="button">Warning</button><button data-s="info" type="button">Info</button></div>
+        <select id="alCat" aria-label="Alert type"></select>
+      </div>
+      <div class="kpis" id="alK"></div>
+      <div class="alist" id="alList"></div>
+    </section>
+
+    <!-- INVENTORY -->
+    <section class="view stack" id="v-inventory" hidden>
+      <div class="kpis" id="invK"></div>
+      <div class="panel">
+        <div class="ph"><div><h2>Stock position</h2><div class="sub">On hand ÷ daily sales (Wolt + in-store) = days of cover, against the next delivery and shelf life</div></div>
+          <div class="toolbar"><div class="seg" id="invSeg"><button class="on" data-f="all" type="button">All</button><button data-f="low" type="button">Stockout risk</button><button data-f="markdown" type="button">Markdown</button><button data-f="high" type="button">Overstock</button><button data-f="slow" type="button">Slow on Wolt</button></div><button class="btn" type="button" id="invCopy">Copy</button></div></div>
+        <div class="formula">stockout risk: cover &lt; days to next delivery · markdown: fresh item with cover &gt; 80% of shelf life · overstock: cover &gt; max(21 days, 3 × reorder interval) · slow: ≤ 1 unit on Wolt in 14 days · stock value at 72% of Wolt price</div>
+        <div class="tw lim"><table id="invTable"></table></div>
+      </div>
+      <div class="panel">
+        <div><h2>Refund and loss ledger</h2><div class="sub">Weekly money lost on the Wolt channel</div></div>
+        <div class="tw lim"><table id="ledger"></table></div>
+      </div>
+    </section>
+
+    <!-- DEAL BREAKERS -->
+    <section class="view" id="v-dealbreakers" hidden>
+      <div class="panel">
+        <div class="ph">
+          <div><h2>Items that make customers cancel the whole order</h2><div class="sub">4-month history. An item is a deal-breaker when it was short and the customer then cancelled the full order.</div></div>
+          <div class="toolbar"><select id="dbFilter" aria-label="Filter"><option value="all">All items with cancellations</option><option value="restock">Recommended: restock</option><option value="delist">Recommended: delist</option></select><button class="btn" type="button" id="dbCopy">Copy</button></div>
+        </div>
+        <div class="formula">deal-breaker rate = cancelled orders where the item was short ÷ orders containing it · revenue at risk / month = cancellations per month × average basket (₪<span id="aovF">0</span>)<br>rule: ≥ 6 cancellations in 4 months and ≥ 100 units a month → restock (raise par) · fewer than 100 units a month → delist or mark unavailable on Wolt</div>
+        <div class="tw lim"><table id="dbTable"></table></div>
+        <p class="note">Your decision is saved in this browser and feeds the owner report.</p>
+      </div>
+    </section>
+
+    <!-- REORDER -->
+    <section class="view" id="v-reorder" hidden>
+      <div class="panel">
+        <div class="ph"><div><h2>Most-short items and reorder frequency</h2><div class="sub">4-month history. Every replaced, rejected or missing line means the picker found the shelf empty.</div></div><button class="btn" type="button" id="reCopy">Copy reorder plan</button></div>
+        <div class="formula">short rate = short lines ÷ lines ordered · new interval = max(1 day, current × (1 − min(0.8, 3 × short rate)))</div>
+        <div class="tw lim"><table id="reTable"></table></div>
+      </div>
+    </section>
+
+    <!-- PICKING -->
+    <section class="view stack" id="v-picking" hidden>
+      <div class="panel">
+        <div class="ph">
+          <div><h2>Pick route along the store planogram</h2><div class="sub">A real order from the history, routed two ways: the sequence the customer added items in Wolt, and the route sorted by aisle position.</div></div>
+          <div class="toolbar"><select id="orderSel" aria-label="Order"></select>
+            <div class="seg" id="routeSeg"><button class="on" data-r="opt" type="button">Planogram route</button><button data-r="app" type="button">Wolt app order</button><button data-r="both" type="button">Both</button></div></div>
+        </div>
+        <div class="stat3" id="pickStats"></div>
+        <div class="mapwrap"><svg id="plan" viewBox="0 0 640 400" role="img" aria-label="Store planogram with pick route"></svg></div>
+        <div class="legend"><span><i style="background:var(--route)"></i>Planogram route</span><span><i style="background:var(--route2)"></i>Wolt app order</span><span>Walking 1 m/s with trolley · 25 s per line · +15 s per produce or butcher line</span></div>
+      </div>
+      <div class="grid2">
+        <div class="panel"><div><h2>Pick list for the picker</h2><div class="sub">Open on the picker's phone and follow top to bottom</div></div><div class="picklist" id="pickList"></div></div>
+        <div class="panel"><div><h2>Average over the last 30 days</h2><div class="sub">Every order with 5 or more lines, routed both ways</div></div><div class="stat3" id="pickAvg" style="grid-template-columns:minmax(0,1fr)"></div><p class="note">Faster picks free picker time at the 17:00–20:00 peak, so the store stays out of Wolt's busy mode and accepts more orders.</p></div>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section class="view" id="v-reports" hidden>
+      <div class="grid2">
+        <div class="panel">
+          <div class="ph"><div><h2>Prioritized action list</h2><div class="sub">Critical and warning alerts, ranked by money at risk</div></div>
+            <div class="seg" id="audSeg"><button class="on" data-a="all" type="button">All</button><button data-a="Owner" type="button">Owner</button><button data-a="Ops" type="button">Operations</button></div></div>
+          <div class="alist" id="repList"></div>
+        </div>
+        <div class="panel">
+          <div class="ph"><div><h2>Daily message</h2><div class="sub">Ready to paste into WhatsApp</div></div><button class="btn pri" type="button" id="msgCopy">Copy message</button></div>
+          <pre class="out" id="msg"></pre>
+          <div><h2 style="font-size:14px">Frequency report</h2><div class="sub">Last 30 days: how often each problem item failed</div></div>
+          <div class="tw"><table id="freqTable"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIMULATOR -->
+    <section class="view" id="v-simulator" hidden>
+      <div class="grid2">
+        <div class="panel"><div><h2>Starting point</h2><div class="sub">Your December 2025 baseline. Edit any number.</div></div><div id="simIn"></div><h2 style="font-size:14px">How much of each fix is in place</h2><div id="simSl"></div></div>
+        <div class="panel"><div><h2>Projected month</h2><div class="sub">Counts only orders and lines the fixes recover, with no new-demand assumptions</div></div><div class="target" id="simOut"></div><div class="tw"><table id="simTable"></table></div><p class="note" id="simNote"></p></div>
+      </div>
+    </section>
+
+    <!-- IMPORT -->
+    <section class="view" id="v-import" hidden>
+      <div class="grid2">
+        <div class="panel">
+          <div><h2>Import Wolt data</h2><div class="sub">Two kinds of CSV. Every page recalculates from what you load.</div></div>
+          <label class="drop" id="drop" for="file">Drop a .csv here or <u>choose a file</u><input type="file" id="file" accept=".csv,text/csv" hidden></label>
+          <div class="formula">Orders: order_id,created_at,item_name,line_status,qty,price<br>line_status: ok | replaced | rejected | missing | order_cancelled · created_at: 2026-11-24 18:05<br><br>Stock: item_name,on_hand</div>
+          <div class="toolbar"><button class="btn" type="button" id="tplCopy">Copy orders template</button><button class="btn" type="button" id="tplInv">Copy stock template</button><button class="btn" type="button" id="resetData">Back to example data</button></div>
+          <p class="note" id="impMsg">Item names are matched to the Wolt catalog by Hebrew or English name.</p>
+        </div>
+        <div class="panel">
+          <div><h2>Catalog in this tool</h2><div class="sub"><span id="catCount"></span> items from cedar-market-downtown on Wolt, with planogram location</div></div>
+          <div class="tw lim"><table id="catalog"></table></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>/* ===== DATA ENGINE (pure) ===== */
+var VD=(function(){
+"use strict";
+function rng(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+const ZONES={
+  P:{name:"Produce",rect:[16,64,92,252],pick:{x:118,y0:90,y1:300},life:5},
+  B:{name:"Bakery",rect:[130,16,110,34],pick:{y:66,x0:140,x1:230},life:2},
+  D:{name:"Dairy & eggs",rect:[250,16,230,34],pick:{y:66,x0:262,x1:470},life:12},
+  M:{name:"Butcher & deli",rect:[548,64,76,140],pick:{x:532,y0:84,y1:196},life:3},
+  F:{name:"Frozen",rect:[548,214,76,112],pick:{x:532,y0:226,y1:318},life:120},
+  A1:{name:"Aisle 1 · Pantry",col:176,life:365},A2:{name:"Aisle 2 · Canned & dry",col:248,life:365},
+  A3:{name:"Aisle 3 · Snacks & sweets",col:320,life:365},A4:{name:"Aisle 4 · Drinks",col:392,life:365},
+  A5:{name:"Aisle 5 · Paper & cleaning",col:464,life:365}
+};
+/* [he, en, Wolt category, zone, price, unit, popularity weight, short weight, cancel weight, reorder days, cover-days override, shelf-life override] */
+const RAW=[
+["בצל יבש יחידה","Onion, unit","Fruit & veg","P",1.9,"160 g",410,22,1,2,0,0],
+["בשר טחון טרי","Fresh ground beef","Butcher","M",32.45,"≈500 g · ₪64.90/kg",182,19,14,3,0.6,0],
+["תבנית ביצים 12 יחידות | M","Eggs, tray of 12, M","Dairy & eggs","D",13.4,"12 pcs",265,41,11,4,0.7,25],
+["פלפל אדום יחידה","Red pepper, unit","Fruit & veg","P",3.9,"250 g",330,18,1,2,0,0],
+["קוקה קולה זירו 1.5 ליטר","Coca-Cola Zero 1.5 L","Soft drinks","A4",9.9,"1.5 L",240,9,0,7,0,0],
+["גזר יחידה","Carrot, unit","Fruit & veg","P",0.9,"125 g",300,8,0,2,0,0],
+["לימון יחידה","Lemon, unit","Fruit & veg","P",3.5,"150 g",260,27,2,3,0,0],
+["מגבת נייר סופג הפלא 6","Hapele paper towels ×6","Paper goods","A5",14.9,"6 rolls",96,6,0,14,0,0],
+["חמאה מהדרין תנובה 200 גרם","Tnuva butter 200 g","Dairy & eggs","D",10.5,"200 g",150,24,4,5,0,0],
+["שמן זית כתית מעולה סידר","Cedar extra virgin olive oil","Pantry","A1",18.9,"750 ml",120,5,0,14,48,0],
+["בטטה יחידה","Sweet potato, unit","Fruit & veg","P",3.9,"193 g",190,7,0,3,0,0],
+["כוסברה","Coriander bunch","Fruit & veg","P",5.9,"bunch",160,31,3,2,1.1,0],
+["פיתות אסלי פרמיום","Asli premium pitas","Bread","B",13.9,"1 kg",140,22,2,2,0,0],
+["יטבתה חלב מועשר 3% 1 ליטר","Yotvata milk 3% 1 L","Dairy & eggs","D",9.9,"1 L",210,38,3,4,1.4,0],
+["לבבות חסה","Lettuce hearts","Fruit & veg","P",11.9,"465 g",120,19,1,3,1.5,0],
+["נייר טואלט מולט 30 גלילים","Molett toilet paper ×30","Paper goods","A5",31.9,"30 rolls",88,4,0,14,55,0],
+["חלב תנובה 3% 2 ליטר","Tnuva milk 3% 2 L","Dairy & eggs","D",14.7,"2 L",180,26,2,4,0,0],
+["סוכר לבן 1 ק״ג","White sugar 1 kg","Dry goods","A2",5.9,"1 kg",95,2,0,14,0,0],
+["שניצל עוף טרי דק דק","Fresh thin chicken schnitzel","Butcher","M",29.95,"≈500 g · ₪59.90/kg",160,21,9,3,0.8,0],
+["נתחי טונה בהירה בשמן צמחי רביעייה סידר","Cedar light tuna in oil ×4","Canned & sauces","A2",22.9,"560 g",110,6,0,10,0,0],
+["אבוקדו יחידה","Avocado, unit","Fruit & veg","P",8.9,"200 g",170,29,5,3,0.9,0],
+["שמנת להקצפה 38% תנובה","Tnuva whipping cream 38%","Dairy & eggs","D",15.28,"500 ml · price-controlled",95,17,7,7,1.2,14],
+["אצבעות שוקולד קינדר 16","Kinder chocolate fingers ×16","Sweets","A3",16.9,"200 g",85,3,0,14,42,0],
+["קפה טסטרס צ'ויס 200 גרם","Taster's Choice coffee 200 g","Hot drinks","A1",38.9,"200 g",72,11,6,10,2.5,0],
+["מארז במבה 10 יח׳","Bamba ×10 pack","Salty snacks","A3",19.9,"250 g",130,8,1,7,0,0],
+["גבינה צהובה עמק 28% 200 גרם","Emek yellow cheese 28% 200 g","Dairy & eggs","D",19.9,"200 g",125,15,3,5,0,0],
+["קורנפלקס אלופים תלמה","Telma Alufim cornflakes","Cereal","A3",24.9,"850 g",70,4,0,14,30,0],
+["טופו סידר 1.2 קג","Cedar tofu 1.2 kg","Organic & special diet","D",19.9,"1.2 kg",22,6,4,10,26,20],
+["יוגורט דנונה פיצפוצים","Danone yogurt with crunch","Dairy & eggs","D",5.9,"173 g",140,12,1,5,0,0],
+["חזה עוף טרי","Fresh chicken breast","Butcher","M",23.95,"≈500 g · ₪47.90/kg",150,18,6,3,1.0,0],
+["אלטרנטיב שיבולת שועל 1 ליטר","Alternative oat drink 1 L","Dairy & eggs","D",14.9,"1 L",80,19,8,10,1.3,0],
+["שישיית מי עדן ספורט","Mei Eden sport cap ×6","Soft drinks","A4",13.1,"6 × 500 ml",110,5,0,7,0,0],
+["לחם עננים בריוש","Brioche cloud bread","Bread","B",16.9,"500 g",90,14,2,2,0,0],
+["שרי תמר ארוז","Cherry tomatoes, pack","Fruit & veg","P",15.9,"450 g",130,16,1,3,6,0],
+["ענבים","Grapes","Fruit & veg","P",29.9,"540 g",60,9,1,3,7,6],
+["שניצל תירס זוגלובק","Zoglowek corn schnitzel","Frozen","F",29.9,"750 g",55,4,0,10,0,0],
+["פתיתי פרמז׳ן תנובה","Tnuva parmesan flakes","Dairy & eggs","D",16.9,"100 g",38,5,3,10,34,60],
+["שוקולד פרה מריר","Pesek Zman dark chocolate","Sweets","A3",9.9,"100 g",75,2,0,14,0,0],
+["נייר טואלט סופט 32","Soft toilet paper ×32","Paper goods","A5",37.9,"32 rolls",60,5,1,14,70,0],
+["אורז פרסי סוגת","Sugat Persian rice 1 kg","Dry goods","A2",13.9,"1 kg",65,3,0,14,28,0],
+["מולר פרוטאין קפה","Müller protein drink, coffee","Dairy & eggs","D",8.5,"350 ml",18,7,5,10,0,0],
+["נענע","Mint bunch","Fruit & veg","P",5.9,"bunch",90,15,1,2,4.5,4],
+["ספרייט זירו 1.5 ליטר","Sprite Zero 1.5 L","Soft drinks","A4",9.9,"1.5 L",80,3,0,7,0,0],
+["שמן קנולה 1 ליטר","Canola oil 1 L","Pantry","A1",12.9,"1 L",70,2,0,14,38,0],
+["מי סודה שוופס 4×1.5","Schweppes soda 4 × 1.5 L","Soft drinks","A4",17.1,"6 L",55,7,1,7,0,0],
+["רסק עגבניות יכין","Yachin tomato paste","Canned & sauces","A2",3.9,"100 g",85,1,0,14,0,0],
+["תפוצ׳יפס מארז 6","Potato chips ×6","Salty snacks","A3",17.9,"240 g",60,3,0,10,0,0],
+["עגבניות חתוכות סידר ×3","Cedar chopped tomatoes ×3","Canned & sauces","A2",9.9,"1.2 kg",50,2,0,14,45,0],
+["כריות נוגט","Nougat pillows cereal","Cereal","A3",32.9,"686 g",1,0,0,14,60,0],
+["פתי בר אסם","Osem Petit Beurre biscuits","Sweets","A3",13.9,"500 g",1.5,0,0,14,50,0],
+["תפוח אדמה לבן יחידה","White potato, unit","Fruit & veg","P",2.9,"237 g",230,10,0,3,0,0],
+["פיתה ארטיזן","Artisan pita","Bread","B",15.9,"800 g",70,9,1,2,0,0],
+["קבב מזרחי 8 יחידות","Oriental kebab ×8","Frozen","F",19.9,"400 g",60,4,0,10,0,0],
+["המבורגר אנגוס 2 יח׳","Angus burgers ×2","Frozen","F",31.9,"400 g",45,4,1,10,0,0],
+["המבורגר משפחתי 15 יח׳","Family burgers ×15","Frozen","F",64.9,"1.5 kg",25,3,1,10,0,0],
+["בלדי קבב כבש","Baladi lamb kebab","Frozen","F",19.9,"400 g",30,3,0,10,0,0],
+["נקניקיות צ׳וריסוס בלדי","Baladi chorizo sausages","Frozen","F",35.9,"600 g",22,2,0,10,0,0],
+["המבורגר בלדי 4 יחידות","Baladi burgers ×4","Frozen","F",19.9,"400 g",40,3,0,10,0,0],
+["נקניקיות קנקר עוף ביירן","Bayern chicken knackers","Frozen","F",45.9,"700 g",18,2,0,10,40,0],
+["קוקה קולה 1.5 ליטר","Coca-Cola 1.5 L","Soft drinks","A4",9.9,"1.5 L",170,7,0,7,0,0],
+["שישיית פחיות קולה זירו","Coca-Cola Zero cans ×6","Soft drinks","A4",25.9,"6 × 330 ml",70,4,1,7,0,0],
+["מים נביעות 1.5 ליטר","Neviot water 1.5 L","Soft drinks","A4",6.2,"1.5 L",120,3,0,7,0,0],
+["מים עין גדי 2 ליטר","Ein Gedi water 2 L","Soft drinks","A4",4.9,"2 L",90,2,0,7,0,0],
+["שישיית סן פלגרינו","San Pellegrino ×6","Soft drinks","A4",27.1,"6 × 500 ml",25,2,0,10,0,0],
+["פריגת קליר ענבים דובדבן","Prigat Clear grape-cherry 1.5 L","Soft drinks","A4",9.9,"1.5 L",35,1,0,10,0,0],
+["אורז בסמטי ויליפוד","Willi-Food basmati rice 1 kg","Dry goods","A2",15.9,"1 kg",30,2,0,14,0,0],
+["אורז יסמין סוגת","Sugat jasmine rice 1 kg","Dry goods","A2",13.9,"1 kg",35,2,0,14,0,0],
+["אורז סושי סוגת","Sugat sushi rice 1 kg","Dry goods","A2",17.9,"1 kg",15,2,1,14,0,0],
+["אורז עגול סוגת","Sugat round rice 1 kg","Dry goods","A2",13.9,"1 kg",20,1,0,14,0,0],
+["אורז מלא ארוך סוגת","Sugat long brown rice 1 kg","Dry goods","A2",10.9,"1 kg",12,1,0,14,0,0],
+["במבה 80 גרם","Bamba 80 g","Salty snacks","A3",5.9,"80 g",90,3,0,7,0,0],
+["ביסלי גריל 70 גרם","Bissli grill 70 g","Salty snacks","A3",5.9,"70 g",70,3,0,7,0,0],
+["דוריטוס גריל 70 גרם","Doritos grill 70 g","Salty snacks","A3",5.9,"70 g",45,2,0,7,0,0],
+["במבה נוגט מארז 5","Bamba nougat ×5","Salty snacks","A3",16.9,"150 g",40,3,1,7,0,0],
+["מארז במבה 20 יח׳","Bamba ×20 pack","Salty snacks","A3",29.9,"300 g",22,2,0,10,0,0],
+["מארז משפחתי ביסלי גריל 4","Bissli grill family ×4","Salty snacks","A3",16.9,"220 g",25,1,0,10,0,0],
+["אפרופו מארז שלישיה","Apropo ×3","Salty snacks","A3",16.9,"150 g",18,1,0,10,0,0],
+["פרימיום חזה עוף חצוי טרי","Premium half chicken breast","Butcher","M",34.93,"≈700 g · ₪49.90/kg",70,9,4,3,0,0],
+["כנפיים עוף טרי","Fresh chicken wings","Butcher","M",14.9,"≈1 kg · ₪14.90/kg",55,6,1,3,0,0],
+["פרימיום שוקיים עוף טרי","Premium chicken drumsticks","Butcher","M",37.9,"≈1 kg · ₪37.90/kg",65,8,3,3,0,0],
+["לחם אחיד פרוס אנג׳ל 900 גרם","Angel sliced white bread 900 g","Bread","B",9.5,"900 g · price-controlled",110,16,2,1,0,0],
+["לחם חיטה מלאה דגנית","Dganit whole wheat bread","Bread","B",15.9,"750 g",40,5,0,2,0,0],
+["לחם קל אנג׳ל","Angel light bread","Bread","B",18.9,"750 g",45,6,1,2,0,0],
+["לחם מחמצת כפרי ארטיזנל","Artisanal country sourdough","Bread","B",20.9,"500 g",30,6,1,2,0,0],
+["לחמניות עננים בריוש 10","Brioche cloud rolls ×10","Bread","B",18.9,"600 g",45,5,0,2,0,0],
+["שמיניית פיתות כוסמין מלא","Whole spelt pitas ×8","Bread","B",17.9,"400 g",40,5,0,2,0,0],
+["רביעיית טונה במים סטארקיסט","StarKist tuna in water ×4","Canned & sauces","A2",27.9,"448 g",60,3,0,10,0,0],
+["רביעיית טונה בשמן סטארקיסט","StarKist tuna in oil ×4","Canned & sauces","A2",27.9,"448 g",55,3,0,10,0,0],
+["שלישיית עגבניות מרוסקות מוטי","Mutti crushed tomatoes ×3","Canned & sauces","A2",22.9,"3 × 400 g",30,2,0,14,0,0],
+["טונה סידר בשמן זית 3×80","Cedar tuna in olive oil ×3","Canned & sauces","A2",10.9,"240 g",30,2,0,10,0,0],
+["סרדינים בשמן צמחי וילי פוד","Willi-Food sardines in oil","Canned & sauces","A2",6.9,"110 g",15,1,0,14,0,0],
+["טונה ריו מרה בשמן זית 3","Rio Mare tuna in olive oil ×3","Canned & sauces","A2",31.9,"3 × 65 g",12,1,0,14,50,0]
+];
+function buildCatalog(){
+  const byZone={};RAW.forEach((r,i)=>{(byZone[r[3]]=byZone[r[3]]||[]).push(i);});
+  const r0=rng(77);
+  const items=RAW.map((r,i)=>({id:i,he:r[0],en:r[1],cat:r[2],zone:r[3],price:r[4],unit:r[5],w:r[6],sw:r[7],cw:r[8],reo:r[9],
+    coverSet:r[10]||0,life:r[11]||ZONES[r[3]].life,x:0,y:0,m:0,rep:0,can:0}));
+  items.forEach(it=>{if(!it.coverSet){const fresh=it.life<=12;it.coverSet=fresh?+Math.min(it.life*0.75,it.reo*(1.15+r0()*0.5)).toFixed(1):+Math.max(it.reo*1.3,8+r0()*10).toFixed(1);}});
+  Object.entries(byZone).forEach(([z,ids])=>{const Z=ZONES[z],n=ids.length;ids.forEach((id,k)=>{const t=(k+0.5)/n,it=items[id];
+    if(Z.col){it.x=Z.col;it.y=Math.round(104+t*210);}else if(Z.pick.x!=null){it.x=Z.pick.x;it.y=Math.round(Z.pick.y0+t*(Z.pick.y1-Z.pick.y0));}else{it.y=Z.pick.y;it.x=Math.round(Z.pick.x0+t*(Z.pick.x1-Z.pick.x0));}});});
+  return items;
+}
+/* calendar */
+const pad=n=>String(n).padStart(2,"0");
+const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const HOURS={wk:[8,9,10,11,12,13,14,15,16,17,18,19,20],fri:[8,9,10,11,12,13]};
+const hoursFor=dow=>dow===5?HOURS.fri:dow===6?[]:HOURS.wk;
+const CLOSED={"2026-09-13":"Rosh Hashanah","2026-09-21":"Yom Kippur"};
+const SPIKE={"2026-09-10":["Rosh Hashanah eve",1.55],"2026-09-11":["Rosh Hashanah eve",1.7],"2026-09-20":["Yom Kippur eve",1.4],"2026-09-24":["Sukkot eve",1.5],"2026-09-25":["Sukkot eve",1.6],"2026-10-01":["Simchat Torah eve",1.35],"2026-10-02":["Simchat Torah eve",1.45]};
+const WD=[1.05,0.95,0.95,1.0,1.3,0.85,0];
+const HW_WK={8:.5,9:.8,10:1,11:1.1,12:1,13:.9,14:.8,15:.85,16:1,17:1.3,18:1.4,19:1.2,20:.45};
+const HW_FRI={8:1,9:1.4,10:1.5,11:1.3,12:1,13:.3};
+function buildDays(startY,startM,startD,endY,endM,endD){
+  const out=[];const d=new Date(startY,startM,startD,12);const end=new Date(endY,endM,endD,12);let i=0;
+  while(d<=end){const iso=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,dow=d.getDay();
+    out.push({i,iso,dow,mk:iso.slice(0,7),label:`${DOW[dow]} ${d.getDate()} ${MON[d.getMonth()]}`,short:`${d.getDate()} ${MON[d.getMonth()]}`,open:dow!==6&&!CLOSED[iso],event:CLOSED[iso]||(SPIKE[iso]&&SPIKE[iso][0])||""});
+    d.setDate(d.getDate()+1);i++;}
+  return out;
+}
+function poisson(l,r){if(l<=0)return 0;if(l>30)return Math.max(0,Math.round(l+Math.sqrt(l)*(r()+r()+r()-1.5)*2));const L=Math.exp(-l);let k=0,p=1;do{k++;p*=r();}while(p>L);return k-1;}
+/* category trend over the 4 months: weight × (a + b × progress) */
+const CATG={"Frozen":[0.7,0.8],"Butcher":[0.85,0.35],"Soft drinks":[1.3,-0.5],"Salty snacks":[1.12,-0.28],"Dairy & eggs":[0.95,0.15],"Canned & sauces":[0.9,0.2],"Dry goods":[0.88,0.28],"Hot drinks":[0.8,0.4],"Bread":[1,0.05],"Sweets":[1.05,-0.1]};
+const CATSPIKE={"Butcher":1.7,"Fruit & veg":1.25,"Bread":1.2,"Dairy & eggs":1.1,"Soft drinks":1.3,"Frozen":1.2};
+/* status: 0 ok, 1 replaced (accepted substitute), 2 rejected (customer refused substitute), 3 missing (refunded) */
+function genHistory(items,days,cutHour){
+  const r=rng(20261124);const orders=[];let oid=731204;
+  let cum=[],tot=0;
+  const setW=(prog,spike)=>{cum=[];let s=0;items.forEach(it=>{const g=CATG[it.cat];let w=it.w*(g?g[0]+g[1]*prog:1);if(spike&&CATSPIKE[it.cat])w*=CATSPIKE[it.cat];s+=w;cum.push(s);});tot=s;};
+  const pickItem=()=>{const x=r()*tot;let lo=0,hi=cum.length-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]<x)lo=m+1;else hi=m;}return lo;};
+  const N=days.length;
+  days.forEach(day=>{
+    if(!day.open)return;
+    const prog=day.i/(N-1);const base=(1400+100*prog)/25.5;setW(prog,!!SPIKE[day.iso]);
+    const mult=WD[day.dow]*(SPIKE[day.iso]?SPIKE[day.iso][1]:1);
+    const hw=day.dow===5?HW_FRI:HW_WK;const hsum=Object.values(hw).reduce((a,b)=>a+b,0);
+    const shortMult=(1.4-0.4*prog)*0.6;
+    const last=day.i===N-1;
+    for(const h of hoursFor(day.dow)){
+      if(last&&h>cutHour)break;
+      const n=poisson(base*mult*hw[h]/hsum,r);
+      for(let k=0;k<n;k++){
+        const nl=5+Math.floor(r()*r()*13);const seen=new Set();const lines=[];let cancelled=false;
+        let guard=0;while(lines.length<nl&&guard++<60){const id=pickItem();if(seen.has(id))continue;seen.add(id);const it=items[id];
+          const q=it.zone==="P"?1+Math.floor(r()*4):(r()<0.78?1:2);
+          let st=0;const ps=(it.sw/it.w)*shortMult*(SPIKE[day.iso]?1.35:1);
+          if(r()<ps){const u=r();st=u<0.55?1:u<0.8?2:3;const cp=it.cw/(it.sw+it.cw);if(r()<cp*0.42)cancelled=true;}
+          lines.push([id,q,st]);}
+        if(!cancelled&&r()<0.011)cancelled=true;
+        const other=Math.max(4,Math.round(18+(r()-0.5)*28));
+        const prep=Math.round(10+lines.length*0.55+r()*7+(mult>1.3?5:0));
+        orders.push({id:"WLT-"+(oid++),d:day.i,h,l:lines,c:cancelled,o:other,p:prep});
+      }
+    }
+  });
+  return orders;
+}
+/* aggregation over a day range */
+function aggF(H,items,days,f){
+  const dowOk=f.dows&&f.dows.length?new Set(f.dows):null,catOk=f.cats&&f.cats.length?new Set(f.cats):null;
+  const inc=new Set();for(let d=f.from;d<=f.to;d++){const day=days[d];if(!day||!day.open)continue;if(dowOk&&!dowOk.has(day.dow))continue;inc.add(d);}
+  const it=items.map(()=>({u:0,ord:0,rev:0,rp:0,rj:0,ms:0,can:0,sd:new Set(),refund:0}));
+  const T={orders:0,can:0,rev:0,lines:0,rp:0,rj:0,ms:0,refund:0,lost:0,prepSum:0,prepN:0,late:0,shortO:0,shortOcan:0,cleanO:0,cleanOcan:0};
+  const byDay={},catOrd={},vals=[];
+  for(const o of H){if(!inc.has(o.d))continue;
+    const ls=catOk?o.l.filter(l=>catOk.has(items[l[0]].cat)):o.l;if(!ls.length)continue;
+    T.orders++;const pd=byDay[o.d]||(byDay[o.d]={orders:0,rev:0,can:0,h:{},hr:{}});pd.orders++;pd.h[o.h]=(pd.h[o.h]||0)+1;
+    let val=catOk?0:o.o,ref=0,short=false;const seen=new Set();
+    for(const [id,q,st] of ls){const x=it[id];const p=items[id].price*q;x.u+=q;x.ord++;T.lines++;const c=items[id].cat;if(!seen.has(c)){seen.add(c);catOrd[c]=(catOrd[c]||0)+1;}
+      if(st<=1){val+=p;if(!o.c)x.rev+=p;}
+      if(st===1){x.rp++;T.rp++;}else if(st===2){x.rj++;T.rj++;ref+=p;if(!o.c)x.refund+=p;}else if(st===3){x.ms++;T.ms++;ref+=p;if(!o.c)x.refund+=p;}
+      if(st>0){short=true;x.sd.add(o.d);if(o.c)x.can++;}}
+    if(short){T.shortO++;if(o.c)T.shortOcan++;}else{T.cleanO++;if(o.c)T.cleanOcan++;}
+    if(o.c){T.can++;T.lost+=val;pd.can++;}else{T.rev+=val;pd.rev+=val;pd.hr[o.h]=(pd.hr[o.h]||0)+val;T.refund+=ref;T.prepSum+=o.p;T.prepN++;if(o.p>25)T.late++;vals.push(val);}
+  }
+  return {it,T,byDay,catOrd,vals,inc,from:f.from,to:f.to};
+}
+function agg(H,items,days,from,to){return aggF(H,items,days,{from,to});}
+function aggOld(H,items,days,from,to){
+  const n=items.length;const it=items.map(()=>({u:0,ord:0,rev:0,rp:0,rj:0,ms:0,can:0,sd:new Set(),refund:0}));
+  const T={orders:0,can:0,rev:0,lines:0,rp:0,rj:0,ms:0,refund:0,lost:0,prepSum:0,prepN:0,late:0};
+  const byDay={};
+  for(const o of H){if(o.d<from||o.d>to)continue;
+    T.orders++;const pd=byDay[o.d]||(byDay[o.d]={orders:0,rev:0,can:0,h:{}});pd.orders++;pd.h[o.h]=(pd.h[o.h]||0)+1;
+    let val=o.o,ref=0;
+    for(const [id,q,st] of o.l){const x=it[id];const p=items[id].price*q;x.u+=q;x.ord++;T.lines++;
+      if(st<=1){val+=p;if(!o.c)x.rev+=p;}
+      if(st===1){x.rp++;T.rp++;}else if(st===2){x.rj++;T.rj++;ref+=p;if(!o.c)x.refund+=p;}else if(st===3){x.ms++;T.ms++;ref+=p;if(!o.c)x.refund+=p;}
+      if(st>0){x.sd.add(o.d);if(o.c)x.can++;}}
+    if(o.c){T.can++;T.lost+=val;pd.can++;}else{T.rev+=val;pd.rev+=val;T.refund+=ref;T.prepSum+=o.p;T.prepN++;if(o.p>25)T.late++;}
+  }
+  return {it,T,byDay,from,to};
+}
+function hourly(A,days,filter){
+  const res={};const hs=filter==="fri"||filter===5?HOURS.fri:HOURS.wk;
+  hs.forEach(h=>res[h]=[]);
+  for(let d=A.from;d<=A.to;d++){const day=days[d];if(!day||!day.open||(A.inc&&!A.inc.has(d)))continue;
+    const ok=filter==="all"||(filter==="wk"&&day.dow<=4)||(filter==="fri"&&day.dow===5)||(typeof filter==="number"&&day.dow===filter);
+    if(!ok)continue;const pd=A.byDay[d]||{h:{}};
+    for(const h of hoursFor(day.dow)){if(res[h]!==undefined)res[h].push(pd.h[h]||0);}}
+  return hs.map(h=>{const v=res[h];if(!v.length)return{h,avg:0,hi:0,lo:0,n:0};
+    let hi=-1,lo=1e9,sum=0,hiDay="";v.forEach(x=>{sum+=x;if(x>hi)hi=x;if(x<lo)lo=x;});return{h,avg:sum/v.length,hi,lo,n:v.length};});
+}
+function heat(A,days){
+  const g={};for(let dw=0;dw<6;dw++){g[dw]={};hoursFor(dw).forEach(h=>g[dw][h]={s:0,n:0,hi:0});}
+  for(let d=A.from;d<=A.to;d++){const day=days[d];if(!day||!day.open||(A.inc&&!A.inc.has(d)))continue;const pd=A.byDay[d]||{h:{}};
+    for(const h of hoursFor(day.dow)){const c=pd.h[h]||0,cell=g[day.dow][h];cell.s+=c;cell.n++;if(c>cell.hi)cell.hi=c;}}
+  return g;
+}
+return {rng,ZONES,RAW,CATG,buildCatalog,buildDays,genHistory,agg,aggF,hourly,heat,hoursFor,HOURS,DOW,MON,CLOSED,SPIKE,pad};
+})();
+if(typeof module!=="undefined")module.exports=VD;
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const fmt=n=>Math.round(n).toLocaleString("en-US");
+const ils=n=>"₪"+fmt(n);
+const pct=(n,d=1)=>(isFinite(n)?(n*100).toFixed(d):"0")+"%";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const {ZONES}=VD;
+const BASELINE={rev:100000,ord:1200,cancel:0.091,short:0.118,pick:18.4};
+
+/* ---------- state ---------- */
+let ITEMS,DAYS,HIST,SOURCE="example",INV_OVERRIDE=null,CACHE={};
+function loadExample(){ITEMS=VD.buildCatalog();DAYS=VD.buildDays(2026,6,27,2026,10,26);HIST=VD.genHistory(ITEMS,DAYS,99);SOURCE="example";INV_OVERRIDE=null;CACHE={};}
+const L=()=>DAYS.length-1;
+const RANGE={"4m":()=>[0,L()],"30d":()=>[Math.max(0,L()-29),L()],"7d":()=>[Math.max(0,L()-6),L()],"prev30":()=>[Math.max(0,L()-59),Math.max(0,L()-30)],"14d":()=>[Math.max(0,L()-13),L()]};
+function A(p){if(p==="F"){const [f,t]=rangeOf(F.period);return AFx(f,t);}if(!CACHE[p]){const [f,t]=RANGE[p]();CACHE[p]=VD.agg(HIST,ITEMS,DAYS,f,t);}return CACHE[p];}
+const openDays=(f,t)=>{let n=0;for(let d=f;d<=t;d++)if(DAYS[d]&&DAYS[d].open)n++;return n;};
+const monthsIn=p=>{const [f,t]=RANGE[p]();return (t-f+1)/30.4;};
+const aov=p=>{const T=A(p).T;return T.rev/Math.max(1,T.orders-T.can);};
+const decisions=store.get("vwo-decisions",{});
+let pickers=store.get("vwo-pickers",2);
+
+/* ---------- derived item model ---------- */
+let INV=[],PICK={app:0,opt:0,mApp:0,mOpt:0,orders:[]};
+function derive(){
+  const a30=A("30d").it,a4=A("4m").it,prev=A("prev30").it,a14=A("14d").it,a7=A("7d").it,m4=monthsIn("4m");
+  ITEMS.forEach((it,i)=>{
+    const x=a4[i];
+    it.u4=x.u;it.ord4=x.ord;it.short4=x.rp+x.rj+x.ms;it.rp4=x.rp;it.rj4=x.rj;it.ms4=x.ms;it.can4=x.can;it.refund4=x.refund;it.days4=x.sd.size;it.rev4=x.rev;
+    it.m=x.u/m4;it.u30=a30[i].u;it.uPrev=prev[i].u;it.u14=a14[i].u;
+    it.short30=a30[i].rp+a30[i].rj+a30[i].ms;it.ord30=a30[i].ord;it.can30=a30[i].can;
+    it.short7=a7[i].rp+a7[i].rj+a7[i].ms;it.ord7=a7[i].ord;
+  });
+  INV=ITEMS.map(it=>{
+    const wolt=it.u30/30, daily=Math.max(0.05,wolt*3.5);
+    const onHand=INV_OVERRIDE&&INV_OVERRIDE[it.id]!=null?INV_OVERRIDE[it.id]:Math.max(2,Math.round(daily*it.coverSet));
+    const cover=onHand/daily, value=onHand*it.price*0.72;
+    let st="ok";
+    if(it.u14<=1)st="slow";
+    if(cover<it.reo)st="low";
+    else if(it.life<=30&&cover>it.life*0.8)st="markdown";
+    else if(cover>Math.max(21,it.reo*3))st=st==="slow"?"slow":"high";
+    return {it,onHand,daily,wolt,cover,value,st};
+  });
+  /* picking sample: recent orders with >=5 lines */
+  const [f]=RANGE["30d"]();
+  PICK.orders=HIST.filter(o=>o.d>=f&&o.l.length>=5).map(o=>({id:o.id,d:o.d,h:o.h,lines:o.l.map(l=>ITEMS[l[0]])}));
+  let ta=0,tb=0,ma=0,mb=0;PICK.orders.forEach(o=>{const x=pickSec(o.lines),y=pickSec(optimize(o.lines));ta+=x.total;tb+=y.total;ma+=x.meters;mb+=y.meters;});
+  const n=Math.max(1,PICK.orders.length);PICK.app=ta/n/60;PICK.opt=tb/n/60;PICK.mApp=ma/n;PICK.mOpt=mb/n;
+}
+
+/* ---------- routing ---------- */
+const START={x:70,y:352,label:"Wolt packing"},CROSS=[66,332];
+const colOf=p=>{for(const z of Object.values(ZONES))if(z.col&&Math.abs(z.col-p.x)<2)return z.col;return null;};
+const inAisle=(p,c)=>c!=null&&p.y>CROSS[0]+8&&p.y<CROSS[1]-8;
+function dist(a,b){const ca=colOf(a),cb=colOf(b);
+  if((inAisle(a,ca)||inAisle(b,cb))&&!(ca!=null&&ca===cb)){let best=Infinity;for(const c of CROSS)best=Math.min(best,Math.abs(a.y-c)+Math.abs(a.x-b.x)+Math.abs(b.y-c));return best;}
+  return Math.abs(a.x-b.x)+Math.abs(a.y-b.y);}
+function pathPts(a,b){const ca=colOf(a),cb=colOf(b);
+  if((inAisle(a,ca)||inAisle(b,cb))&&!(ca!=null&&ca===cb)){let bc=CROSS[0],bd=Infinity;for(const c of CROSS){const v=Math.abs(a.y-c)+Math.abs(a.x-b.x)+Math.abs(b.y-c);if(v<bd){bd=v;bc=c;}}return [[a.x,bc],[b.x,bc],[b.x,b.y]];}
+  return [[b.x,a.y],[b.x,b.y]];}
+function tourLen(seq){let t=0,p=START;for(const s of seq){t+=dist(p,s);p=s;}return t+dist(p,START);}
+function optimize(list){const rest=list.slice(),seq=[];let p=START;
+  while(rest.length){let bi=0,bd=Infinity;rest.forEach((r,i)=>{const v=dist(p,r);if(v<bd){bd=v;bi=i;}});p=rest.splice(bi,1)[0];seq.push(p);}
+  let imp=true,g=0;while(imp&&g++<30){imp=false;const cur=tourLen(seq);
+    for(let i=0;i<seq.length-1&&!imp;i++)for(let k=i+1;k<seq.length;k++){const c=seq.slice(0,i).concat(seq.slice(i,k+1).reverse(),seq.slice(k+1));if(tourLen(c)<cur-0.5){seq.splice(0,seq.length,...c);imp=true;break;}}}
+  return seq;}
+function pickSec(seq){const m=tourLen(seq)*0.075;const handle=seq.reduce((s,i)=>s+25+((i.zone==="P"||i.zone==="M")?15:0),0);return {total:m+handle,meters:m};}
+
+/* ---------- helpers ---------- */
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,2200);}
+function copy(text,label){const done=()=>toast(label+" copied");
+  const fb=()=>{const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done();}catch(e){toast("Select the text and copy it manually");}ta.remove();};
+  try{navigator.clipboard.writeText(text).then(done,fb);}catch(e){fb();}}
+const csv=rows=>rows.map(r=>r.map(c=>{const s=String(c);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(",")).join("\n");
+const itemCell=i=>`<div class="item"><span class="he">${esc(i.he)}</span><small>${esc(i.en)} · ${esc(i.unit)}</small></div>`;
+const zoneName=z=>ZONES[z]?ZONES[z].name:"Unmapped";
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const charts={};
+function mkChart(id,cfg){if(!window.Chart){const c=$("#"+id);if(c)c.parentElement.innerHTML='<p class="note">The chart library did not load. The tables on this page carry the same numbers.</p>';return;}if(charts[id])charts[id].destroy();charts[id]=new Chart($("#"+id),cfg);}
+const axis=(cb,zero)=>({ticks:{color:css("--muted"),callback:cb,font:{family:"'IBM Plex Mono',ui-monospace,Menlo,monospace",size:10}},grid:{color:css("--line")+"66"},beginAtZero:zero!==false});
+const stPill={low:'<span class="pill p-bad">Stockout risk</span>',markdown:'<span class="pill p-warn">Markdown</span>',high:'<span class="pill p-acc">Overstock</span>',slow:'<span class="pill p-mut">Slow on Wolt</span>',ok:'<span class="pill p-good">OK</span>'};
+const invOf=id=>INV[id];
+const hourLbl=h=>VD.pad(h)+":00";
+
+/* ---------- Command center ---------- */
+let trendMode="rev";
+function renderCommand(){
+  const T=A("30d").T, sr=(T.rp+T.rj+T.ms)/Math.max(1,T.lines), cr=T.can/Math.max(1,T.orders);
+  const k=[
+    {l:"Wolt revenue · 30 days",v:ils(T.rev),d:`<span class="up">+${pct(T.rev/BASELINE.rev-1,0)}</span> vs ₪100K Dec 2025`,p:T.rev/250000},
+    {l:"Orders · 30 days",v:fmt(T.orders),d:`<span class="up">+${pct(T.orders/BASELINE.ord-1,0)}</span> vs 1,200 Dec 2025`,p:T.orders/1500},
+    {l:"Average basket",v:ils(aov("30d")),d:"delivered orders"},
+    {l:"Full-order cancellations",v:pct(cr),d:`<span class="${cr<BASELINE.cancel?"up":"dn"}">${((cr-BASELINE.cancel)*100).toFixed(1)} pts</span> vs Dec 2025`},
+    {l:"Short lines",v:pct(sr),d:`<span class="${sr<BASELINE.short?"up":"dn"}">${((sr-BASELINE.short)*100).toFixed(1)} pts</span> vs Dec 2025`},
+    {l:"Avg pick, planogram",v:PICK.opt.toFixed(1)+" min",d:`vs ${PICK.app.toFixed(1)} min in Wolt app order`},
+    {l:"Open alerts",v:String(ALERTS.filter(a=>a.sev!=="info").length),d:`${ALERTS.filter(a=>a.sev==="crit").length} critical`}
+  ];
+  $("#kpis").innerHTML=k.map(x=>`<div class="kpi"><span class="l">${x.l}</span><span class="v">${x.v}</span><span class="d">${x.d}</span>${x.p!=null?`<div class="bar" title="Progress to monthly target"><i style="width:${Math.min(100,x.p*100)}%"></i></div>`:""}</div>`).join("");
+  $("#cmdTop").innerHTML=ALERTS.slice(0,4).map(alertCard).join("");
+  renderTrend();renderCats();
+}
+function weeks(){const W=[];for(let s=0;s+6<=L();s+=7){const a=VD.agg(HIST,ITEMS,DAYS,s,s+6);W.push({lbl:DAYS[s].short,a});}return W;}
+let WEEKS=null;
+function renderTrend(){
+  WEEKS=WEEKS||weeks();const lbl=WEEKS.map(w=>w.lbl),acc=css("--accent"),mut=css("--muted");
+  let ds,cb;
+  if(trendMode==="rev"){ds=[{label:"Revenue",data:WEEKS.map(w=>Math.round(w.a.T.rev)),borderColor:acc,backgroundColor:acc+"22",fill:true,tension:.3,pointRadius:2},{label:"₪250K / month pace",data:lbl.map(()=>Math.round(250000/30.4*7)),borderColor:mut,borderDash:[5,5],pointRadius:0,borderWidth:1}];cb=v=>"₪"+Math.round(v/1000)+"K";}
+  else if(trendMode==="ord"){ds=[{label:"Orders",data:WEEKS.map(w=>w.a.T.orders),borderColor:acc,backgroundColor:acc+"22",fill:true,tension:.3,pointRadius:2},{label:"1,500 / month pace",data:lbl.map(()=>Math.round(1500/30.4*7)),borderColor:mut,borderDash:[5,5],pointRadius:0,borderWidth:1}];cb=v=>fmt(v);}
+  else {ds=[{label:"Cancellations %",data:WEEKS.map(w=>+(w.a.T.can/w.a.T.orders*100).toFixed(1)),borderColor:css("--bad"),tension:.3,pointRadius:2},{label:"Short lines %",data:WEEKS.map(w=>+((w.a.T.rp+w.a.T.rj+w.a.T.ms)/w.a.T.lines*100).toFixed(1)),borderColor:css("--warn"),tension:.3,pointRadius:2},{label:"Orders over 25 min prep %",data:WEEKS.map(w=>+(w.a.T.late/Math.max(1,w.a.T.prepN)*100).toFixed(1)),borderColor:css("--good"),tension:.3,pointRadius:2}];cb=v=>v+"%";}
+  mkChart("trend",{type:"line",data:{labels:lbl,datasets:ds},options:{maintainAspectRatio:false,animation:false,interaction:{mode:"index",intersect:false},plugins:{legend:{labels:{color:mut,boxWidth:12}}},scales:{x:axis(function(v){return this.getLabelForValue(v);}),y:axis(cb)}}});
+}
+function renderCats(){
+  const a=A("30d").it,c={};
+  ITEMS.forEach((i,k)=>{const x=a[k],r=c[i.cat]||(c[i.cat]={cat:i.cat,u:0,ln:0,sh:0,can:0,ref:0,n:0});r.u+=x.u;r.ln+=x.ord;r.sh+=x.rp+x.rj+x.ms;r.can+=x.can;r.ref+=x.refund;r.n++;});
+  const rows=Object.values(c).sort((x,y)=>(y.can*aov("30d")+y.ref)-(x.can*aov("30d")+x.ref));const mx=Math.max(...rows.map(r=>r.can),1);
+  $("#catTable").innerHTML=`<thead><tr><th>Wolt category</th><th class="r">Items</th><th class="r">Units</th><th class="r">Short lines</th><th class="r">Short rate</th><th>Order cancellations</th><th class="r">Refunds</th><th class="r">Cancelled revenue</th></tr></thead><tbody>`+
+    rows.map(r=>`<tr><td>${esc(r.cat)}</td><td class="r num">${r.n}</td><td class="r num">${fmt(r.u)}</td><td class="r num">${fmt(r.sh)}</td><td class="r num">${pct(r.sh/Math.max(1,r.ln))}</td><td><span class="hb num"><span class="b bad" style="width:${Math.round(r.can/mx*80)}px"></span>${r.can}</span></td><td class="r num">${ils(r.ref)}</td><td class="r num">${ils(r.can*aov("30d"))}</td></tr>`).join("")+"</tbody>";
+}
+
+/* ---------- Sales dashboard ---------- */
+let per="F",topN=10,hrF="all",topSort="u";
+function renderDashboard(){
+  const a=A(per),T=a.T,od=Math.max(1,a.inc.size);
+  const sr=(T.rp+T.rj+T.ms)/Math.max(1,T.lines);
+  const k=[["Orders",fmt(T.orders),`${(T.orders/od).toFixed(1)} per open day`],["Revenue",ils(T.rev),`${ils(T.rev/od)} per open day`],["Average basket",ils(aov(per)),`${(T.lines/T.orders).toFixed(1)} lines per order`],
+    ["Cancelled orders",fmt(T.can),pct(T.can/T.orders)+" of orders"],["Replaced lines",fmt(T.rp),pct(T.rp/T.lines)+" of lines"],["Rejected + missing",fmt(T.rj+T.ms),ils(T.refund)+" refunded"],["Short-line rate",pct(sr),"replaced + rejected + missing"]];
+  $("#dkpis").innerHTML=k.map(x=>`<div class="kpi"><span class="l">${x[0]}</span><span class="v">${x[1]}</span><span class="d">${x[2]}</span></div>`).join("");
+  renderDaily();renderTop();renderHourly();renderCatSales();renderHeat();renderRjRp();renderHigh();
+}
+function renderDaily(){
+  const [f,t]=RANGE[per](),a=A(per),lbl=[],val=[],ev=[];
+  for(let d=f;d<=t;d++){const day=DAYS[d];lbl.push(day.label);val.push(a.inc.has(d)?((a.byDay[d]||{}).orders||0):null);ev.push(day.event);}
+  const acc=css("--accent");
+  mkChart("daily",{type:"line",data:{labels:lbl,datasets:[{label:"Orders",data:val,borderColor:acc,backgroundColor:acc+"22",fill:true,spanGaps:false,tension:.2,pointRadius:lbl.map((_, i)=>ev[i]?4:0),pointBackgroundColor:css("--warn"),borderWidth:1.6}]},
+    options:{maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{callbacks:{afterLabel:c=>ev[c.dataIndex]||""}}},scales:{x:axis(function(v){const s=this.getLabelForValue(v);return s.split(" ").slice(1).join(" ");}),y:axis(v=>v)}}});
+}
+function topRows(){
+  const a=A(per).it,T=A(per).T;
+  return ITEMS.map((it,i)=>({it,x:a[i]})).filter(r=>r.it.zone!=="P"&&r.x.u>0).sort((p,q)=>topSort==="price"?(q.it.price-p.it.price||q.x.u-p.x.u):topSort==="rev"?q.x.rev-p.x.rev:q.x.u-p.x.u).map((r,k)=>({...r,rank:k+1,share:r.x.ord/T.orders,trend:(r.it.u30-r.it.uPrev)/Math.max(1,r.it.uPrev)}));
+}
+function renderTop(){
+  const rows=topRows().slice(0,topN),key=r=>topSort==="price"?r.it.price:topSort==="rev"?r.x.rev:r.x.u,mx=rows[0]?key(rows[0]):1,fm=v=>topSort==="u"?fmt(v):topSort==="price"?"₪"+v.toFixed(2):ils(v);
+  $("#topH").textContent=topSort==="price"?"Highest-priced items ordered":topSort==="rev"?"Top items by revenue":"Most ordered items";
+  $("#topSub").textContent=topSort==="price"?"Ranked by Wolt price, among items ordered in this period":topSort==="rev"?"Ranked by delivered revenue on Wolt":"Ranked by units ordered on Wolt";
+  $("#topTable").innerHTML=`<thead><tr><th>#</th><th>Item</th><th>${topSort==="price"?"Price":topSort==="rev"?"Revenue":"Units"}</th><th class="r">${topSort==="u"?"Revenue":"Units"}</th><th class="r">In % of orders</th><th class="r">30 d vs prior 30 d</th><th class="r">Short rate</th><th>Stock</th></tr></thead><tbody>`+
+    rows.map(r=>`<tr><td class="rk">${r.rank}</td><td>${itemCell(r.it)}</td><td><span class="hb num"><span class="b" style="width:${Math.round(key(r)/mx*70)}px"></span>${fm(key(r))}</span></td><td class="r num">${topSort==="u"?ils(r.x.rev):fmt(r.x.u)}</td><td class="r num">${pct(r.share)}</td><td class="r num ${r.trend>=0?"up":"dn"}">${r.trend>=0?"+":""}${pct(r.trend,0)}</td><td class="r num">${pct((r.x.rp+r.x.rj+r.x.ms)/Math.max(1,r.x.ord))}</td><td>${stPill[invOf(r.it.id).st]}</td></tr>`).join("")+"</tbody>";
+}
+function capacity(){return pickers*60/Math.max(4,PICK.opt);}
+function renderHourly(){
+  const f=hrF==="all"||hrF==="wk"||hrF==="fri"?hrF:+hrF;
+  const H=VD.hourly(A(per),DAYS,f),cap=capacity();
+  const acc=css("--accent"),bad=css("--bad");
+  mkChart("hourly",{type:"bar",data:{labels:H.map(x=>hourLbl(x.h)),datasets:[
+    {type:"bar",label:"Low – high",data:H.map(x=>[x.lo,x.hi]),backgroundColor:acc+"40",borderColor:acc+"90",borderWidth:1,borderSkipped:false,borderRadius:3,barPercentage:.6,order:2},
+    {type:"line",label:"Average",data:H.map(x=>+x.avg.toFixed(1)),borderColor:acc,backgroundColor:acc,pointRadius:4,showLine:true,tension:.3,borderWidth:2,order:1},
+    {type:"line",label:`Capacity (${pickers} pickers)`,data:H.map(()=>+cap.toFixed(1)),borderColor:bad,borderDash:[5,5],pointRadius:0,borderWidth:1.2,order:0}]},
+    options:{maintainAspectRatio:false,animation:false,interaction:{mode:"index",intersect:false},plugins:{legend:{labels:{color:css("--muted"),boxWidth:12}},tooltip:{callbacks:{label:c=>c.datasetIndex===0?`Low ${c.raw[0]} · High ${c.raw[1]}`:`${c.dataset.label}: ${c.formattedValue}`}}},scales:{x:axis(function(v){return this.getLabelForValue(v);}),y:axis(v=>v)}}});
+  $("#capNote").textContent=`Capacity ≈ ${cap.toFixed(1)} orders/hour at ${PICK.opt.toFixed(1)} min per pick`;
+  $("#hrTable").innerHTML=`<thead><tr><th>Hour</th><th class="r">Average</th><th class="r">High</th><th class="r">Low</th><th>Load vs capacity</th></tr></thead><tbody>`+
+    H.map(x=>{const ld=x.hi/cap;return `<tr><td class="num">${hourLbl(x.h)}–${VD.pad(x.h+1)}:00</td><td class="r num">${x.avg.toFixed(1)}</td><td class="r num">${x.hi}</td><td class="r num">${x.lo}</td><td>${x.avg>cap?'<span class="pill p-bad">Average over capacity</span>':ld>1?'<span class="pill p-warn">Peaks over capacity</span>':'<span class="pill p-good">Within capacity</span>'}</td></tr>`;}).join("")+"</tbody>";
+}
+function renderHeat(){
+  const g=VD.heat(A(per),DAYS);let mx=0;Object.values(g).forEach(r=>Object.values(r).forEach(c=>{if(c.n)mx=Math.max(mx,c.s/c.n);}));
+  const hrs=VD.HOURS.wk;let h='<div></div>'+hrs.map(x=>`<div class="hd">${VD.pad(x)}</div>`).join("");
+  for(let dw=0;dw<6;dw++){h+=`<div class="rl">${VD.DOW[dw]}</div>`;
+    hrs.forEach(x=>{const c=g[dw][x];if(!c||!c.n){h+='<div class="c x" title="Closed"></div>';return;}const v=c.s/c.n,o=0.08+0.85*v/mx;
+      h+=`<div class="c" style="background:rgba(var(--heat),${o.toFixed(2)});${o>0.55?"color:var(--surface)":""}" title="${VD.DOW[dw]} ${hourLbl(x)} · average ${v.toFixed(1)} · highest ${c.hi}">${v.toFixed(1)}</div>`;});}
+  $("#heat").innerHTML=h;
+}
+function rjRows(){const a=A(per).it;return ITEMS.map((it,i)=>({it,x:a[i]})).filter(r=>r.x.rj+r.x.ms>0).sort((p,q)=>(q.x.rj+q.x.ms)-(p.x.rj+p.x.ms));}
+function rpRows(){const a=A(per).it;return ITEMS.map((it,i)=>({it,x:a[i]})).filter(r=>r.x.rp>0).sort((p,q)=>q.x.rp-p.x.rp);}
+function renderRjRp(){
+  $("#rjTable").innerHTML=`<thead><tr><th>Item</th><th class="r">Substitute refused</th><th class="r">Missing</th><th class="r">In cancelled orders</th><th class="r">Refunded</th></tr></thead><tbody>`+
+    rjRows().slice(0,20).map(r=>`<tr><td>${itemCell(r.it)}</td><td class="r num">${r.x.rj}</td><td class="r num">${r.x.ms}</td><td class="r num">${r.x.can}</td><td class="r num">${ils(r.x.refund)}</td></tr>`).join("")+"</tbody>";
+  $("#rpTable").innerHTML=`<thead><tr><th>Item</th><th class="r">Replaced</th><th class="r">Substitute accepted</th><th class="r">Days short</th><th class="r">Short rate</th></tr></thead><tbody>`+
+    rpRows().slice(0,20).map(r=>{const acc=r.x.rp/Math.max(1,r.x.rp+r.x.rj);return `<tr><td>${itemCell(r.it)}</td><td class="r num">${r.x.rp}</td><td class="r num ${acc<0.6?"dn":""}">${pct(acc,0)}</td><td class="r num">${r.x.sd.size}</td><td class="r num">${pct((r.x.rp+r.x.rj+r.x.ms)/Math.max(1,r.x.ord))}</td></tr>`;}).join("")+"</tbody>";
+}
+function renderHigh(){
+  const rows=INV.slice().sort((a,b)=>b.cover-a.cover).slice(0,10);
+  $("#hiTable").innerHTML=invHead()+rows.map(invRow).join("")+"</tbody>";
+}
+const invHead=()=>`<thead><tr><th>Item</th><th>Planogram</th><th class="r">On hand</th><th class="r">Sold / day</th><th class="r">Wolt / day</th><th class="r">Days of cover</th><th class="r">Next delivery</th><th class="r">Shelf life</th><th class="r">Stock value</th><th>Status</th></tr></thead><tbody>`;
+const invRow=r=>`<tr><td>${itemCell(r.it)}</td><td>${zoneName(r.it.zone)}</td><td class="r num">${fmt(r.onHand)}</td><td class="r num">${r.daily.toFixed(1)}</td><td class="r num">${r.wolt.toFixed(1)}</td><td class="r num"><b>${r.cover.toFixed(1)}</b></td><td class="r num">${r.it.reo} d</td><td class="r num">${r.it.life>=365?"—":r.it.life+" d"}</td><td class="r num">${ils(r.value)}</td><td>${stPill[r.st]}</td></tr>`;
+
+
+let catMetric="rev",catSel=null;
+function catRows(){
+  const a=A(per),T=a.T,c={};
+  ITEMS.forEach((it,i)=>{const x=a.it[i];if(!x.ord)return;const r=c[it.cat]||(c[it.cat]={cat:it.cat,ord:a.catOrd[it.cat]||0,u:0,rev:0,ln:0,sh:0,n:0,top:null});r.u+=x.u;r.rev+=x.rev;r.ln+=x.ord;r.sh+=x.rp+x.rj+x.ms;r.n++;if(!r.top||x.u>a.it[r.top.id].u)r.top=it;});
+  const tr=Object.values(c).reduce((s,r)=>s+r.rev,0);
+  return Object.values(c).map(r=>({...r,share:r.rev/Math.max(1,tr),reach:r.ord/Math.max(1,T.orders)})).sort((x,y)=>y[catMetric]-x[catMetric]);
+}
+function renderCatSales(){
+  const rows=catRows();if(!catSel||!rows.find(r=>r.cat===catSel))catSel=rows[0]&&rows[0].cat;
+  const acc=css("--accent"),lab={rev:"Revenue",ord:"Orders",u:"Units"}[catMetric];
+  mkChart("catChart",{type:"bar",data:{labels:rows.map(r=>r.cat),datasets:[{label:lab,data:rows.map(r=>Math.round(r[catMetric])),backgroundColor:rows.map(r=>r.cat===catSel?acc:acc+"55"),borderRadius:3,barPercentage:.75}]},
+    options:{indexAxis:"y",maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},onClick:(e,els)=>{if(els.length){catSel=rows[els[0].index].cat;renderCatSales();}},
+      scales:{x:axis(v=>catMetric==="rev"?"₪"+Math.round(v/1000)+"K":fmt(v)),y:{ticks:{color:css("--muted"),font:{size:11}},grid:{display:false}}}}});
+  $("#catSales").innerHTML=`<thead><tr><th>Category</th><th class="r">Orders</th><th class="r">In % of orders</th><th class="r">Units</th><th class="r">Revenue</th><th class="r">Share</th><th class="r">Short rate</th></tr></thead><tbody>`+
+    rows.map(r=>`<tr data-cat="${esc(r.cat)}" style="cursor:pointer${r.cat===catSel?";background:var(--accent-soft)":""}"><td>${esc(r.cat)}</td><td class="r num">${fmt(r.ord)}</td><td class="r num">${pct(r.reach)}</td><td class="r num">${fmt(r.u)}</td><td class="r num">${ils(r.rev)}</td><td class="r num">${pct(r.share)}</td><td class="r num ${r.sh/Math.max(1,r.ln)>=0.08?"dn":""}">${pct(r.sh/Math.max(1,r.ln))}</td></tr>`).join("")+"</tbody>";
+  const sel=$("#catPick");sel.innerHTML=rows.map(r=>`<option${r.cat===catSel?" selected":""}>${esc(r.cat)}</option>`).join("");
+  $("#catName").textContent=catSel;
+  const a=A(per).it,its=ITEMS.map((it,i)=>({it,x:a[i]})).filter(r=>r.it.cat===catSel&&r.x.u>0).sort((p,q)=>catMetric==="rev"?q.x.rev-p.x.rev:q.x.u-p.x.u).slice(0,10);
+  const cr=rows.find(r=>r.cat===catSel)||{rev:1};
+  $("#catTop").innerHTML=`<thead><tr><th>#</th><th>Item</th><th class="r">Units</th><th class="r">Orders</th><th class="r">Revenue</th><th class="r">Share of category</th><th class="r">Price</th><th class="r">Short rate</th><th>Stock</th></tr></thead><tbody>`+
+    its.map((r,k)=>`<tr><td class="rk">${k+1}</td><td>${itemCell(r.it)}</td><td class="r num">${fmt(r.x.u)}</td><td class="r num">${fmt(r.x.ord)}</td><td class="r num">${ils(r.x.rev)}</td><td class="r num">${pct(r.x.rev/Math.max(1,cr.rev))}</td><td class="r num">₪${r.it.price.toFixed(2)}</td><td class="r num">${pct((r.x.rp+r.x.rj+r.x.ms)/Math.max(1,r.x.ord))}</td><td>${stPill[invOf(r.it.id).st]}</td></tr>`).join("")+"</tbody>";
+}
+$("#catMetric").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;catMetric=b.dataset.m;$$("#catMetric button").forEach(x=>x.classList.toggle("on",x===b));renderCatSales();});
+$("#catSales").addEventListener("click",e=>{const tr=e.target.closest("tr[data-cat]");if(tr){catSel=tr.dataset.cat;renderCatSales();}});
+$("#catPick").addEventListener("change",e=>{catSel=e.target.value;renderCatSales();});
+$("#catCopy").addEventListener("click",()=>copy(csv([["category","orders","share_of_orders","units","revenue_ils","share_of_revenue","short_rate"],...catRows().map(r=>[r.cat,r.ord,pct(r.reach),r.u,Math.round(r.rev),pct(r.share),pct(r.sh/Math.max(1,r.ln))])]),"Category sales"));
+/* ---------- Manager alerts ---------- */
+let ALERTS=[];
+const SEV={crit:{c:"var(--bad)",p:"p-bad",t:"Critical"},warn:{c:"var(--warn)",p:"p-warn",t:"Warning"},info:{c:"var(--accent)",p:"p-acc",t:"Info"}};
+function buildAlerts(){
+  const out=[],A30=A("30d").T,A7=A("7d").T,A4=A("4m").T,av=aov("30d");
+  INV.forEach(r=>{const it=r.it;
+    if(r.st==="low")out.push({sev:r.cover<1?"crit":"warn",cat:"Stock",who:"Ops",go:"inventory",money:it.can30*av+it.short30*it.price,
+      t:`Stockout risk: ${it.en}`,he:it.he,p:`${fmt(r.onHand)} on hand covers ${r.cover.toFixed(1)} days; next delivery in ${it.reo} days. ${fmt(it.u30)} units sold on Wolt in 30 days.`,a:r.cover<1?"Order today and mark it low on Wolt until stock arrives.":"Bring the order forward or raise the par level."});
+    if(r.st==="markdown")out.push({sev:"warn",cat:"Expiry & markdown",who:"Owner",go:"inventory",money:r.value,
+      t:`Markdown before expiry: ${it.en}`,he:it.he,p:`${r.cover.toFixed(1)} days of stock against a ${it.life}-day shelf life. ${ils(r.value)} of stock at risk.`,a:"Add 20–30% off in Wolt Deals (מבצעים חמים) for 3 days and pause the next order."});
+    if(r.st==="high")out.push({sev:r.value>800?"warn":"info",cat:"Overstock",who:"Owner",go:"inventory",money:r.value*0.1,
+      t:`Overstock: ${it.en}`,he:it.he,p:`${r.cover.toFixed(0)} days of cover, ${ils(r.value)} tied up in stock.`,a:"Skip the next reorder and feature it in קונים חכם or a bundle on Wolt."});
+    if(r.st==="slow")out.push({sev:"info",cat:"Menu",who:"Owner",go:"inventory",money:0,
+      t:`Not selling on Wolt: ${it.en}`,he:it.he,p:`${it.u14} units on Wolt in 14 days.`,a:"Check the photo and price on Wolt, or hide it to keep the menu clean."});
+    if(it.can30>=3)out.push({sev:"crit",cat:"Deal-breaker",who:"Owner",go:"dealbreakers",money:it.can30*av,
+      t:`Deal-breaker: ${it.en}`,he:it.he,p:`Short in ${it.can30} orders that were then cancelled in the last 30 days (${ils(it.can30*av)} lost).`,a:it.m>=100?"Restock and raise the par level before the 17:00 peak.":"Delist or mark unavailable on Wolt until supply is reliable."});
+    const r7=it.short7/Math.max(1,it.ord7),r4=it.short4/Math.max(1,it.ord4);
+    if(it.short7>=4&&r7>1.6*r4)out.push({sev:"warn",cat:"Replacements",who:"Ops",go:"reorder",money:it.short7*it.price*4,
+      t:`Replacement spike: ${it.en}`,he:it.he,p:`Short in ${pct(r7,0)} of orders this week vs ${pct(r4,0)} over 4 months.`,a:"Check the supplier delivery and the shelf count this morning."});
+  });
+  const cw=A7.can/Math.max(1,A7.orders),c4=A4.can/Math.max(1,A4.orders);
+  if(cw>c4*1.2)out.push({sev:"warn",cat:"Service",who:"Owner",go:"dealbreakers",money:A7.lost,t:"Cancellations up this week",p:`${pct(cw)} of orders cancelled in the last 7 days vs ${pct(c4)} over 4 months.`,a:"Review the deal-breaker list with the morning team."});
+  const late=A30.late/Math.max(1,A30.prepN);
+  if(late>0.1)out.push({sev:late>0.2?"crit":"warn",cat:"Service",who:"Ops",go:"picking",money:0,t:"Orders ready late",p:`${pct(late,0)} of orders in the last 30 days took more than 25 minutes to prepare (average ${(A30.prepSum/Math.max(1,A30.prepN)).toFixed(1)} min).`,a:"Pick with the planogram route and add a picker at the peak hours below."});
+  /* peak capacity from 4-month heat */
+  const g=VD.heat(A("4m"),DAYS),cap=capacity(),over=[];
+  for(let dw=0;dw<6;dw++)VD.hoursFor(dw).forEach(h=>{const c=g[dw][h];if(c&&c.n&&c.hi>cap)over.push({dw,h,hi:c.hi,avg:c.s/c.n});});
+  over.sort((a,b)=>b.hi-a.hi);
+  if(over.length)out.push({sev:over.some(o=>o.avg>cap)?"crit":"warn",cat:"Staffing",who:"Ops",go:"dashboard",money:0,t:`Peak hours above picking capacity (${pickers} pickers)`,
+    p:`Capacity is about ${cap.toFixed(1)} orders/hour. Busiest slots: `+over.slice(0,4).map(o=>`${VD.DOW[o.dw]} ${hourLbl(o.h)} (high ${o.hi}, average ${o.avg.toFixed(1)})`).join(", ")+".",a:"Add a picker for those slots, or prepare scheduled orders before the peak."});
+  /* holidays */
+  const evs=[];for(let d=0;d<=L();d++)if(DAYS[d].event&&DAYS[d].open){const n=(A("4m").byDay[d]||{}).orders||0;evs.push(n);}
+  const normal=A4.orders/Math.max(1,openDays(0,L()));const lift=evs.length?evs.reduce((a,b)=>a+b,0)/evs.length/normal:1;
+  const han=["canola","potato","eggs","onion"].map(k=>INV.find(r=>r.it.en.toLowerCase().includes(k))).filter(Boolean);
+  out.push({sev:"warn",cat:"Holiday prep",who:"Owner",go:"inventory",money:0,t:"Hanukkah starts the evening of Friday 4 December",
+    p:`Holiday eves in this history averaged ${pct(lift-1,0)} more orders than a normal day. Frying staples now cover: `+han.map(r=>`${r.it.en} ${r.cover.toFixed(1)} d`).join(", ")+".",a:"Raise par levels on oil, potatoes, eggs and onions from 1 December, and fill the חנוכה עם סידר category on Wolt."});
+  /* compliance & pricing */
+  ITEMS.filter(i=>i.unit.includes("price-controlled")).forEach(cream=>out.push({sev:"warn",cat:"Price compliance",who:"Owner",go:"inventory",money:0,t:`Price-controlled item: ${cream.en}`,he:cream.he,p:`Listed on Wolt at ₪${cream.price.toFixed(2)} and marked "מחיר מפוקח". Supervised items must not exceed the government maximum price.`,a:"Check the current maximum price whenever it is updated and keep Wolt in line."}));
+  out.push({sev:"info",cat:"Price compliance",who:"Owner",go:"command",money:0,t:"Wolt prices vs in-store and website prices",p:"The store's Wolt page notes that Wolt prices can be higher than in the branch or on the store website.",a:"Check weekly that Wolt deals match the branch flyer, so customers don't see the same deal cheaper elsewhere."});
+  out.push({sev:"info",cat:"Service",who:"Owner",go:"command",money:0,t:"Wolt rating 8.2, below sister branches",p:"On Wolt today the Harbor branch shows 9.0 and the Park branch 9.4.",a:"Short lines drive low ratings: clear the deal-breaker and reorder lists first."});
+  const wk=A7.refund,avgWk=A4.refund/(openDays(0,L())/6);
+  out.push({sev:wk>avgWk*1.2?"warn":"info",cat:"Losses",who:"Owner",go:"inventory",money:wk,t:`Refunds this week ${ils(wk)}`,p:`Average week over 4 months: ${ils(avgWk)}. Refunds cover refused substitutes and missing items.`,a:"See the refund and loss ledger."});
+  const rank={crit:0,warn:1,info:2};
+  ALERTS=out.sort((a,b)=>rank[a.sev]-rank[b.sev]||b.money-a.money);
+  $("#ctAl").textContent=ALERTS.filter(a=>a.sev==="crit").length||"";
+}
+function alertCard(a){return `<div class="rcard"><span class="s" style="background:${SEV[a.sev].c}"></span><div style="min-width:0"><div class="tags"><span class="pill ${SEV[a.sev].p}">${SEV[a.sev].t}</span><span class="pill p-mut">${esc(a.cat)}</span></div><h3>${esc(a.t)}</h3>${a.he?`<div class="he" style="text-align:left;font-size:12.5px;color:var(--muted)">${esc(a.he)}</div>`:""}<p>${esc(a.p)}</p><p class="act"><b>Do:</b> ${esc(a.a)}</p></div><div class="meta"><span>${a.who}</span>${a.money?`<span class="num" style="text-transform:none;letter-spacing:0">${ils(a.money)}</span>`:""}<button class="btn" type="button" data-go="${a.go}">Open</button></div></div>`;}
+let alS="all",alC="all";
+function renderAlerts(){
+  const cats=[...new Set(ALERTS.map(a=>a.cat))];
+  const sel=$("#alCat");if(sel.options.length!==cats.length+1){sel.innerHTML=`<option value="all">All alert types</option>`+cats.map(c=>`<option>${esc(c)}</option>`).join("");sel.value=cats.includes(alC)?alC:"all";}
+  const n=s=>ALERTS.filter(a=>a.sev===s).length;
+  $("#alK").innerHTML=[["Critical",n("crit"),"act today"],["Warning",n("warn"),"act this week"],["Info",n("info"),"for awareness"],["Money at risk",ils(ALERTS.filter(a=>a.sev!=="info").reduce((s,a)=>s+a.money,0)),"sum of critical + warning"]].map(x=>`<div class="kpi"><span class="l">${x[0]}</span><span class="v">${x[1]}</span><span class="d">${x[2]}</span></div>`).join("");
+  const rows=ALERTS.filter(a=>(alS==="all"||a.sev===alS)&&(alC==="all"||a.cat===alC));
+  $("#alList").innerHTML=rows.map(alertCard).join("")||'<p class="note">No alerts match this filter.</p>';
+}
+
+/* ---------- Inventory ---------- */
+let invF="all";
+function renderInventory(){
+  const by=s=>INV.filter(r=>r.st===s);
+  const tot=INV.reduce((s,r)=>s+r.value,0);
+  $("#invK").innerHTML=[["Stock value",ils(tot),`${INV.length} items tracked`],["Stockout risk",by("low").length,"cover below next delivery"],["Markdown",by("markdown").length,ils(by("markdown").reduce((s,r)=>s+r.value,0))+" at risk"],["Overstock",by("high").length,ils(by("high").reduce((s,r)=>s+r.value,0))+" tied up"],["Slow on Wolt",by("slow").length,"≤ 1 unit in 14 days"]].map(x=>`<div class="kpi"><span class="l">${x[0]}</span><span class="v">${x[1]}</span><span class="d">${x[2]}</span></div>`).join("");
+  const order={low:0,markdown:1,high:2,slow:3,ok:4};
+  const rows=INV.filter(r=>invF==="all"||r.st===invF).sort((a,b)=>order[a.st]-order[b.st]||(a.st==="low"?a.cover-b.cover:b.cover-a.cover));
+  $("#invTable").innerHTML=invHead()+rows.map(invRow).join("")+"</tbody>";
+  $("#ctInv").textContent=by("low").length||"";
+  WEEKS=WEEKS||weeks();
+  let tr=0,tm=0,tc=0,tk=0;
+  const md=by("markdown").reduce((s,r)=>s+r.value,0)*0.25/Math.max(1,WEEKS.length);
+  $("#ledger").innerHTML=`<thead><tr><th>Week from</th><th class="r">Orders</th><th class="r">Refused substitutes</th><th class="r">Missing items</th><th class="r">Cancelled orders</th><th class="r">Cancelled revenue</th><th class="r">Refunds</th></tr></thead><tbody>`+
+    WEEKS.slice().reverse().map(w=>{const T=w.a.T;let rj=0,ms=0;w.a.it.forEach((x,i)=>{});tr+=T.refund;tc+=T.lost;tk+=T.can;
+      return `<tr><td>${w.lbl}</td><td class="r num">${fmt(T.orders)}</td><td class="r num">${T.rj}</td><td class="r num">${T.ms}</td><td class="r num">${T.can}</td><td class="r num">${ils(T.lost)}</td><td class="r num">${ils(T.refund)}</td></tr>`;}).join("")+
+    `<tr><td><b>Total</b></td><td></td><td></td><td></td><td class="r num"><b>${tk}</b></td><td class="r num"><b>${ils(tc)}</b></td><td class="r num"><b>${ils(tr)}</b></td></tr></tbody>`;
+}
+
+/* ---------- Deal-breakers ---------- */
+function dbRows(){const av=aov("4m"),m4=monthsIn("4m");
+  return ITEMS.filter(i=>i.can4>0).map(i=>{const rec=i.can4>=6?(i.m>=100?"restock":"delist"):"watch";return {...i,rate:i.can4/Math.max(1,i.ord4),risk:i.can4/m4*av,rec};}).sort((a,b)=>b.risk-a.risk);}
+const recPill=a=>a==="restock"?'<span class="pill p-good">Restock</span>':a==="delist"?'<span class="pill p-bad">Delist</span>':'<span class="pill p-acc">Monitor</span>';
+function renderDb(){
+  const f=$("#dbFilter").value,rows=dbRows().filter(r=>f==="all"||r.rec===f);$("#aovF").textContent=fmt(aov("4m"));
+  $("#dbTable").innerHTML=`<thead><tr><th>Item</th><th>Planogram</th><th class="r">Units / month</th><th class="r">Cancellations (4 mo)</th><th class="r">Deal-breaker rate</th><th class="r">Revenue at risk / month</th><th>Stock now</th><th>Recommended</th><th>Your decision</th></tr></thead><tbody>`+
+    rows.map(r=>{const dsn=decisions[r.id]||"";return `<tr><td>${itemCell(r)}</td><td>${zoneName(r.zone)}</td><td class="r num">${fmt(r.m)}</td><td class="r num">${r.can4}</td><td class="r num">${pct(r.rate)}</td><td class="r num"><b>${ils(r.risk)}</b></td><td>${stPill[invOf(r.id).st]}</td><td>${recPill(r.rec)}</td><td><div class="decide" data-id="${r.id}">${["restock","delist","watch"].map(a=>`<button type="button" class="${a}${dsn===a?" on":""}" data-a="${a}">${a==="watch"?"Monitor":a[0].toUpperCase()+a.slice(1)}</button>`).join("")}</div></td></tr>`;}).join("")+"</tbody>";
+  $("#ctDb").textContent=dbRows().filter(r=>r.rec!=="watch"&&!decisions[r.id]).length||"";
+}
+$("#dbTable").addEventListener("click",e=>{const b=e.target.closest("button[data-a]");if(!b)return;const id=+b.parentElement.dataset.id;
+  if(decisions[id]===b.dataset.a)delete decisions[id];else decisions[id]=b.dataset.a;store.set("vwo-decisions",decisions);renderDb();renderReports();});
+$("#dbFilter").addEventListener("change",renderDb);
+$("#dbCopy").addEventListener("click",()=>copy(csv([["item_he","item_en","units_month","cancellations_4m","dealbreaker_rate","revenue_at_risk_month","recommended","decision"],...dbRows().map(r=>[r.he,r.en,Math.round(r.m),r.can4,pct(r.rate),Math.round(r.risk),r.rec,decisions[r.id]||""])]),"Deal-breakers"));
+
+/* ---------- Reorder ---------- */
+function reRows(){return ITEMS.filter(i=>i.short4>0).map(i=>{const rate=i.short4/Math.max(1,i.ord4);return {...i,rate,nw:Math.max(1,Math.round(i.reo*(1-Math.min(0.8,3*rate))))};}).sort((a,b)=>b.short4-a.short4);}
+function renderRe(){
+  const od=openDays(0,L());
+  $("#reTable").innerHTML=`<thead><tr><th>Item</th><th class="r">Lines (4 mo)</th><th class="r">Replaced</th><th class="r">Rejected</th><th class="r">Missing</th><th class="r">Short rate</th><th class="r">Days short</th><th class="r">Reorder now</th><th class="r">Reorder new</th><th>Status</th></tr></thead><tbody>`+
+    reRows().map(r=>`<tr><td>${itemCell(r)}</td><td class="r num">${fmt(r.ord4)}</td><td class="r num">${r.rp4}</td><td class="r num">${r.rj4}</td><td class="r num">${r.ms4}</td><td class="r num">${pct(r.rate)}</td><td class="r num">${r.days4} / ${od}</td><td class="r num">every ${r.reo} d</td><td class="r num"><b>${r.nw<r.reo?"every "+r.nw+" d":"no change"}</b></td><td>${r.rate>=0.12?'<span class="pill p-bad">Critical</span>':r.rate>=0.06?'<span class="pill p-warn">High</span>':'<span class="pill p-good">OK</span>'}</td></tr>`).join("")+"</tbody>";
+  $("#ctRe").textContent=reRows().filter(r=>r.nw<r.reo).length||"";
+}
+$("#reCopy").addEventListener("click",()=>copy(csv([["item_he","item_en","short_lines_4m","short_rate","reorder_now_days","reorder_new_days"],...reRows().filter(r=>r.nw<r.reo).map(r=>[r.he,r.en,r.short4,pct(r.rate),r.reo,r.nw])]),"Reorder plan"));
+
+/* ---------- Picking ---------- */
+let routeMode="opt";
+function drawPlan(lines){
+  const C={zone:css("--surface"),line:css("--line"),gon:css("--gondola"),mut:css("--muted"),r1:css("--route"),r2:css("--route2"),acc:css("--accent"),s:css("--surface")};
+  let h=`<rect x="0" y="0" width="640" height="400" fill="${css("--surface2")}"/><rect x="8" y="8" width="624" height="378" rx="6" fill="none" stroke="${C.line}" stroke-width="2"/>`;
+  for(const [k,z] of Object.entries(ZONES)){
+    if(z.rect){const [x,y,w,hh]=z.rect,v=hh>w;h+=`<rect x="${x}" y="${y}" width="${w}" height="${hh}" rx="4" fill="${C.zone}" stroke="${C.line}"/><text x="${x+w/2}" y="${y+hh/2}" font-size="10.5" font-weight="600" fill="${C.mut}" text-anchor="middle" dominant-baseline="middle" ${v?`transform="rotate(-90 ${x+w/2} ${y+hh/2})"`:""}>${z.name}</text>`;}
+    else{[z.col-26,z.col+14].forEach(gx=>h+=`<rect x="${gx}" y="90" width="12" height="232" rx="2" fill="${C.gon}"/>`);h+=`<text x="${z.col}" y="86" font-size="9.5" font-weight="600" fill="${C.mut}" text-anchor="middle">${k}</text>`;}
+  }
+  h+=`<text x="330" y="368" font-size="10" fill="${C.mut}" text-anchor="middle">Checkouts · entrance from Main St.</text><rect x="${START.x-30}" y="${START.y-12}" width="60" height="24" rx="4" fill="${C.acc}"/><text x="${START.x}" y="${START.y+1}" font-size="9.5" font-weight="600" fill="${C.s}" text-anchor="middle" dominant-baseline="middle">${START.label}</text>`;
+  const rd=seq=>{let p=START,s=`M${p.x} ${p.y}`;for(const n of seq.concat([START])){for(const [x,y] of pathPts(p,n))s+=` L${x} ${y}`;p=n;}return s;};
+  const opt=optimize(lines);
+  if(routeMode!=="opt")h+=`<path d="${rd(lines)}" fill="none" stroke="${C.r2}" stroke-width="2" stroke-opacity=".75" ${routeMode==="both"?'stroke-dasharray="5 4"':""} stroke-linejoin="round"/>`;
+  if(routeMode!=="app")h+=`<path d="${rd(opt)}" fill="none" stroke="${C.r1}" stroke-width="2.6" stroke-linejoin="round"/>`;
+  const seq=routeMode==="app"?lines:opt;
+  seq.forEach((n,i)=>{h+=`<circle cx="${n.x}" cy="${n.y}" r="8" fill="${routeMode==="app"?C.r2:C.r1}"/><text x="${n.x}" y="${n.y+0.5}" font-size="8.5" font-weight="700" fill="${C.s}" text-anchor="middle" dominant-baseline="middle" font-family="IBM Plex Mono">${i+1}</text>`;});
+  $("#plan").innerHTML=h;return opt;
+}
+function fillOrders(){const big=PICK.orders.slice(-60).filter(o=>o.lines.length>=8).slice(-12);const list=big.length?big:PICK.orders.slice(-12);
+  $("#orderSel").innerHTML=list.map(o=>`<option value="${o.id}">${o.id} · ${DAYS[o.d].short} ${hourLbl(o.h)} · ${o.lines.length} lines</option>`).join("");}
+function renderPick(){
+  const o=PICK.orders.find(x=>x.id===$("#orderSel").value)||PICK.orders[PICK.orders.length-1];if(!o)return;
+  const opt=drawPlan(o.lines),a=pickSec(o.lines),b=pickSec(opt);
+  $("#pickStats").innerHTML=`<div><div class="l">Wolt app order</div><div class="v">${(a.total/60).toFixed(1)} min</div><div class="note num">${fmt(a.meters)} m walked</div></div><div><div class="l">Planogram route</div><div class="v">${(b.total/60).toFixed(1)} min</div><div class="note num">${fmt(b.meters)} m walked</div></div><div><div class="l">Saved on this order</div><div class="v up">${pct(1-b.total/a.total,0)}</div><div class="note num">${fmt(a.meters-b.meters)} m less · ${o.lines.length} lines</div></div>`;
+  const seq=routeMode==="app"?o.lines:opt;
+  $("#pickList").innerHTML=seq.map((n,i)=>`<div><span class="n">${i+1}</span><span class="item" style="min-width:0"><span class="he">${esc(n.he)}</span><small>${esc(n.en)}</small></span><span class="z">${zoneName(n.zone)}</span></div>`).join("");
+  const n30=A("30d").T.orders;
+  $("#pickAvg").innerHTML=`<div><div class="l">Wolt app order</div><div class="v">${PICK.app.toFixed(1)} min · ${fmt(PICK.mApp)} m</div></div><div><div class="l">Planogram route</div><div class="v">${PICK.opt.toFixed(1)} min · ${fmt(PICK.mOpt)} m</div></div><div><div class="l">Picker hours freed per month</div><div class="v up">${fmt((PICK.app-PICK.opt)*n30/60)} h</div></div>`;
+}
+$("#orderSel").addEventListener("change",renderPick);
+$("#routeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;routeMode=b.dataset.r;$$("#routeSeg button").forEach(x=>x.classList.toggle("on",x===b));renderPick();});
+
+/* ---------- Reports ---------- */
+let aud="all";
+function renderReports(){
+  const acts=ALERTS.filter(a=>a.sev!=="info").map(a=>{if(a.cat==="Deal-breaker"){const it=ITEMS.find(i=>a.he===i.he);const d=it&&decisions[it.id];if(d==="delist")return {...a,a:"Owner decided: delist on Wolt."};if(d==="restock")return {...a,a:"Owner decided: restock and raise par."};if(d==="watch")return {...a,sev:"info"};}return a;}).filter(a=>a.sev!=="info").sort((a,b)=>(a.sev===b.sev?0:a.sev==="crit"?-1:1)||b.money-a.money);
+  $("#repList").innerHTML=acts.filter(a=>aud==="all"||a.who===aud).map(alertCard).join("")||'<p class="note">Nothing open for this team.</p>';
+  const T=A("30d").T,y=A("7d").T;
+  const own=acts.filter(a=>a.who==="Owner").slice(0,6),ops=acts.filter(a=>a.who==="Ops").slice(0,8);
+  $("#msg").textContent=`Cedar Market Downtown · Wolt daily · ${DAYS[L()].label} 2026\n\nLast 30 days: ${fmt(T.orders)} orders · ${ils(T.rev)} · basket ${ils(aov("30d"))}\nLast 7 days: ${fmt(y.orders)} orders · cancelled ${pct(y.can/y.orders)} · short lines ${pct((y.rp+y.rj+y.ms)/y.lines)} · refunds ${ils(y.refund)}\n\nOWNER\n`+own.map((a,i)=>`${i+1}. ${a.t}${a.he?" ("+a.he+")":""} — ${a.a}`).join("\n")+`\n\nOPERATIONS\n`+ops.map((a,i)=>`${i+1}. ${a.t}${a.he?" ("+a.he+")":""} — ${a.a}`).join("\n");
+  const fr=ITEMS.filter(i=>i.short30>0).sort((a,b)=>b.short30-a.short30).slice(0,10);
+  $("#freqTable").innerHTML=`<thead><tr><th>Item</th><th class="r">Short / week</th><th class="r">Cancels / week</th><th class="r">Days between</th></tr></thead><tbody>`+fr.map(i=>{const w=i.short30/4.3;return `<tr><td>${itemCell(i)}</td><td class="r num">${w.toFixed(1)}</td><td class="r num">${(i.can30/4.3).toFixed(1)}</td><td class="r num">${(7/Math.max(w,0.01)).toFixed(1)}</td></tr>`;}).join("")+"</tbody>";
+}
+$("#audSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;aud=b.dataset.a;$$("#audSeg button").forEach(x=>x.classList.toggle("on",x===b));renderReports();});
+$("#msgCopy").addEventListener("click",()=>copy($("#msg").textContent,"Daily message"));
+
+/* ---------- Simulator ---------- */
+const SIM_IN=[["orders","Orders per month",1200,1],["aov","Average basket ₪",83,0.5],["cancel","Full-order cancellation rate %",9.1,0.1],["lines","Lines per order",14,1],["repl","Short lines %",11.8,0.1],["refuse","Short lines refunded (refused or missing) %",45,1],["itemp","Average line price ₪",12,0.5],["busy","Orders lost to busy mode / month",160,5],["pick","Average pick minutes",18.4,0.1]];
+const SIM_SL=[["db","Deal-breakers restocked or delisted",80],["re","Reorder plan in place",75],["rt","Orders picked with planogram route",90]];
+const simV=store.get("vwo-sim",{});
+function renderSimInputs(){
+  $("#simIn").innerHTML=SIM_IN.map(([k,l,dv,st])=>`<div class="field"><label for="si-${k}">${l}</label><input id="si-${k}" type="number" step="${st}" value="${simV[k]??dv}"></div>`).join("");
+  $("#simSl").innerHTML=SIM_SL.map(([k,l,dv])=>`<div class="slider"><label for="ss-${k}">${l}<span class="num" id="sv-${k}">${simV[k]??dv}%</span></label><input id="ss-${k}" type="range" min="0" max="100" value="${simV[k]??dv}"></div>`).join("");}
+function simulate(){
+  const g=k=>parseFloat(($("#si-"+k)||$("#ss-"+k)).value)||0;
+  SIM_IN.concat(SIM_SL).forEach(([k])=>simV[k]=g(k));store.set("vwo-sim",simV);SIM_SL.forEach(([k])=>$("#sv-"+k).textContent=g(k)+"%");
+  const o=g("orders"),av=g("aov"),cr=g("cancel")/100,ln=g("lines"),rr=g("repl")/100,rf=g("refuse")/100,ip=g("itemp"),busy=g("busy"),pk=g("pick"),db=g("db")/100,re=g("re")/100,rt=g("rt")/100;
+  const rec=o/(1-cr)*cr*0.7*db,saved=o*ln*rr*0.65*re,lineRev=saved*rf*ip,ps=0.31*rt,np=pk*(1-ps),capO=busy*Math.min(1,ps/0.31),no=o+rec+capO,nr=no*av+lineRev,base=o*av;
+  $("#simOut").innerHTML=[["Orders",o,no,1500,fmt],["Revenue",base,nr,250000,ils]].map(([l,b,n,t,f])=>`<div class="trow"><span>${l}</span><div class="track" title="Target ${f(t)}"><i style="width:${Math.min(100,n/t*100)}%"></i><b style="left:${Math.min(99.5,b/t*100)}%"></b></div><span class="num" style="text-align:right">${f(n)} <small class="note">/ ${f(t)}</small></span></div>`).join("");
+  $("#simTable").innerHTML=`<thead><tr><th>Lever</th><th class="r">Volume / month</th><th class="r">Revenue / month</th></tr></thead><tbody>`+[["Orders recovered from fixed deal-breakers",fmt(rec),ils(rec*av)],["Short lines avoided",fmt(saved),ils(lineRev)],["Orders accepted instead of busy mode",fmt(capO),ils(capO*av)],["Pick time",`${pk.toFixed(1)} → ${np.toFixed(1)} min`,"—"],["Average basket",ils(av),ils(nr/no)]].map(r=>`<tr><td>${r[0]}</td><td class="r num">${r[1]}</td><td class="r num">${r[2]}</td></tr>`).join("")+"</tbody>";
+  const gap=250000-nr;
+  $("#simNote").textContent=gap>0?`These three levers recover ${ils(nr-base)} a month. The other ${ils(gap)} to reach ₪250K comes from bigger baskets (${ils(250000/Math.max(no,1))} average at this order count): Wolt deals, the Most ordered shelf, and keeping high-value items like fresh meat in stock. The last 30 days in this tool run at ${ils(aov("30d"))}.`:`At these settings the month passes ₪250K by ${ils(-gap)}.`;
+}
+document.addEventListener("input",e=>{if(e.target.closest("#simIn,#simSl"))simulate();});
+
+/* ---------- Import ---------- */
+function parseCSV(t){const rows=[];let r=[],f="",q=false;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}else if(c==='"')q=true;else if(c===","){r.push(f);f="";}else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n")i++;r.push(f);rows.push(r);r=[];f="";}else f+=c;}if(f!==""||r.length){r.push(f);rows.push(r);}return rows.filter(x=>x.some(y=>y.trim()!==""));}
+const norm=s=>String(s).replace(/[\s\-–|״"׳'·,.()]/g,"").toLowerCase();
+function matcher(){const idx={};ITEMS.forEach(b=>{idx[norm(b.he)]=b.id;idx[norm(b.en)]=b.id;});const keys=Object.keys(idx);
+  return name=>{const n=norm(name);if(idx[n]!=null)return idx[n];const k=keys.find(k=>k.length>3&&(n.includes(k)||k.includes(n)));return k?idx[k]:null;};}
+function importCSV(text){
+  const rows=parseCSV(text);if(rows.length<2){$("#impMsg").textContent="The file has no data rows.";return;}
+  const h=rows[0].map(x=>x.trim().toLowerCase().replace(/^﻿/,"")),ix=k=>h.indexOf(k),match=matcher(),un=new Set();
+  if(ix("on_hand")>=0&&ix("item_name")>=0){INV_OVERRIDE=INV_OVERRIDE||{};let n=0;rows.slice(1).forEach(r=>{const id=match(r[ix("item_name")]||"");if(id==null){un.add(r[ix("item_name")]);return;}INV_OVERRIDE[id]=parseFloat(r[ix("on_hand")])||0;n++;});
+    $("#impMsg").textContent=`Stock loaded for ${n} items.`+(un.size?` Not matched: ${[...un].slice(0,6).join(", ")}`:"");refresh();toast("Stock imported");return;}
+  const io=ix("order_id"),ii=ix("item_name"),is=ix("line_status"),iq=ix("qty"),it=ix("created_at");
+  if(io<0||ii<0||is<0){$("#impMsg").textContent="Missing columns. The orders file needs order_id, item_name and line_status (created_at for hours).";return;}
+  const parsed=[];let minD=null,maxD=null;
+  rows.slice(1).forEach(r=>{let d=null;if(it>=0&&r[it]){const s=r[it].trim().replace(" ","T");const dt=new Date(s);if(!isNaN(dt))d=dt;}parsed.push({r,d});if(d){if(!minD||d<minD)minD=d;if(!maxD||d>maxD)maxD=d;}});
+  if(!minD){minD=new Date(2026,10,24,12);maxD=minD;}
+  DAYS=VD.buildDays(minD.getFullYear(),minD.getMonth(),minD.getDate(),maxD.getFullYear(),maxD.getMonth(),maxD.getDate());
+  const dayIdx=dt=>Math.round((new Date(dt.getFullYear(),dt.getMonth(),dt.getDate(),12)-new Date(minD.getFullYear(),minD.getMonth(),minD.getDate(),12))/864e5);
+  const ST={ok:0,replaced:1,rejected:2,missing:3,order_cancelled:4},O={};
+  parsed.forEach(({r,d})=>{const id=match(r[ii]||"");const oid=r[io];const o=O[oid]||(O[oid]={id:oid,d:d?dayIdx(d):0,h:d?d.getHours():12,l:[],c:false,o:0,p:15});
+    const st=ST[(r[is]||"").trim().toLowerCase()];if(st===4)o.c=true;if(id==null){un.add(r[ii]);return;}o.l.push([id,parseFloat(r[iq])||1,st===4||st==null?0:st]);});
+  HIST=Object.values(O).filter(o=>o.l.length);CACHE={};WEEKS=null;SOURCE="import";
+  DAYS.forEach(d=>{if(!d.open&&HIST.some(o=>o.d===d.i))d.open=true;});
+  $("#srcChip").innerHTML=`Data <b>Imported · ${fmt(HIST.length)} orders</b>`;$("#banner").hidden=true;
+  $("#impMsg").textContent=`Imported ${fmt(rows.length-1)} lines from ${fmt(HIST.length)} orders, ${DAYS[0].label} – ${DAYS[L()].label}.`+(it<0?" No created_at column, so hourly charts are not meaningful.":"")+(un.size?` Not matched to the catalog: ${[...un].slice(0,8).join(", ")}${un.size>8?"…":""}`:" Every item matched.");
+  refresh();toast("Orders imported");
+}
+function readFile(f){if(!f)return;const r=new FileReader();r.onload=()=>importCSV(String(r.result));r.readAsText(f);}
+$("#file").addEventListener("change",e=>readFile(e.target.files[0]));
+const drop=$("#drop");["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over");}));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over");}));
+drop.addEventListener("drop",e=>readFile(e.dataTransfer.files[0]));
+$("#tplCopy").addEventListener("click",()=>copy("order_id,created_at,item_name,line_status,qty,price\nWLT-1001,2026-11-24 18:05,תבנית ביצים 12 יחידות | M,missing,1,13.4\nWLT-1001,2026-11-24 18:05,בשר טחון טרי,order_cancelled,1,32.45\nWLT-1002,2026-11-24 18:12,יטבתה חלב מועשר 3% 1 ליטר,replaced,1,9.9\nWLT-1002,2026-11-24 18:12,פלפל אדום יחידה,ok,3,3.9","Orders template"));
+$("#tplInv").addEventListener("click",()=>copy("item_name,on_hand\nתבנית ביצים 12 יחידות | M,24\nשמן זית כתית מעולה סידר,180","Stock template"));
+$("#resetData").addEventListener("click",()=>{loadExample();WEEKS=null;$("#srcChip").innerHTML="Data <b>Example set</b>";$("#banner").hidden=false;$("#impMsg").textContent="Back on example data.";refresh();});
+function renderCatalog(){$("#catCount").textContent=ITEMS.length;$("#catalog").innerHTML=`<thead><tr><th>Item</th><th>Wolt category</th><th>Planogram</th><th class="r">Price</th></tr></thead><tbody>`+ITEMS.map(i=>`<tr><td>${itemCell(i)}</td><td>${esc(i.cat)}</td><td>${zoneName(i.zone)}</td><td class="r num">₪${i.price.toFixed(2)}</td></tr>`).join("")+"</tbody>";}
+
+/* ---------- global filters ---------- */
+const F=Object.assign({period:"all",dows:[],cats:[]},store.get("vwo-filter",{}));
+const DEPTS=[["Butcher",["Butcher"]],["Dairy & eggs",["Dairy & eggs"]],["Fruit & veg",["Fruit & veg"]],["Frozen",["Frozen"]],["Soft drinks",["Soft drinks"]],["Bread",["Bread"]],["Salty snacks",["Salty snacks"]],["Dry & canned",["Dry goods","Canned & sauces"]]];
+const DEPT_NAMES=DEPTS.map(d=>d[0]).concat(["Other grocery & home"]);
+const deptOf=cat=>{const i=DEPTS.findIndex(d=>d[1].includes(cat));return i<0?8:i;};
+const deptColor=i=>css("--c"+(i+1));
+const MONTHNAME=k=>{const [y,m]=k.split("-");return VD.MON[+m-1]+" "+y;};
+const monthKeys=()=>[...new Set(DAYS.map(d=>d.mk))];
+function monthRange(k){let f=-1,t=-1;DAYS.forEach(d=>{if(d.mk===k){if(f<0)f=d.i;t=d.i;}});return [f,t];}
+function monthFull(k){const [f,t]=monthRange(k);if(f<0)return false;const [y,m]=k.split("-").map(Number);return DAYS[f].iso.endsWith("-01")&&+DAYS[t].iso.slice(8)===new Date(y,m,0).getDate();}
+function monthTag(k){return monthFull(k)?"":k===DAYS[L()].mk?" (to date)":" (partial)";}
+function weekStarts(){const s=[];for(let d=0;d<=L();d++)if(d===0||DAYS[d].dow===0)s.push(d);return s;}
+function weekRange(s){const n=weekStarts().find(x=>x>s);return [s,n!=null?n-1:L()];}
+function weekTag(s){const [a,b]=weekRange(s);return b-a<6?(b===L()?" (to date)":" (partial)"):"";}
+function rangeOf(v){if(v==="all"||!v)return [0,L()];if(v==="30d"||v==="7d")return RANGE[v]();if(v.startsWith("m:")){const r=monthRange(v.slice(2));return r[0]<0?[0,L()]:r;}if(v.startsWith("w:"))return weekRange(+v.slice(2));return [0,L()];}
+RANGE.F=()=>rangeOf(F.period);
+function AF(f,t,dows,cats){f=Math.max(0,f);t=Math.min(L(),t);const k="F/"+f+"/"+t+"/"+(dows||[]).join(".")+"/"+(cats||[]).join("|");if(!CACHE[k])CACHE[k]=VD.aggF(HIST,ITEMS,DAYS,{from:f,to:Math.max(f,t),dows,cats});return CACHE[k];}
+const AFx=(f,t)=>AF(f,t,F.dows,F.cats);
+const perMonth=(v,f,t)=>v/Math.max(1,t-f+1)*30.4;
+const sgn=v=>(v>=0?"+":"−")+"";
+const dPct=(a,b)=>b?(a-b)/b:0;
+const fmtD=(v,kind)=>kind==="pct"?(v>=0?"+":"−")+Math.abs(v*100).toFixed(1)+" pts":kind==="ils"?(v>=0?"+":"−")+ils(Math.abs(v)):kind==="dec"?(v>=0?"+":"−")+Math.abs(v).toFixed(1):(v>=0?"+":"−")+fmt(Math.abs(v));
+const arrow=(v,good)=>{if(Math.abs(v)<1e-9)return '<span class="delta" style="color:var(--muted)">';const ok=good?v>0:v<0;return `<span class="delta ${ok?"up":"dn"}">${v>0?"▲":"▼"} `;};
+function periodOptions(withQuick){
+  const opt=(v,l)=>`<option value="${v}">${esc(l)}</option>`;
+  return (withQuick?`<optgroup label="Quick">${opt("all","All history · "+DAYS[0].short+" – "+DAYS[L()].short)}${opt("30d","Last 30 days")}${opt("7d","Last 7 days")}</optgroup>`:"")+
+    `<optgroup label="Months">${monthKeys().slice().reverse().map(k=>opt("m:"+k,MONTHNAME(k)+monthTag(k))).join("")}</optgroup>`+
+    `<optgroup label="Weeks (Sun–Sat)">${weekStarts().slice().reverse().map(s=>{const [a,b]=weekRange(s);return opt("w:"+s,`Week ${DAYS[a].short} – ${DAYS[b].short}`+weekTag(s));}).join("")}</optgroup>`;
+}
+function buildFilterUI(){
+  $("#fPeriod").innerHTML=periodOptions(true);
+  if(![...$("#fPeriod").options].some(o=>o.value===F.period))F.period="all";
+  $("#fPeriod").value=F.period;
+  $("#fDays").innerHTML=[0,1,2,3,4,5].map(d=>`<button type="button" data-d="${d}" aria-pressed="false">${VD.DOW[d]}</button>`).join("");
+  const cats=[...new Set(ITEMS.map(i=>i.cat))].sort();F.cats=F.cats.filter(c=>cats.includes(c));
+  $("#fCats").innerHTML=cats.map((c,i)=>`<label class="ck" for="fc-${i}"><input type="checkbox" id="fc-${i}" value="${esc(c)}"${F.cats.includes(c)?" checked":""}>${esc(c)}</label>`).join("");
+  const po=periodOptions(false);$("#cmpA").innerHTML=po;$("#cmpB").innerHTML=po;
+  const ms=monthKeys();if(ms.length>1){$("#cmpA").value="m:"+ms[ms.length-1];$("#cmpB").value="m:"+ms[ms.length-2];}
+  filterSummary();
+}
+function filterSummary(){
+  $("#fCatSum").textContent=F.cats.length?(F.cats.length<=2?F.cats.join(", "):F.cats.length+" categories"):"All categories";
+  $$("#fDays button").forEach(b=>b.setAttribute("aria-pressed",String(F.dows.includes(+b.dataset.d))));
+  const [f,t]=rangeOf(F.period),a=AFx(f,t);
+  $("#fNote").textContent=`Showing ${DAYS[f].label} – ${DAYS[t].label} · ${a.inc.size} open days`+(F.dows.length?` · ${F.dows.map(d=>VD.DOW[d]).join(", ")} only`:"")+(F.cats.length?" · revenue and lines from the selected categories only":"");
+}
+function onFilter(){store.set("vwo-filter",F);filterSummary();renderView(cur);}
+$("#fPeriod").addEventListener("change",e=>{F.period=e.target.value;onFilter();});
+$("#fDays").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const d=+b.dataset.d;F.dows=F.dows.includes(d)?F.dows.filter(x=>x!==d):F.dows.concat(d).sort();if(F.dows.length===6)F.dows=[];onFilter();});
+$("#fCats").addEventListener("change",()=>{F.cats=$$("#fCats input:checked").map(x=>x.value);if(F.cats.length===$$("#fCats input").length)F.cats=[];onFilter();});
+$("#fCatAll").addEventListener("click",()=>{$$("#fCats input").forEach(x=>x.checked=false);F.cats=[];onFilter();});
+$("#fCatNone").addEventListener("click",()=>{$$("#fCats input").forEach(x=>x.checked=false);F.cats=[];onFilter();});
+$("#fReset").addEventListener("click",()=>{F.period="all";F.dows=[];F.cats=[];$("#fPeriod").value="all";$$("#fCats input").forEach(x=>x.checked=false);onFilter();});
+document.addEventListener("click",e=>{const dd=$("#fCatDD");if(dd.open&&!dd.contains(e.target))dd.open=false;});
+
+/* ---------- shared analytics ---------- */
+function monthBuckets(f,t){return monthKeys().map(k=>{let [a,b]=monthRange(k);a=Math.max(a,f);b=Math.min(b,t);if(a>b)return null;const x=AFx(a,b);return x.inc.size?{k,label:VD.MON[+k.slice(5)-1]+monthTag(k),full:monthFull(k)&&a===monthRange(k)[0]&&b===monthRange(k)[1],from:a,to:b,a:x}:null;}).filter(Boolean);}
+function weekBuckets(f,t){return weekStarts().map(s=>{let [a,b]=weekRange(s);a=Math.max(a,f);b=Math.min(b,t);if(a>b)return null;const x=AFx(a,b);return x.inc.size?{label:DAYS[a].short,full:b-a===6,from:a,to:b,a:x}:null;}).filter(Boolean);}
+function comparePair(f,t){const m=monthBuckets(f,t).filter(x=>x.full);if(m.length>=2)return {p0:m[0],p1:m[m.length-1],unit:"month",l0:MONTHNAME(m[0].k),l1:MONTHNAME(m[m.length-1].k)};
+  const w=weekBuckets(f,t).filter(x=>x.full);if(w.length>=2)return {p0:w[0],p1:w[w.length-1],unit:"week",l0:"week of "+w[0].label,l1:"week of "+w[w.length-1].label};return null;}
+const pdRev=a=>a.T.rev/Math.max(1,a.inc.size);
+function deptRev(a){const v=new Array(9).fill(0);ITEMS.forEach((it,i)=>{v[deptOf(it.cat)]+=a.it[i].rev;});return v;}
+function catStats(a){const c={};ITEMS.forEach((it,i)=>{const x=a.it[i];if(!x.ord)return;const r=c[it.cat]||(c[it.cat]={cat:it.cat,rev:0,u:0,ln:0,sh:0,can:0,ref:0});r.rev+=x.rev;r.u+=x.u;r.ln+=x.ord;r.sh+=x.rp+x.rj+x.ms;r.can+=x.can;r.ref+=x.refund;});return c;}
+function spark(vals,w=96,h=26){if(vals.length<2)return "";const mx=Math.max(...vals),mn=Math.min(...vals),rg=mx-mn||1;const pts=vals.map((v,i)=>[(i/(vals.length-1)*(w-6)+3),(h-4-(v-mn)/rg*(h-8))]);const last=pts[pts.length-1];
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ")}" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/><circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="2.6" fill="var(--accent)"/></svg>`;}
+const SEASONAL={"Soft drinks":"likely seasonal: summer drinks fade as the weather cools","Salty snacks":"likely seasonal: snack demand drops when the school holidays end","Hot drinks":"likely seasonal: hot drinks pick up as winter starts","Dry goods":"rice and staples rise with autumn home cooking"};
+function median(a){if(!a.length)return 0;const s=a.slice().sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;}
+function projectMonth(){const ld=DAYS[L()],dt=new Date(ld.iso+"T12:00:00"),y=dt.getFullYear(),m=dt.getMonth(),end=new Date(y,m+1,0).getDate();
+  const w=AFx(L()-27,L()),s=[0,0,0,0,0,0,0],n=[0,0,0,0,0,0,0];w.inc.forEach(d=>{s[DAYS[d].dow]+=(w.byDay[d]||{rev:0}).rev;n[DAYS[d].dow]++;});
+  let add=0,days=0;for(let dd=dt.getDate()+1;dd<=end;dd++){const dow=new Date(y,m,dd).getDay();if(dow===6)continue;if(F.dows.length&&!F.dows.includes(dow))continue;if(n[dow]){add+=s[dow]/n[dow];days++;}}
+  const [mf]=monthRange(ld.mk),mtd=AFx(mf,L());return {mtd,add,days,total:mtd.T.rev+add,month:VD.MON[m]};}
+function axisCfg(cb){return axis(cb);}
+const legendCfg=()=>({labels:{color:css("--muted"),boxWidth:12,boxHeight:12,font:{family:"IBM Plex Sans"}}});
+
+/* ---------- Executive briefing ---------- */
+let compMode="abs";
+function renderInsights(){
+  const [f,t]=rangeOf(F.period),a=AFx(f,t),T=a.T,od=Math.max(1,a.inc.size),catF=F.cats.length>0;
+  const l30=AFx(L()-29,L()),pr=projectMonth();
+  const cmk=DAYS[L()].mk,ms=monthKeys(),pmk=ms[ms.indexOf(cmk)-1];
+  const dm=+DAYS[L()].iso.slice(8);let pm=null;if(pmk){const [pf,pt]=monthRange(pmk);pm=AFx(pf,Math.min(pt,pf+dm-1));}
+  const mom=pm?dPct(pr.mtd.T.rev,pm.T.rev):0;
+  const cp=comparePair(f,t);
+  /* --- chapter 1: composition --- */
+  const months=monthBuckets(f,t),dv=months.map(m=>deptRev(m.a));
+  const tot=deptRev(a),totSum=tot.reduce((x,y)=>x+y,0)||1;
+  const ds=DEPT_NAMES.map((nm,i)=>({label:nm,data:months.map((m,j)=>compMode==="pct"?+(dv[j][i]/Math.max(1,dv[j].reduce((x,y)=>x+y,0))*100).toFixed(1):Math.round(dv[j][i]/Math.max(1,m.a.inc.size))),backgroundColor:deptColor(i),borderColor:css("--surface"),borderWidth:{top:2},borderRadius:2,borderSkipped:false})).filter((d,i)=>tot[i]>0);
+  mkChart("compChart",{type:"bar",data:{labels:months.map(m=>m.label),datasets:ds},options:{maintainAspectRatio:false,animation:false,interaction:{mode:"index",intersect:false},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${compMode==="pct"?c.raw+"%":ils(c.raw)}`}}},
+    scales:{x:{stacked:true,ticks:{color:css("--muted")},grid:{display:false}},y:{stacked:true,max:compMode==="pct"?100:undefined,...axis(v=>compMode==="pct"?v+"%":"₪"+(v>=1000?Math.round(v/1000)+"K":v))}}}});
+  $("#compLeg").innerHTML=DEPT_NAMES.map((n,i)=>tot[i]>0?`<span><i style="background:var(--c${i+1})"></i>${esc(n)}</span>`:"").join("");
+  $("#compSub").textContent=compMode==="pct"?"Share of delivered revenue in each month":"Average delivered revenue per open day, so partial months compare fairly";
+  const p0d=cp?deptRev(cp.p0.a):null,p1d=cp?deptRev(cp.p1.a):null,s0=p0d?p0d.reduce((x,y)=>x+y,0)||1:1,s1=p1d?p1d.reduce((x,y)=>x+y,0)||1:1;
+  const drows=DEPT_NAMES.map((n,i)=>({i,n,rev:tot[i],share:tot[i]/totSum,sh0:p0d?p0d[i]/s0:0,sh1:p1d?p1d[i]/s1:0,g:cp?dPct(p1d[i]/cp.p1.a.inc.size,p0d[i]/cp.p0.a.inc.size):0})).filter(r=>r.rev>0).sort((x,y)=>y.rev-x.rev);
+  $("#shareSub").textContent=cp?`Share of revenue for the period, and the change from ${cp.l0} to ${cp.l1}`:"Share of revenue for the period";
+  $("#shareTable").innerHTML=`<thead><tr><th>Department</th><th class="r">Revenue</th><th class="r">Share</th>${cp?`<th class="r">Share change</th><th class="r">Growth / open day</th>`:""}</tr></thead><tbody>`+
+    drows.map(r=>`<tr><td><span class="hb"><span class="b" style="width:10px;height:10px;background:var(--c${r.i+1})"></span>${esc(r.n)}</span></td><td class="r num">${ils(r.rev)}</td><td class="r num">${pct(r.share)}</td>${cp?`<td class="r">${arrow(r.sh1-r.sh0,true)}${Math.abs((r.sh1-r.sh0)*100).toFixed(1)} pts</span></td><td class="r">${arrow(r.g,true)}${pct(Math.abs(r.g),0)}</span></td>`:""}</tr>`).join("")+"</tbody>";
+  const top3=drows.filter(r=>r.i<8).slice(0,3),gain=cp?drows.slice().sort((x,y)=>(y.sh1-y.sh0)-(x.sh1-x.sh0)):[];
+  $("#l1").textContent=`${ils(T.rev)} of delivered revenue over ${od} open days${catF?" from the selected categories":""}, ${ils(perMonth(T.rev,f,t))} a month on average.`;
+  const i1=[`<li><span class="tag">Concentration</span>${top3.map(r=>esc(r.n)).join(", ")} bring <b>${pct(top3.reduce((s,r)=>s+r.share,0),0)}</b> of revenue. Availability in these departments decides the month.</li>`];
+  if(cp&&gain.length>1){const g=gain[0],l=gain[gain.length-1];
+    i1.push(`<li><span class="tag">Gaining share</span>${esc(g.n)} went from <b>${pct(g.sh0)}</b> to <b>${pct(g.sh1)}</b> of revenue between ${cp.l0} and ${cp.l1}, with revenue per open day ${g.g>=0?"up":"down"} <b>${pct(Math.abs(g.g),0)}</b>.</li>`);
+    i1.push(`<li><span class="tag">Losing share</span>${esc(l.n)} fell from <b>${pct(l.sh0)}</b> to <b>${pct(l.sh1)}</b>${SEASONAL[l.n]?`, ${SEASONAL[l.n]}`:""}.</li>`);}
+  $("#i1").innerHTML=i1.join("");
+  /* --- chapter 2: growth --- */
+  const cs=catStats(a),cs0=cp?catStats(cp.p0.a):{},cs1=cp?catStats(cp.p1.a):{},wks=weekBuckets(f,t);
+  const wk=wks.map(w=>({w,c:catStats(w.a)}));
+  const grow=Object.values(cs).map(r=>{const r0=cs0[r.cat],r1=cs1[r.cat],v0=r0?r0.rev/cp.p0.a.inc.size:0,v1=r1?r1.rev/cp.p1.a.inc.size:0;return {...r,share:r.rev/Math.max(1,T.rev),v0,v1,g:cp&&v0?(v1-v0)/v0:0,sp:wk.map(x=>(x.c[r.cat]?x.c[r.cat].rev:0)/Math.max(1,x.w.a.inc.size)),sr:r.sh/Math.max(1,r.ln)};}).sort((x,y)=>y.g-x.g);
+  $("#growSub").textContent=cp?`Revenue per open day, ${cp.l0} against ${cp.l1} · sparkline is the weekly trend`:"Pick a period of at least two full weeks to see growth";
+  $("#growTable").innerHTML=`<thead><tr><th>Category</th><th class="r">Revenue</th><th class="r">Share</th>${cp?`<th class="r">${esc(cp.l0)} / day</th><th class="r">${esc(cp.l1)} / day</th><th class="r">Growth</th>`:""}<th>Weekly trend</th><th class="r">Short rate</th></tr></thead><tbody>`+
+    grow.map(r=>`<tr><td>${esc(r.cat)}</td><td class="r num">${ils(r.rev)}</td><td class="r num">${pct(r.share)}</td>${cp?`<td class="r num">${ils(r.v0)}</td><td class="r num">${ils(r.v1)}</td><td class="r">${arrow(r.g,true)}${pct(Math.abs(r.g),0)}</span></td>`:""}<td>${spark(r.sp)}</td><td class="r num ${r.sr>=0.08?"dn":""}">${pct(r.sr)}</td></tr>`).join("")+"</tbody>";
+  const sig=grow.filter(r=>r.share>=0.02);
+  const ups=sig.filter(r=>r.g>0.05).slice(0,2),dns=sig.filter(r=>r.g<-0.05).slice(-2).reverse();
+  $("#l2").textContent=cp?`Comparing ${cp.l0} with ${cp.l1}, per open day so holidays and month length don't distort the picture.`:"Growth needs two full weeks or months inside the selected period.";
+  const i2=[];
+  if(ups.length)i2.push(`<li><span class="tag">Growing</span>${ups.map(r=>`${esc(r.cat)} <b>+${pct(r.g,0)}</b>`).join(" and ")}. ${ups[0].cat==="Frozen"?"Frozen meat (kebabs and burgers) is becoming a weeknight staple. Give it more Wolt menu space.":"Give the growers more visibility on Wolt: the Most ordered shelf and Deals."}</li>`);
+  if(dns.length)i2.push(`<li><span class="tag">Fading</span>${dns.map(r=>`${esc(r.cat)} <b>−${pct(Math.abs(r.g),0)}</b>`).join(" and ")}${SEASONAL[dns[0].cat]?`, ${SEASONAL[dns[0].cat]}`:""}. Cut reorder quantities to match.</li>`);
+  const hiSR=sig.slice().sort((x,y)=>y.sr-x.sr)[0];
+  if(hiSR)i2.push(`<li><span class="tag">Watch</span>${esc(hiSR.cat)} has the highest short-line rate among the large categories (<b>${pct(hiSR.sr)}</b>). Growth there is being capped by stock.</li>`);
+  $("#i2").innerHTML=i2.join("")||'<li>Not enough history in this period.</li>';
+  /* --- chapter 3: rhythm --- */
+  const dsum=[0,0,0,0,0,0],dn=[0,0,0,0,0,0];a.inc.forEach(d=>{const w=DAYS[d].dow;if(w>5)return;dsum[w]+=(a.byDay[d]||{rev:0}).rev;dn[w]++;});
+  const dav=dsum.map((s,i)=>dn[i]?s/dn[i]:0),dl=VD.DOW.slice(0,6),acc=css("--accent");
+  mkChart("dowChart",{type:"bar",data:{labels:dl,datasets:[{label:"Revenue per open day",data:dav.map(Math.round),backgroundColor:dav.map(v=>v===Math.max(...dav)?acc:acc+"66"),borderRadius:4,barPercentage:.6}]},options:{maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>ils(c.raw)+" per open day"}}},scales:{x:{ticks:{color:css("--muted")},grid:{display:false}},y:axis(v=>"₪"+Math.round(v/1000)+"K")}}});
+  const hw=VD.hourly(a,DAYS,"wk"),hf=VD.hourly(a,DAYS,"fri"),hl=VD.HOURS.wk.map(hourLbl);
+  mkChart("hrChart",{type:"line",data:{labels:hl,datasets:[{label:"Sun–Thu",data:hw.map(x=>x.n?+x.avg.toFixed(1):null),borderColor:css("--c1"),backgroundColor:css("--c1"),borderWidth:2,pointRadius:3,tension:.3},{label:"Friday",data:VD.HOURS.wk.map(h=>{const x=hf.find(y=>y.h===h);return x&&x.n?+x.avg.toFixed(1):null;}),borderColor:css("--c2"),backgroundColor:css("--c2"),borderWidth:2,pointRadius:3,tension:.3}]},options:{maintainAspectRatio:false,animation:false,interaction:{mode:"index",intersect:false},plugins:{legend:legendCfg()},scales:{x:axis(function(v){return this.getLabelForValue(v);}),y:axis(v=>v)}}});
+  const wkTot=dav.reduce((x,y)=>x+y,0)||1,best=dav.indexOf(Math.max(...dav)),open=dav.map((v,i)=>({v,i})).filter(x=>x.v>0),low=open.sort((x,y)=>x.v-y.v)[0];
+  const sumH=(H,a1,b1)=>H.filter(x=>x.h>=a1&&x.h<b1).reduce((s,x)=>s+x.avg,0),allW=hw.reduce((s,x)=>s+x.avg,0)||1,allF=hf.reduce((s,x)=>s+x.avg,0)||1;
+  const ev=[...a.inc].filter(d=>DAYS[d].event),evLift=(()=>{if(!ev.length)return null;let s=0,b=0,n=0;ev.forEach(d=>{const w=DAYS[d].dow,base=[...a.inc].filter(x=>!DAYS[x].event&&DAYS[x].dow===w);if(!base.length)return;s+=(a.byDay[d]||{orders:0}).orders;b+=base.reduce((q,x)=>q+((a.byDay[x]||{orders:0}).orders),0)/base.length;n++;});return n?{lift:s/b-1,n}:null;})();
+  $("#l3").textContent=`Demand has a clear weekly shape. Staffing, deliveries and promotions should follow it.`;
+  const i3=[];
+  if(low)i3.push(`<li><span class="tag">Peak day</span>${VD.DOW[best]} averages <b>${ils(dav[best])}</b> per open day, <b>${(dav[best]/Math.max(1,low.v)).toFixed(1)}×</b> ${VD.DOW[low.i]}. Book an extra picker and a dairy and meat delivery for ${VD.DOW[best]} morning.</li>`);
+  if(allW>0&&hw.some(x=>x.n))i3.push(`<li><span class="tag">Evening rush</span>On Sun–Thu, <b>${pct(sumH(hw,17,20)/allW,0)}</b> of orders arrive between 17:00 and 20:00. The shelves must be full by 16:00.</li>`);
+  if(hf.some(x=>x.n))i3.push(`<li><span class="tag">Friday</span>Friday is a morning business: <b>${pct(sumH(hf,9,12)/allF,0)}</b> of Friday orders arrive 09:00–12:00, before Shabbat.</li>`);
+  if(evLift)i3.push(`<li><span class="tag">Holiday eves</span>The ${evLift.n} holiday eves in this period averaged <b>${evLift.lift>=0?"+":""}${pct(evLift.lift,0)}</b> orders against the same weekday. Hanukkah starts the evening of Fri 4 Dec.</li>`);
+  $("#i3").innerHTML=i3.join("");
+  /* --- chapter 4: basket --- */
+  const vals=a.vals,B=[[0,50],[50,100],[100,150],[150,200],[200,300],[300,400],[400,1e9]],bl=["< ₪50","₪50–100","₪100–150","₪150–200","₪200–300","₪300–400","₪400+"];
+  const bc=B.map(([x,y])=>vals.filter(v=>v>=x&&v<y).length),nv=Math.max(1,vals.length);
+  mkChart("histChart",{type:"bar",data:{labels:bl,datasets:[{label:"Share of orders",data:bc.map(c=>+(c/nv*100).toFixed(1)),backgroundColor:acc,borderRadius:4,barPercentage:.75}]},options:{maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw}% of orders (${fmt(bc[c.dataIndex])})`}}},scales:{x:{ticks:{color:css("--muted")},grid:{display:false}},y:axis(v=>v+"%")}}});
+  const ir=ITEMS.map((it,i)=>a.it[i].rev).filter(v=>v>0).sort((x,y)=>y-x),irs=ir.reduce((x,y)=>x+y,0)||1;let cum=0;const par=ir.map((v,i)=>{cum+=v;return {x:+((i+1)/ir.length*100).toFixed(1),y:+(cum/irs*100).toFixed(1)};});
+  const top20=par.find(p=>p.x>=20)||par[par.length-1]||{y:0};
+  mkChart("parChart",{type:"line",data:{datasets:[{label:"Cumulative revenue",data:par,borderColor:acc,backgroundColor:acc+"22",fill:true,pointRadius:0,borderWidth:2,tension:.2}]},options:{maintainAspectRatio:false,animation:false,parsing:true,plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>`Top ${c[0].raw.x}% of items`,label:c=>`${c.raw.y}% of revenue`}}},scales:{x:{type:"linear",min:0,max:100,ticks:{color:css("--muted"),callback:v=>v+"%"},grid:{color:css("--line")+"66"},title:{display:true,text:"Share of items, best sellers first",color:css("--muted")}},y:{min:0,max:100,ticks:{color:css("--muted"),callback:v=>v+"%"},grid:{color:css("--line")+"66"}}}}});
+  const aovV=T.rev/Math.max(1,T.orders-T.can),med=median(vals),u100=vals.filter(v=>v<100).length/nv,u100m=perMonth(vals.filter(v=>v<100).length,f,t);
+  $("#l4").textContent=`The average delivered basket is ${ils(aovV)} with ${(T.lines/Math.max(1,T.orders)).toFixed(1)} lines. The median is ${ils(med)}, so a few large family baskets pull the average up.`;
+  $("#i4").innerHTML=[`<li><span class="tag">Small baskets</span><b>${pct(u100,0)}</b> of orders are under ₪100 (about ${fmt(u100m)} a month). Adding ₪15 to each through bundles and "complete the meal" suggestions would be worth <b>${ils(u100m*15)}</b> a month.</li>`,
+    `<li><span class="tag">Concentration</span>The top 20% of items bring <b>${pct(top20.y/100,0)}</b> of revenue. These ${Math.max(1,Math.round(ir.length*0.2))} items need daily stock counts and never-out-of-stock targets.</li>`,
+    `<li><span class="tag">Average vs median</span>The gap between the ${ils(aovV)} average and the ${ils(med)} median comes from large weekly shops. Keep the ₪300+ customers loyal with reliable fresh meat and dairy.</li>`].join("");
+  /* --- chapter 5: service --- */
+  const catArr=Object.values(cs).filter(r=>r.rev/Math.max(1,T.rev)>=0.01).map(r=>({cat:r.cat,x:+(r.rev/Math.max(1,T.rev)*100).toFixed(1),y:+(r.sh/Math.max(1,r.ln)*100).toFixed(1),can:r.can}));
+  const mx=median(catArr.map(c=>c.x)),my=median(catArr.map(c=>c.y)),maxCan=Math.max(1,...catArr.map(c=>c.can));
+  const fix=catArr.filter(c=>c.x>=mx&&c.y>=my).sort((p,q)=>q.x*q.y-p.x*p.y);
+  const quad={id:"quad",afterDatasetsDraw(ch){const {ctx,chartArea:ca,scales:{x,y}}=ch;ctx.save();ctx.strokeStyle=css("--muted");ctx.globalAlpha=.6;ctx.setLineDash([4,4]);ctx.beginPath();const px=x.getPixelForValue(mx),py=y.getPixelForValue(my);ctx.moveTo(px,ca.top);ctx.lineTo(px,ca.bottom);ctx.moveTo(ca.left,py);ctx.lineTo(ca.right,py);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+    ctx.font="11px 'IBM Plex Sans',sans-serif";ctx.fillStyle=css("--fg");const meta=ch.getDatasetMeta(0),placed=[];catArr.map((c,i)=>({c,el:meta.data[i]})).filter(o=>o.el).sort((p,q)=>q.c.x*q.c.y-p.c.x*p.c.y).forEach(({c,el})=>{const r=el.options.radius||6,w=ctx.measureText(c.cat).width,left=el.x+r+6+w>ca.right;let bx=left?el.x-r-4-w:el.x+r+4;for(const dy of [0,-12,12,-22,22,-32,32]){const box={x:bx,y:el.y+dy-8,w,h:12};if(!placed.some(p=>box.x<p.x+p.w&&box.x+box.w>p.x&&box.y<p.y+p.h&&box.y+box.h>p.y)){placed.push(box);ctx.textAlign="left";ctx.fillText(c.cat,bx,el.y+dy+2);break;}}});
+    ctx.textAlign="right";ctx.font="600 11px 'IBM Plex Sans',sans-serif";ctx.fillStyle=css("--bad");ctx.fillText("Fix first",ca.right-4,ca.top+12);ctx.restore();}};
+  mkChart("quadChart",{type:"bubble",data:{datasets:[{label:"Categories",data:catArr.map(c=>({x:c.x,y:c.y,r:5+c.can/maxCan*14})),backgroundColor:catArr.map(c=>c.x>=mx&&c.y>=my?css("--bad")+"bb":acc+"77"),borderColor:css("--surface"),borderWidth:2}]},plugins:[quad],
+    options:{maintainAspectRatio:false,animation:false,layout:{padding:{right:12,top:6}},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const k=catArr[c.dataIndex];return `${k.cat}: ${k.x}% of revenue · ${k.y}% short lines · ${k.can} cancellations`;}}}},
+      scales:{x:{ticks:{color:css("--muted"),callback:v=>v+"%"},grid:{color:css("--line")+"55"},title:{display:true,text:"Share of revenue",color:css("--muted")}},y:{beginAtZero:true,ticks:{color:css("--muted"),callback:v=>v+"%"},grid:{color:css("--line")+"55"},title:{display:true,text:"Short-line rate",color:css("--muted")}}}}});
+  const crS=T.shortOcan/Math.max(1,T.shortO),crC=T.cleanOcan/Math.max(1,T.cleanO),mult=crC>0?crS/crC:0,lostM=perMonth(T.lost,f,t);
+  $("#svcTable").innerHTML=`<thead><tr><th>Orders</th><th class="r">Count</th><th class="r">Cancelled</th><th class="r">Rate</th></tr></thead><tbody>
+    <tr><td>Every line in stock</td><td class="r num">${fmt(T.cleanO)}</td><td class="r num">${fmt(T.cleanOcan)}</td><td class="r num">${pct(crC)}</td></tr>
+    <tr><td>At least one short line</td><td class="r num">${fmt(T.shortO)}</td><td class="r num">${fmt(T.shortOcan)}</td><td class="r num dn">${pct(crS)}</td></tr>
+    <tr><td><b>All orders</b></td><td class="r num"><b>${fmt(T.orders)}</b></td><td class="r num"><b>${fmt(T.can)}</b></td><td class="r num"><b>${pct(T.can/Math.max(1,T.orders))}</b></td></tr>
+    </tbody>`;
+  $("#svcNote").textContent=`Revenue lost to cancellations: ${ils(T.lost)} in this period, ${ils(lostM)} a month.`;
+  $("#l5").textContent=`${pct(T.shortO/Math.max(1,T.orders),0)} of orders had at least one line that was replaced, refused or missing. Those orders are where customers walk away.`;
+  $("#i5").innerHTML=[`<li><span class="tag">The cost of a gap</span>An order with a short line is cancelled <b>${pct(crS)}</b> of the time, against <b>${pct(crC)}</b> when everything is in stock${mult>0?`, ${mult.toFixed(0)}× more often`:""}. This is a correlation, not proof of cause, but the gap is large enough to make availability the first lever.</li>`,
+    fix.length?`<li><span class="tag">Fix first</span>${fix.slice(0,3).map(c=>esc(c.cat)).join(", ")} sit above the median on both revenue share and short-line rate. Fixing availability there protects the most money.</li>`:"",
+    `<li><span class="tag">Money on the table</span>Cancellations cost <b>${ils(lostM)}</b> a month in this period, before counting the customers who don't come back.</li>`].join("");
+  /* --- chapter 6: decisions --- */
+  const decs=[];
+  if(fix.length){const fc=fix.slice(0,2).map(c=>c.cat),fcLost=ITEMS.reduce((s,it,i)=>s+(fc.includes(it.cat)?a.it[i].can:0),0)*aovV;
+    decs.push({t:`Guarantee availability in ${fc.join(" and ")}`,imp:perMonth(fcLost,f,t)*0.6,o:"Owner + Ops",why:`Highest revenue share combined with the highest short-line rate. Cancelled orders containing these categories cost ${ils(perMonth(fcLost,f,t))} a month.`,how:"Daily shelf count at opening and 15:00, raise par levels for the top 5 items, and a second delivery on the peak day."});}
+  if(ups.length){const u=ups[0],add=u.v1*25.3*0.15;decs.push({t:`Expand ${u.cat} on Wolt`,imp:add,o:"Owner",why:`${u.cat} revenue per open day grew ${pct(u.g,0)} from ${cp.l0} to ${cp.l1}.`,how:`Add 3–5 more items, a Wolt Deals slot and a place on the Most ordered shelf. Estimate assumes 15% more ${u.cat.toLowerCase()} sales.`});}
+  if(low)decs.push({t:`Staff for ${VD.DOW[best]} and the 17:00–20:00 rush`,imp:perMonth(T.lost,f,t)*0.15,o:"Ops",why:`${VD.DOW[best]} is ${(dav[best]/Math.max(1,low.v)).toFixed(1)}× the slowest day, and the weekday evening carries ${pct(sumH(hw,17,20)/allW,0)} of orders.`,how:"Add one picker 16:00–20:00 on Sun–Thu and two on the peak day. Estimate assumes 15% fewer cancellations from late or incomplete picks."});
+  decs.push({t:"Grow baskets under ₪100",imp:u100m*15,o:"Owner",why:`${pct(u100,0)} of orders are under ₪100.`,how:"Bundles (pasta + sauce + cheese, schnitzel + pita + salad) and Deals under ₪20 that add to a basket. Test for 2 weeks and measure the average basket."});
+  decs.push({t:"Prepare Hanukkah from 1 December",imp:evLift?pdRev(l30)*Math.max(0,evLift.lift)*2:0,unit:"over the holiday",o:"Owner + Ops",why:evLift?`Holiday eves ran ${pct(evLift.lift,0)} above a normal day in this history. The estimate applies that lift to two peak days (the first evening and the Friday).`:"Holiday eves are the busiest days of the year.",how:"Raise par on frying oil, eggs, potatoes and onions, fill the חנוכה עם סידר category on Wolt, and plan staff for the 8 evenings from Fri 4 Dec."});
+  $("#decs").innerHTML=decs.map((d,i)=>`<div class="dcard"><span class="eyebrow">Decision ${i+1} · ${esc(d.o)}</span><h3>${esc(d.t)}</h3><div class="imp">${d.imp>0?"≈ "+ils(d.imp):"—"} <small>${esc(d.unit||"a month")}</small></div><dl><dt>Evidence</dt><dd>${esc(d.why)}</dd><dt>Action</dt><dd>${esc(d.how)}</dd></dl></div>`).join("");
+  /* --- headline --- */
+  const att=l30.T.rev/250000;
+  $("#brEyebrow").textContent=`Cedar Market Downtown · Wolt channel · data to ${DAYS[L()].label}`+(catF||F.dows.length?" · filtered view":"");
+  const absUp=sig.filter(r=>r.v1>r.v0).sort((x,y)=>(y.v1-y.v0)-(x.v1-x.v0)).slice(0,2);
+  const fixTxt=fix.length?` The biggest leak is availability in ${fix[0].cat.toLowerCase()}: orders with a missing item are cancelled ${mult>0?mult.toFixed(0)+"× more often":"far more often"}.`:"";
+  $("#brHead").innerHTML=catF?`The selected categories bring <b>${ils(perMonth(T.rev,f,t))}</b> a month${ups.length?`. ${esc(ups[0].cat)} is growing fastest`:""}.${fixTxt}`:
+    `Wolt is running at <b>${ils(l30.T.rev)}</b> a month, <b>${pct(att,0)}</b> of the ₪250K goal${pr.total>=250000?`, and ${pr.month} is on track to pass it`:""}.${absUp.length&&cp?` Most of the growth since ${cp.l0} comes from ${absUp.map(u=>`${u.cat.toLowerCase()} (+${ils(u.v1-u.v0)} a day)`).join(" and ")}.`:""}${fixTxt}`;
+  const k=[["Revenue · last 30 days",ils(l30.T.rev),catF?"selected categories":`${pct(att,0)} of the ₪250K target`],
+    [`${pr.month} to date`,ils(pr.mtd.T.rev),pm?`${mom>=0?"▲":"▼"} ${pct(Math.abs(mom),1)} vs the same ${dm} days of ${VD.MON[+pmk.slice(5)-1]}`:""],
+    [`${pr.month} projection`,ils(pr.total),`to date + ${pr.days} open days at the last 4 weeks' weekday pace`],
+    ["Orders · last 30 days",fmt(l30.T.orders),catF?"orders with the selected categories":`${pct(l30.T.orders/1500,0)} of the 1,500 target`],
+    ["Average basket · 30 days",ils(l30.T.rev/Math.max(1,l30.T.orders-l30.T.can)),`${(l30.T.lines/Math.max(1,l30.T.orders)).toFixed(1)} lines per order`],
+    ["Cancellations · 30 days",pct(l30.T.can/Math.max(1,l30.T.orders)),`${pct(l30.T.shortO/Math.max(1,l30.T.orders),0)} of orders had a short line`]];
+  $("#brK").innerHTML=k.map(x=>`<div class="kpi"><span class="l">${x[0]}</span><span class="v">${x[1]}</span><span class="d">${x[2]}</span></div>`).join("");
+}
+$("#compSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;compMode=b.dataset.m;$$("#compSeg button").forEach(x=>x.classList.toggle("on",x===b));renderInsights();});
+$("#growCopy").addEventListener("click",()=>{const [f,t]=rangeOf(F.period),a=AFx(f,t),cs=catStats(a);copy(csv([["category","revenue_ils","lines","short_rate","cancellations"],...Object.values(cs).map(r=>[r.cat,Math.round(r.rev),r.ln,pct(r.sh/Math.max(1,r.ln)),r.can])]),"Category growth");});
+
+/* ---------- Compare periods ---------- */
+let cmpPreset="wtd",cmpNorm="tot";
+function presetRanges(){
+  const ws=weekStarts().filter(s=>s<=L()),s=ws[ws.length-1],ms=monthKeys(),cmk=DAYS[L()].mk;
+  const lab=(f,t)=>`${DAYS[f].short} – ${DAYS[t].short}`;
+  if(cmpPreset==="wtd"){const A=[s,L()],B=[s-7,L()-7];return {A,B,la:"This week to date",lb:"Same days last week"};}
+  if(cmpPreset==="lw"){return {A:[s-7,s-1],B:[s-14,s-8],la:"Last full week",lb:"Week before"};}
+  if(cmpPreset==="mtd"){const [cf]=monthRange(cmk),pk=ms[ms.indexOf(cmk)-1],[pf,pt]=monthRange(pk),dm=+DAYS[L()].iso.slice(8);return {A:[cf,L()],B:[pf,Math.min(pt,pf+dm-1)],la:MONTHNAME(cmk)+" to date",lb:"Same days of "+MONTHNAME(pk)};}
+  if(cmpPreset==="lm"){const full=ms.filter(monthFull);const k1=full[full.length-1],k0=full[full.length-2]||ms[0];return {A:monthRange(k1),B:monthRange(k0),la:MONTHNAME(k1),lb:MONTHNAME(k0)};}
+  const va=$("#cmpA").value,vb=$("#cmpB").value,txt=v=>{const o=[...$("#cmpA").options].find(x=>x.value===v);return o?o.textContent:v;};
+  return {A:rangeOf(va),B:rangeOf(vb),la:txt(va),lb:txt(vb)};
+}
+function renderCompare(){
+  $("#cmpCustom").hidden=cmpPreset!=="custom";
+  const R=presetRanges();R.A=[Math.max(0,R.A[0]),Math.min(L(),R.A[1])];R.B=[Math.max(0,R.B[0]),Math.min(L(),R.B[1])];
+  const a=AFx(...R.A),b=AFx(...R.B),na=Math.max(1,a.inc.size),nb=Math.max(1,b.inc.size),day=cmpNorm==="day";
+  const cA=css("--c1"),cB=css("--c9");
+  $("#cmpVs").innerHTML=`<span class="vs"><span class="sw" style="background:var(--c1)"></span><b>A · ${esc(R.la)}</b> <span class="note">${DAYS[R.A[0]].label} – ${DAYS[R.A[1]].label} · ${a.inc.size} open days</span></span><span class="vs"><span class="sw" style="background:var(--c9)"></span><b>B · ${esc(R.lb)}</b> <span class="note">${DAYS[R.B[0]].label} – ${DAYS[R.B[1]].label} · ${b.inc.size} open days</span></span>`;
+  const M=[["Orders",T=>T.orders,"n",1,0],["Revenue",T=>T.rev,"ils",1,0],["Average basket",T=>T.rev/Math.max(1,T.orders-T.can),"ils",1,1],["Lines per order",T=>T.lines/Math.max(1,T.orders),"dec",1,1],["Cancellation rate",T=>T.can/Math.max(1,T.orders),"pct",-1,1],["Short-line rate",T=>(T.rp+T.rj+T.ms)/Math.max(1,T.lines),"pct",-1,1],["Refunds",T=>T.refund,"ils",-1,0],["Revenue lost to cancellations",T=>T.lost,"ils",-1,0],["Orders over 25 min prep",T=>T.late/Math.max(1,T.prepN),"pct",-1,1]];
+  const show=(v,k)=>k==="pct"?pct(v):k==="ils"?ils(v):k==="dec"?v.toFixed(1):fmt(v);
+  const rows=M.map(([n,fn,k,dir,ratio])=>{let va=fn(a.T),vb=fn(b.T);if(day&&!ratio){va/=na;vb/=nb;}const d=va-vb,dp=ratio?null:dPct(va,vb);return {n,va,vb,d,dp,k:day&&!ratio&&k==="n"?"dec":k,dir};});
+  $("#cmpTable").innerHTML=`<thead><tr><th>Metric${day?" (per open day)":""}</th><th class="r">A</th><th class="r">B</th><th class="r">Change</th><th class="r">%</th></tr></thead><tbody>`+
+    rows.map(r=>`<tr><td>${r.n}</td><td class="r num">${show(r.va,r.k)}</td><td class="r num">${show(r.vb,r.k)}</td><td class="r">${arrow(r.d,r.dir>0)}${fmtD(r.d,r.k).replace(/^[+−]/,"")}</span></td><td class="r num">${r.dp==null?"":(r.dp>=0?"+":"−")+pct(Math.abs(r.dp),1)}</td></tr>`).join("")+
+    `<tr><td>Open days</td><td class="r num">${a.inc.size}</td><td class="r num">${b.inc.size}</td><td></td><td></td></tr></tbody>`;
+  /* daily */
+  const len=Math.max(R.A[1]-R.A[0],R.B[1]-R.B[0])+1,ser=(r,x)=>Array.from({length:len},(_,k)=>{const d=r[0]+k;return d<=r[1]&&x.inc.has(d)?Math.round((x.byDay[d]||{rev:0}).rev):null;});
+  mkChart("cmpDaily",{type:"line",data:{labels:Array.from({length:len},(_,k)=>"Day "+(k+1)),datasets:[{label:"A · "+R.la,data:ser(R.A,a),borderColor:cA,backgroundColor:cA,borderWidth:2,pointRadius:3,tension:.25,spanGaps:true},{label:"B · "+R.lb,data:ser(R.B,b),borderColor:cB,backgroundColor:cB,borderWidth:2,borderDash:[5,4],pointRadius:3,tension:.25,spanGaps:true}]},
+    options:{maintainAspectRatio:false,animation:false,interaction:{mode:"index",intersect:false},plugins:{legend:legendCfg(),tooltip:{callbacks:{title:c=>{const k=c[0].dataIndex,da=DAYS[R.A[0]+k],db=DAYS[R.B[0]+k];return `A ${da&&R.A[0]+k<=R.A[1]?da.label:"—"} · B ${db&&R.B[0]+k<=R.B[1]?db.label:"—"}`;},label:c=>`${c.dataset.label.split(" · ")[0]}: ${ils(c.raw)}`}}},scales:{x:axis(function(v){return this.getLabelForValue(v);}),y:axis(v=>"₪"+Math.round(v/1000)+"K")}}});
+  /* categories */
+  const ca=catStats(a),cb=catStats(b),cats=[...new Set(Object.keys(ca).concat(Object.keys(cb)))];
+  const cd=cats.map(c=>{const ra=ca[c]?ca[c].rev:0,rb=cb[c]?cb[c].rev:0;return {c,ra,rb,d:day?ra/na-rb/nb:ra-rb};}).sort((x,y)=>y.d-x.d);
+  mkChart("cmpCat",{type:"bar",data:{labels:cd.map(x=>x.c),datasets:[{label:"Revenue change",data:cd.map(x=>Math.round(x.d)),backgroundColor:cd.map(x=>x.d>=0?css("--c1"):css("--c8")),borderRadius:3,barPercentage:.7}]},
+    options:{indexAxis:"y",maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const x=cd[c.dataIndex];return `${x.d>=0?"+":"−"}${ils(Math.abs(x.d))}${day?" per open day":""} (A ${ils(day?x.ra/na:x.ra)} · B ${ils(day?x.rb/nb:x.rb)})`;}}}},scales:{x:axis(v=>(v<0?"−":"")+"₪"+fmt(Math.abs(v))),y:{ticks:{color:css("--muted"),font:{size:11}},grid:{display:false}}}}});
+  /* weekday */
+  const dowAvg=x=>{const s=[0,0,0,0,0,0],n=[0,0,0,0,0,0];x.inc.forEach(d=>{const w=DAYS[d].dow;if(w>5)return;s[w]+=(x.byDay[d]||{rev:0}).rev;n[w]++;});return s.map((v,i)=>n[i]?Math.round(v/n[i]):null);};
+  mkChart("cmpDow",{type:"bar",data:{labels:VD.DOW.slice(0,6),datasets:[{label:"A · "+R.la,data:dowAvg(a),backgroundColor:cA,borderRadius:3,barPercentage:.8,categoryPercentage:.7},{label:"B · "+R.lb,data:dowAvg(b),backgroundColor:cB,borderRadius:3,barPercentage:.8,categoryPercentage:.7}]},
+    options:{maintainAspectRatio:false,animation:false,plugins:{legend:legendCfg(),tooltip:{callbacks:{label:c=>`${c.dataset.label.split(" · ")[0]}: ${c.raw==null?"closed":ils(c.raw)}`}}},scales:{x:{ticks:{color:css("--muted")},grid:{display:false}},y:axis(v=>"₪"+Math.round(v/1000)+"K")}}});
+  /* movers */
+  const mv=ITEMS.map((it,i)=>{const ra=a.it[i].rev,rb=b.it[i].rev;return {it,ra,rb,ua:a.it[i].u,ub:b.it[i].u,d:day?ra/na-rb/nb:ra-rb};}).filter(x=>x.ra||x.rb);
+  const mt=list=>`<thead><tr><th>Item</th><th class="r">A</th><th class="r">B</th><th class="r">Change</th><th class="r">Units A / B</th></tr></thead><tbody>`+list.map(x=>`<tr><td>${itemCell(x.it)}</td><td class="r num">${ils(day?x.ra/na:x.ra)}</td><td class="r num">${ils(day?x.rb/nb:x.rb)}</td><td class="r">${arrow(x.d,true)}${ils(Math.abs(x.d))}</span></td><td class="r num">${fmt(x.ua)} / ${fmt(x.ub)}</td></tr>`).join("")+"</tbody>";
+  const upL=mv.filter(x=>x.d>0).sort((p,q)=>q.d-p.d).slice(0,8),dnL=mv.filter(x=>x.d<0).sort((p,q)=>p.d-q.d).slice(0,8);
+  $("#cmpUp").innerHTML=upL.length?mt(upL):'<tbody><tr><td class="note">No item grew.</td></tr></tbody>';
+  $("#cmpDn").innerHTML=dnL.length?mt(dnL):'<tbody><tr><td class="note">No item dropped.</td></tr></tbody>';
+  /* narrative */
+  const rv=rows[1],od=rows[0],cr=rows[4],sr=rows[5],ab=rows[2];
+  const pos=cd.filter(x=>x.d>0).slice(0,2),neg=cd.filter(x=>x.d<0).slice(-2).reverse();
+  const evA=[...a.inc].filter(d=>DAYS[d].event).map(d=>DAYS[d].event),evB=[...b.inc].filter(d=>DAYS[d].event).map(d=>DAYS[d].event);
+  const per_=day?" per open day":"",dir=v=>v>=0?"up":"down";
+  const n=[];
+  n.push(`<p>Revenue is <b>${dir(rv.d)} ${pct(Math.abs(rv.dp||0),1)}</b> (${rv.d>=0?"+":"−"}${ils(Math.abs(rv.d))}${per_}) and orders are <b>${dir(od.d)} ${pct(Math.abs(od.dp||0),1)}</b>, with the average basket ${ab.d>=0?"up":"down"} ${ils(Math.abs(ab.d))} to ${ils(ab.va)}.${!day&&a.inc.size!==b.inc.size?` A has ${a.inc.size} open days and B has ${b.inc.size}; switch to Per open day for a like-for-like view.`:""}</p>`);
+  const fmtP=l=>l.map(x=>`${esc(x.c)} (${x.d>=0?"+":"−"}${ils(Math.abs(x.d))})`).join(" and ");
+  if(pos.length||neg.length)n.push(rv.d>=0?`<p>The gain came mostly from ${pos.length?fmtP(pos):"no single category"}${neg.length?`, partly offset by ${fmtP(neg)}${SEASONAL[neg[0].c]?` (${SEASONAL[neg[0].c]})`:""}`:""}.</p>`
+    :`<p>The drop came mostly from ${neg.length?fmtP(neg):"no single category"}${SEASONAL[neg[0]&&neg[0].c]?` (${SEASONAL[neg[0].c]})`:""}${pos.length?`, partly offset by ${fmtP(pos)}`:""}.</p>`);
+  n.push(`<p>Service: cancellations ${cr.d<=0?"improved":"worsened"} by <b>${Math.abs(cr.d*100).toFixed(1)} pts</b> to ${pct(cr.va)}, and short lines ${sr.d<=0?"improved":"worsened"} by <b>${Math.abs(sr.d*100).toFixed(1)} pts</b> to ${pct(sr.va)}.${upL[0]?` The biggest item gain was ${esc(upL[0].it.en)}; the biggest drop was ${dnL[0]?esc(dnL[0].it.en):"none"}.`:""}</p>`);
+  if(evA.length||evB.length)n.push(`<p class="note">Calendar effect: ${evA.length?`A includes ${[...new Set(evA)].join(", ")}`:"A has no holiday eves"}; ${evB.length?`B includes ${[...new Set(evB)].join(", ")}`:"B has no holiday eves"}. Holiday eves lift orders, so read the change with that in mind.</p>`);
+  $("#cmpNarr").innerHTML=n.join("");
+}
+$("#cmpSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;cmpPreset=b.dataset.p;$$("#cmpSeg button").forEach(x=>x.classList.toggle("on",x===b));renderCompare();});
+$("#normSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;cmpNorm=b.dataset.n;$$("#normSeg button").forEach(x=>x.classList.toggle("on",x===b));renderCompare();});
+$("#cmpA").addEventListener("change",renderCompare);$("#cmpB").addEventListener("change",renderCompare);
+
+/* ---------- navigation ---------- */
+const VIEWS={insights:["Executive briefing","The Wolt channel in six chapters: where revenue comes from, what is changing, when customers order, basket economics, service quality and the decisions that follow."],
+  compare:["Compare periods","Week against week and month against month, like for like, with the categories and items behind every change."],
+  command:["Command center","Wolt sales, service and stock for Cedar Market Downtown over the last 30 days, against your 1,500-order and ₪250K targets."],
+  dashboard:["Sales dashboard","Four months of Wolt orders: what sells, when it sells, and what fails."],
+  alerts:["Manager alerts","Everything a store manager should act on, ranked by severity and money at risk."],
+  inventory:["Stock & losses","Days of cover for every item, markdown and overstock triggers, and the weekly refund and loss ledger."],
+  dealbreakers:["Deal-breakers","Items that turn a short line into a lost order, with a restock or delist decision for each."],
+  reorder:["Replacements & reorder","Out-of-stock events by item, and the reorder frequency that prevents them."],
+  picking:["Planogram picking","Route every Wolt order along the store layout instead of the order the customer tapped items in."],
+  reports:["Owner & ops reports","The prioritized list the owner and the floor team act on each morning."],
+  simulator:["Growth simulator","What each fix is worth against the 1,500-order and ₪250K monthly targets."],
+  import:["Import Wolt data","Replace the example history with your Wolt merchant export and stock count."]};
+let cur="command";
+function show(v){if(!VIEWS[v])v="insights";cur=v;$("#filters").hidden=!["insights","dashboard","compare"].includes(v);if(!$("#filters").hidden)filterSummary();
+  $$(".view").forEach(s=>s.hidden=s.id!=="v-"+v);$$("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.v===v));
+  $("#vTitle").textContent=VIEWS[v][0];$("#vSub").textContent=VIEWS[v][1];renderView(v);}
+function renderView(v){({insights:renderInsights,compare:renderCompare,command:renderCommand,dashboard:renderDashboard,alerts:renderAlerts,inventory:renderInventory,dealbreakers:renderDb,reorder:renderRe,picking:renderPick,reports:renderReports,simulator:simulate,import:renderCatalog}[v]||(()=>{}))();}
+window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
+document.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g){if(location.hash.slice(1)===g.dataset.go)show(g.dataset.go);else location.hash=g.dataset.go;window.scrollTo(0,0);}});
+$("#trendSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;trendMode=b.dataset.m;$$("#trendSeg button").forEach(x=>x.classList.toggle("on",x===b));renderTrend();});
+$("#topSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;topN=+b.dataset.n;$$("#topSeg button").forEach(x=>x.classList.toggle("on",x===b));renderTop();});
+$("#sortSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;topSort=b.dataset.s;$$("#sortSeg button").forEach(x=>x.classList.toggle("on",x===b));renderTop();});
+$("#hrSel").addEventListener("change",e=>{hrF=e.target.value;renderHourly();});
+$("#pickers").value=pickers;$("#pickers").addEventListener("change",e=>{pickers=Math.max(1,Math.min(8,+e.target.value||2));store.set("vwo-pickers",pickers);buildAlerts();renderHourly();});
+$("#alSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;alS=b.dataset.s;$$("#alSeg button").forEach(x=>x.classList.toggle("on",x===b));renderAlerts();});
+$("#alCat").addEventListener("change",e=>{alC=e.target.value;renderAlerts();});
+$("#invSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;invF=b.dataset.f;$$("#invSeg button").forEach(x=>x.classList.toggle("on",x===b));renderInventory();});
+$("#topCopy").addEventListener("click",()=>copy(csv([["rank","item_he","item_en","price_ils","units","share_of_orders","revenue_ils","trend_30d"],...topRows().slice(0,topN).map(r=>[r.rank,r.it.he,r.it.en,r.it.price,r.x.u,pct(r.share),Math.round(r.x.rev),pct(r.trend,0)])]),"Top items"));
+$("#rjCopy").addEventListener("click",()=>copy(csv([["item_he","item_en","substitute_refused","missing","in_cancelled_orders","refunded_ils"],...rjRows().map(r=>[r.it.he,r.it.en,r.x.rj,r.x.ms,r.x.can,Math.round(r.x.refund)])]),"Rejected items"));
+$("#rpCopy").addEventListener("click",()=>copy(csv([["item_he","item_en","replaced","days_short"],...rpRows().map(r=>[r.it.he,r.it.en,r.x.rp,r.x.sd.size])]),"Replaced items"));
+$("#invCopy").addEventListener("click",()=>copy(csv([["item_he","item_en","on_hand","sold_per_day","days_cover","stock_value_ils","status"],...INV.map(r=>[r.it.he,r.it.en,r.onHand,r.daily.toFixed(1),r.cover.toFixed(1),Math.round(r.value),r.st])]),"Stock list"));
+const themes=["system","light","dark"];let th=store.get("vwo-theme","system");
+function applyTheme(){if(th==="system")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",th);$("#themeBtn").textContent="Theme: "+th;}
+$("#themeBtn").addEventListener("click",()=>{th=themes[(themes.indexOf(th)+1)%3];store.set("vwo-theme",th);applyTheme();renderView(cur);});
+try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>renderView(cur));}catch(e){}
+
+function refresh(){CACHE={};WEEKS=null;buildFilterUI();derive();buildAlerts();fillOrders();renderDb();renderRe();renderInventory();$("#rangeChip").textContent=`${DAYS[0].short} – ${DAYS[L()].short} 2026`;renderView(cur);}
+loadExample();applyTheme();renderSimInputs();derive();buildAlerts();fillOrders();renderDb();renderRe();renderInventory();
+$("#rangeChip").textContent=`${DAYS[0].short} – ${DAYS[L()].short} 2026`;
+if(window.Chart){Chart.defaults.font.family="'IBM Plex Sans',system-ui,sans-serif";Chart.defaults.font.size=11;}
+buildFilterUI();
+show(location.hash.slice(1)||"insights");
+})();
+</script>
+
+</body></html>
