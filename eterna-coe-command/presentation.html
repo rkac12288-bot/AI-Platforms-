@@ -1,0 +1,217 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eterna CoE Command</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>:root{
+  --dark:#17142B; --light:#F7F6F2; --alt:#EFECE5; --surface:#FDFCF9; --ink:#1A1814; --muted:#57524B; --line:#DDD8CE;
+  --accent:#5B3FD6; --accent-text:#5B3FD6; --accent-on-dark:#B9A9FF;
+  --on-dark:#F4F2EC; --on-dark-muted:#C9C4D9; --on-accent:#F7F6F2; --on-accent-soft:#E4DCFF; --glow:#6C4DE6;
+  --head:'Space Grotesk', Arial, sans-serif; --body:'IBM Plex Sans', Arial, sans-serif;
+}
+body{font-family:var(--body);color:var(--ink)}
+section{padding:128px;box-sizing:border-box;background:var(--light);color:var(--ink);display:flex;flex-direction:column;gap:56px;font-family:var(--body)}
+section.alt{background:var(--alt)}
+section.dark{background:var(--dark);color:var(--on-dark)}
+section.accent{background:var(--accent);color:var(--on-accent)}
+section.cover{justify-content:space-between}
+section.closing{justify-content:center;gap:48px}
+.glow{position:absolute;left:1240px;top:0;width:680px;height:1080px;background:radial-gradient(circle at 65% 45%, var(--glow) 0%, var(--dark) 70%)}
+.head{display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:26px;letter-spacing:4px;text-transform:uppercase;font-weight:600;color:var(--accent-text)}
+.dark .eyebrow{color:var(--accent-on-dark)}
+.accent .eyebrow{color:var(--on-accent-soft)}
+.display{font-family:var(--head);font-size:112px;font-weight:700;line-height:1.04;width:1450px;color:var(--on-dark)}
+.hl{color:var(--accent-on-dark)}
+.title{font-family:var(--head);font-size:72px;font-weight:700;line-height:1.1;width:1550px;color:var(--ink)}
+.dark .title{color:var(--on-dark)}
+.lede{font-size:36px;line-height:1.4;color:var(--muted);width:1250px}
+.dark .lede{color:var(--on-dark-muted)}
+.accent .lede{color:var(--on-accent-soft)}
+.foot{font-size:24px;color:var(--on-dark-muted)}
+.note{font-size:24px;color:var(--muted)}
+.dark .note{color:var(--on-dark-muted)}
+.steps{display:flex;flex-direction:column;gap:28px}
+.step{display:flex;gap:40px;align-items:flex-start;border-top:2px solid var(--line);padding:28px 0 0 0}
+.time{font-family:var(--head);font-size:44px;font-weight:700;color:var(--accent-text);width:200px;flex:none;line-height:1.1}
+.step-txt{font-size:32px;line-height:1.45;color:var(--ink);width:1300px}
+.step-txt-strong{font-size:32px;line-height:1.45;color:var(--ink);width:1300px;font-weight:600}
+.cards{display:flex;gap:32px;flex:1}
+.card{flex:1;background:var(--surface);border-radius:20px;padding:48px;display:flex;flex-direction:column;gap:20px;border-top:8px solid var(--accent)}
+.big{font-family:var(--head);font-size:88px;font-weight:700;line-height:1;color:var(--accent-text)}
+.card-h{font-size:36px;font-weight:600;line-height:1.2;color:var(--ink)}
+.card-t{font-size:28px;line-height:1.45;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px}
+.tile{background:var(--surface);border-radius:18px;padding:40px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--line)}
+.ic{color:var(--accent-text);width:52px;height:52px}
+.tile-h{font-size:34px;font-weight:600;color:var(--ink)}
+.tile-t{font-size:26px;line-height:1.45;color:var(--muted)}
+.flow{display:flex;align-items:stretch;gap:20px}
+.fstep{flex:1;background:var(--surface);border-radius:18px;padding:40px;display:flex;flex-direction:column;gap:16px;border:1px solid var(--line)}
+.fnum{font-family:var(--head);font-size:44px;font-weight:700;color:var(--accent-text);line-height:1}
+.fh{font-size:34px;font-weight:600;color:var(--ink)}
+.ft{font-size:26px;line-height:1.45;color:var(--muted)}
+.arrow{width:56px;height:28px;background:var(--accent);align-self:center;flex:none}
+.split{display:flex;gap:96px;flex:1;align-items:center}
+.col{flex:1;display:flex;flex-direction:column;gap:28px}
+.huge{font-family:var(--head);font-size:160px;font-weight:700;line-height:1;color:var(--accent-text)}
+.huge-lab{font-size:32px;line-height:1.4;color:var(--ink)}
+.rule{background:var(--surface);border-left:8px solid var(--accent);border-radius:12px;padding:36px 40px;font-size:28px;line-height:1.5;color:var(--ink)}
+.bars{display:flex;flex-direction:column;gap:24px}
+.barrow{display:flex;align-items:center;gap:28px}
+.bl{font-size:30px;font-weight:600;width:240px;flex:none;color:var(--ink)}
+.bt{height:44px;background:var(--line);border-radius:8px;width:760px;flex:none;overflow:hidden;display:flex}
+.bf{height:44px;background:var(--accent);border-radius:8px}
+.bf-low{height:44px;background:#C2710C;border-radius:8px}
+.bv{font-family:var(--head);font-size:30px;font-weight:700;color:var(--ink);width:340px}
+.tbl{font-size:28px;color:var(--ink);font-family:var(--body)}
+.tbl-head{background:var(--dark)}
+.band{background:var(--alt)}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:40px}
+.stat{display:flex;flex-direction:column;gap:16px;border-top:3px solid var(--accent-on-dark);padding:32px 0 0 0}
+.num{font-family:var(--head);font-size:80px;font-weight:700;line-height:1;color:var(--on-dark)}
+.lab{font-size:28px;line-height:1.4;color:var(--on-dark-muted)}
+.statement{font-family:var(--head);font-size:96px;font-weight:700;line-height:1.08;width:1500px;color:var(--on-accent)}
+@keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.rise{animation:rise 600ms ease-out both;animation-delay:calc(var(--i) * 120ms)}
+
+html,body{margin:0;height:100%;background:#0b0b0b;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center}
+#stage>section{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .35s;overflow:hidden}
+#stage>section.on{opacity:1;pointer-events:auto}
+#stage>section>*:not(.glow){position:relative}
+#stage>section:not(.on) .rise{animation:none}
+#stage p,#stage h1,#stage h2,#stage h3{margin:0}
+#stage table{border-collapse:collapse;width:100%}#stage th,#stage td{padding:20px 26px;text-align:left}#stage th{font-weight:600}
+#stage .arrow{background:none;color:var(--accent)}
+nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;font:14px system-ui,sans-serif;color:#ddd;background:rgba(20,20,20,.75);padding:6px 10px;border-radius:99px}
+nav button{background:none;border:1px solid #888;color:#eee;border-radius:99px;width:34px;height:34px;cursor:pointer;font-size:16px}
+</style></head><body>
+<div id="stage">
+<section id="cover" class="dark cover">
+<div class="glow"></div>
+<p class="eyebrow">Eterna CoE Command · GenAI governance for large enterprises</p>
+<div class="head">
+<h1 class="display">Fourteen GenAI experiments.<br><span class="hl">One EBITDA engine.</span></h1>
+<p class="lede">How a command platform turns scattered AI pilots across a large holding into governed, measured and profitable capability.</p>
+</div>
+<p class="foot">Grupo Solvane S.A. · fictional company · illustrative data</p>
+
+</section>
+<section id="story">
+<div class="head">
+<p class="eyebrow">Monday, 9 am, the board meeting</p>
+<h2 class="title">The CEO asks one question: what is GenAI worth to us?</h2>
+</div>
+<div class="steps">
+<div class="step rise" style="--i:1"><p class="time">Finance</p><p class="step-txt">Built its own chatbot for reconciliation. Nobody knows what it saves.</p></div>
+<div class="step rise" style="--i:2"><p class="time">Legal</p><p class="step-txt">Pays for a different AI tool on a separate contract.</p></div>
+<div class="step rise" style="--i:3"><p class="time">Sales</p><p class="step-txt">Pastes customer data into a public chatbot to write proposals.</p></div>
+<div class="step rise" style="--i:4"><p class="time">Silence</p><p class="step-txt-strong">Five pilots, three vendors, one data-protection risk and no number for the board.</p></div>
+</div>
+
+</section>
+<section id="cost" class="alt">
+<div class="head">
+<p class="eyebrow">The hidden cost</p>
+<h2 class="title">Without a hub, GenAI happens anyway, just expensively.</h2>
+</div>
+<div class="cards">
+<div class="card rise" style="--i:1"><p class="big">2.5×</p><p class="card-h">Higher cost</p><p class="card-t">R$2.10 per AI interaction when each team buys its own tools, against R$0.84 on one shared contract.</p></div>
+<div class="card rise" style="--i:2"><p class="big">LGPD</p><p class="card-h">Data exposure</p><p class="card-t">Customer and company data typed into public chatbots. One incident outweighs a year of savings.</p></div>
+<div class="card rise" style="--i:3"><p class="big">0 bps</p><p class="card-h">No visible value</p><p class="card-t">Isolated pilots never scale, never get measured and never reach EBITDA.</p></div>
+</div>
+
+</section>
+<section id="platform">
+<div class="head">
+<p class="eyebrow">The platform</p>
+<h2 class="title">One command centre for every function and division.</h2>
+</div>
+<div class="tiles">
+<div class="tile rise" style="--i:1"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-8 6 16 3-8h4"/></svg><p class="tile-h">Command Center</p><p class="tile-t">Board summary, critical risks, KPIs and 90-day pilots on one screen.</p></div>
+<div class="tile rise" style="--i:2"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M1 21c0-4 4-6 8-6s8 2 8 6"/><path d="M17 4a4 4 0 0 1 0 8M23 21c0-3-2-5-5-5.6"/></svg><p class="tile-h">Function heat map</p><p class="tile-t">Adoption, champions and ROI for all 14 business functions.</p></div>
+<div class="tile rise" style="--i:3"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-5-5"/></svg><p class="tile-h">Capability Radar</p><p class="tile-t">Maturity by pillar against the target and the sector average.</p></div>
+<div class="tile rise" style="--i:4"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><p class="tile-h">Budget and ROI</p><p class="tile-t">Value realised, EBITDA impact and pay-per-use chargeback per function.</p></div>
+<div class="tile rise" style="--i:5"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5z"/></svg><p class="tile-h">Governance Board</p><p class="tile-t">LGPD, BACEN and AI Bill evidence ready before every audit.</p></div>
+<div class="tile rise" style="--i:6"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg><p class="tile-h">Scenario Planner</p><p class="tile-t">What each decision adds in basis points of EBITDA.</p></div>
+</div>
+
+</section>
+<section id="how" class="alt">
+<div class="head">
+<p class="eyebrow">How it works</p>
+<h2 class="title">Hub and spoke: build once, use everywhere.</h2>
+</div>
+<div class="flow">
+<div class="fstep rise" style="--i:1"><p class="fnum">01</p><p class="fh">Intake</p><p class="ft">Every idea enters one pipeline and is scored for value and risk.</p></div>
+<svg class="arrow" viewBox="0 0 56 28" preserveAspectRatio="none" style="background:none"><path d="M0 8h34V0l22 14-22 14v-8H0z" fill="currentColor"/></svg>
+<div class="fstep rise" style="--i:2"><p class="fnum">02</p><p class="fh">Build once</p><p class="ft">One secure stack, hosted in Brazil, reused by every function.</p></div>
+<svg class="arrow" viewBox="0 0 56 28" preserveAspectRatio="none" style="background:none"><path d="M0 8h34V0l22 14-22 14v-8H0z" fill="currentColor"/></svg>
+<div class="fstep rise" style="--i:3"><p class="fnum">03</p><p class="fh">Govern</p><p class="ft">Data isolated per function, full audit trail, regulators covered.</p></div>
+<svg class="arrow" viewBox="0 0 56 28" preserveAspectRatio="none" style="background:none"><path d="M0 8h34V0l22 14-22 14v-8H0z" fill="currentColor"/></svg>
+<div class="fstep rise" style="--i:4"><p class="fnum">04</p><p class="fh">Measure</p><p class="ft">ROI and EBITDA tracked per function, each billed for what it uses.</p></div>
+</div>
+<p class="lede">The hub owns platform, security and standards. Each function owns its use cases and its results.</p>
+
+</section>
+<section id="insight">
+<div class="head">
+<p class="eyebrow">The insight the platform revealed</p>
+<h2 class="title">The gap is not technology. It is adoption.</h2>
+</div>
+<div class="bars">
+<div class="barrow rise" style="--i:1"><p class="bl">Finance</p><div class="bt"><div class="bf" style="width:81%"></div></div><p class="bv">81% · above target</p></div>
+<div class="barrow rise" style="--i:2"><p class="bl">Compliance</p><div class="bt"><div class="bf" style="width:79%"></div></div><p class="bv">79% · above target</p></div>
+<div class="barrow rise" style="--i:3"><p class="bl">Legal</p><div class="bt"><div class="bf" style="width:76%"></div></div><p class="bv">76% · above target</p></div>
+<div class="barrow rise" style="--i:4"><p class="bl">Operations</p><div class="bt"><div class="bf-low" style="width:38%"></div></div><p class="bv">38% · below 65%</p></div>
+<div class="barrow rise" style="--i:5"><p class="bl">Logistics</p><div class="bt"><div class="bf-low" style="width:29%"></div></div><p class="bv">29% · no champion</p></div>
+</div>
+<p class="lede">The most data-sensitive functions adopt fastest. Logistics, with no champion, leaves R$1.1M of ready value stranded.</p>
+
+</section>
+<section id="change">
+<div class="head">
+<p class="eyebrow">What changes for the company</p>
+<h2 class="title">Before and after the command centre.</h2>
+</div>
+<table class="tbl">
+<tr class="tbl-head"><th style="width:22%;color:#F4F2EC">&#160;</th><th style="width:39%;color:#F4F2EC">Before</th><th style="width:39%;color:#B9A9FF">With Eterna CoE Command</th></tr>
+<tr><td>Cost</td><td style="color:#57524B">R$2.10 per AI interaction</td><td>R$0.84, 60% cheaper</td></tr>
+<tr class="band"><td>Visibility</td><td style="color:#57524B">Pilots nobody can measure</td><td>ROI and EBITDA per function</td></tr>
+<tr><td>Risk</td><td style="color:#57524B">Data in public chatbots</td><td>Isolated, audited, hosted in Brazil</td></tr>
+<tr class="band"><td>Regulators</td><td style="color:#57524B">Scramble before each audit</td><td>Evidence ready at any time</td></tr>
+<tr><td>Adoption</td><td style="color:#57524B">Left to enthusiasm</td><td>Champions and leaders’ bonus tied to use</td></tr>
+<tr class="band"><td>Board</td><td style="color:#57524B">No answer to “what is it worth?”</td><td>One CEO portfolio report</td></tr>
+</table>
+
+</section>
+<section id="results" class="dark">
+<div class="head">
+<p class="eyebrow">The result</p>
+<h2 class="title">GenAI that pays for itself and shows it.</h2>
+</div>
+<div class="stats">
+<div class="stat rise" style="--i:1"><p class="num">R$14.2M</p><p class="lab">ROI realised this year, 77% over the R$8.0M target</p></div>
+<div class="stat rise" style="--i:2"><p class="num">+68 bps</p><p class="lab">EBITDA uplift, on the way to the 200–300 bps mandate</p></div>
+<div class="stat rise" style="--i:3"><p class="num">41</p><p class="lab">Active use cases across 14 functions, 28 in production</p></div>
+<div class="stat rise" style="--i:4"><p class="num">0</p><p class="lab">Data incidents or LGPD breaches in live functions</p></div>
+</div>
+<p class="note">Illustrative figures for a fictional company · full deployment projects +230 bps by year 3</p>
+
+</section>
+<section id="close" class="accent closing">
+<p class="eyebrow">Why it matters</p>
+<p class="statement">One platform. Every function. Measurable EBITDA.</p>
+<p class="lede">GenAI governed like any other strategic asset: controlled cost, protected data and value the board can see.</p>
+
+</section>
+
+</div>
+<nav><button id="prev" aria-label="Previous slide">‹</button><span id="pos"></span><button id="next" aria-label="Next slide">›</button></nav>
+<script>
+const S=[...document.querySelectorAll('#stage>section')],st=document.getElementById('stage');let i=0;
+function fit(){const k=Math.min(innerWidth/1920,innerHeight/1080);st.style.transform=`translate(-50%,-50%) scale(${k})`}
+function go(n){i=Math.max(0,Math.min(S.length-1,n));S.forEach((s,j)=>s.classList.toggle('on',j===i));document.getElementById('pos').textContent=`${i+1} / ${S.length}`;history.replaceState(null,'','#'+(i+1))}
+addEventListener('resize',fit);addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))go(i+1);if(['ArrowLeft','PageUp'].includes(e.key))go(i-1)});
+prev.onclick=()=>go(i-1);next.onclick=()=>go(i+1);
+fit();go((parseInt(location.hash.slice(1))||1)-1);
+</script></body></html>
